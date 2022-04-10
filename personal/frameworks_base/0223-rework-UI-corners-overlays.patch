@@ -1,0 +1,126 @@
+From 069d870eaddeddf30b941c1cba83d75fcf1a988a Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 20 Jan 2022 08:03:35 +0000
+Subject: [PATCH 223/230] rework UI corners overlays
+
+---
+ core/res/res/values/dimens.xml                              | 2 +-
+ packages/SystemUI/res/drawable/rounded_ripple.xml           | 6 +++---
+ packages/overlays/Android.mk                                | 2 +-
+ .../{UIcorners8dpOverlay => UIcorners4dpOverlay}/Android.mk | 4 ++--
+ .../AndroidManifest.xml                                     | 4 ++--
+ .../res/values/dimens.xml                                   | 2 +-
+ 6 files changed, 10 insertions(+), 10 deletions(-)
+ rename packages/overlays/{UIcorners8dpOverlay => UIcorners4dpOverlay}/Android.mk (91%)
+ rename packages/overlays/{UIcorners8dpOverlay => UIcorners4dpOverlay}/AndroidManifest.xml (89%)
+ rename packages/overlays/{UIcorners8dpOverlay => UIcorners4dpOverlay}/res/values/dimens.xml (92%)
+
+diff --git a/core/res/res/values/dimens.xml b/core/res/res/values/dimens.xml
+index 422e4795e7d..fe665dca9dc 100644
+--- a/core/res/res/values/dimens.xml
++++ b/core/res/res/values/dimens.xml
+@@ -89,7 +89,7 @@
+     <!-- Default extra horizontal drawable padding for status bar icons -->
+     <dimen name="status_bar_horizontal_padding_extra">2dp</dimen>
+     <!-- Default UI rounded corner value -->
+-    <dimen name="rounded_corners_ui_core">4dp</dimen>
++    <dimen name="rounded_corners_ui_core">8dp</dimen>
+     <dimen name="system_app_widget_background_radius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+     <!-- Default radius of the software rounded corners. -->
+diff --git a/packages/SystemUI/res/drawable/rounded_ripple.xml b/packages/SystemUI/res/drawable/rounded_ripple.xml
+index d9ed8233d88..3e529445a0e 100644
+--- a/packages/SystemUI/res/drawable/rounded_ripple.xml
++++ b/packages/SystemUI/res/drawable/rounded_ripple.xml
+@@ -18,13 +18,13 @@
+     <item android:id="@android:id/mask">
+         <shape xmlns:android="http://schemas.android.com/apk/res/android">
+             <solid android:color="#FFFFFFFF"/>
+-            <corners android:radius="8dp"/>
++            <corners android:radius="@*android:dimen/rounded_corners_ui_core"/>
+         </shape>
+     </item>
+     <item android:id="@android:id/background">
+         <shape android:shape="rectangle">
+             <solid android:color="?android:attr/colorBackgroundFloating"/>
+-            <corners android:radius="8dp"/>
++            <corners android:radius="@*android:dimen/rounded_corners_ui_core"/>
+         </shape>
+     </item>
+-</ripple>
+\ No newline at end of file
++</ripple>
+diff --git a/packages/overlays/Android.mk b/packages/overlays/Android.mk
+index 43629bebc33..cf7052002c1 100644
+--- a/packages/overlays/Android.mk
++++ b/packages/overlays/Android.mk
+@@ -151,7 +151,7 @@ LOCAL_REQUIRED_MODULES := \
+ 	Rounded36dpOverlay \
+ 	UIcorners0dpOverlay \
+ 	UIcorners2dpOverlay \
+-	UIcorners8dpOverlay \
++	UIcorners4dpOverlay \
+ 	UIcorners12dpOverlay \
+ 	UIcorners16dpOverlay \
+ 	UIcorners20dpOverlay \
+diff --git a/packages/overlays/UIcorners8dpOverlay/Android.mk b/packages/overlays/UIcorners4dpOverlay/Android.mk
+similarity index 91%
+rename from packages/overlays/UIcorners8dpOverlay/Android.mk
+rename to packages/overlays/UIcorners4dpOverlay/Android.mk
+index 48368c40261..28c3b893c99 100644
+--- a/packages/overlays/UIcorners8dpOverlay/Android.mk
++++ b/packages/overlays/UIcorners4dpOverlay/Android.mk
+@@ -16,7 +16,7 @@
+ LOCAL_PATH:= $(call my-dir)
+ include $(CLEAR_VARS)
+ 
+-LOCAL_RRO_THEME := UIcorners8dp
++LOCAL_RRO_THEME := UIcorners4dp
+ 
+ LOCAL_PRODUCT_MODULE := true
+ 
+@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
+ 
+ LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
+ 
+-LOCAL_PACKAGE_NAME := UIcorners8dpOverlay
++LOCAL_PACKAGE_NAME := UIcorners4dpOverlay
+ LOCAL_SDK_VERSION := current
+ 
+ include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/UIcorners8dpOverlay/AndroidManifest.xml b/packages/overlays/UIcorners4dpOverlay/AndroidManifest.xml
+similarity index 89%
+rename from packages/overlays/UIcorners8dpOverlay/AndroidManifest.xml
+rename to packages/overlays/UIcorners4dpOverlay/AndroidManifest.xml
+index f589b2afca5..f8c95435a6f 100644
+--- a/packages/overlays/UIcorners8dpOverlay/AndroidManifest.xml
++++ b/packages/overlays/UIcorners4dpOverlay/AndroidManifest.xml
+@@ -16,9 +16,9 @@
+  */
+ -->
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-    package="com.android.theme.uicorners8"
++    package="com.android.theme.uicorners4"
+     android:versionCode="1"
+     android:versionName="1.0">
+     <overlay android:targetPackage="android" android:category="android.theme.customization.uicorners" android:priority="1"/>
+-    <application android:label="8dp" android:hasCode="false"/>
++    <application android:label="4dp" android:hasCode="false"/>
+ </manifest>
+diff --git a/packages/overlays/UIcorners8dpOverlay/res/values/dimens.xml b/packages/overlays/UIcorners4dpOverlay/res/values/dimens.xml
+similarity index 92%
+rename from packages/overlays/UIcorners8dpOverlay/res/values/dimens.xml
+rename to packages/overlays/UIcorners4dpOverlay/res/values/dimens.xml
+index 67103ffbf04..9f37859c04b 100644
+--- a/packages/overlays/UIcorners8dpOverlay/res/values/dimens.xml
++++ b/packages/overlays/UIcorners4dpOverlay/res/values/dimens.xml
+@@ -16,5 +16,5 @@
+  */
+ -->
+ <resources>
+-    <dimen name="rounded_corners_ui_core">8dp</dimen>
++    <dimen name="rounded_corners_ui_core">4dp</dimen>
+ </resources>
+-- 
+2.25.1
+

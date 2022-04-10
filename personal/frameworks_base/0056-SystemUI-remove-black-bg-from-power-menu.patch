@@ -1,0 +1,53 @@
+From 6372316cc6eef4f9ca2cbc2d1c95bbdca62377f5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 16 Nov 2020 04:30:39 -0500
+Subject: [PATCH 056/230] SystemUI: remove black bg from power menu
+
+  from
+  https://github.com/StatiXOS/android_frameworks_base/commit/e132c4f16d086e88856465eb2d00ddc3d4bf6cbb
+---
+ .../android/systemui/globalactions/GlobalActionsDialog.java  | 3 +--
+ .../systemui/statusbar/NotificationShadeDepthController.kt   | 5 -----
+ 2 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java b/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java
+index 981870ca205..b5aa629c0a6 100644
+--- a/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java
++++ b/packages/SystemUI/src/com/android/systemui/globalactions/GlobalActionsDialog.java
+@@ -2703,7 +2703,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
+             initializeWalletView();
+             if (mBackgroundDrawable == null) {
+                 mBackgroundDrawable = new ScrimDrawable();
+-                mScrimAlpha = 1.0f;
++                mScrimAlpha = 0.90f;
+             }
+             getWindow().setBackgroundDrawable(mBackgroundDrawable);
+         }
+@@ -2740,7 +2740,6 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
+             if (!(mBackgroundDrawable instanceof ScrimDrawable)) {
+                 return;
+             }
+-            ((ScrimDrawable) mBackgroundDrawable).setColor(Color.BLACK, animate);
+             View decorView = getWindow().getDecorView();
+             if (colors.supportsDarkText()) {
+                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR |
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShadeDepthController.kt b/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShadeDepthController.kt
+index 0445c9879ac..8018d5aaa5a 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShadeDepthController.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShadeDepthController.kt
+@@ -174,12 +174,7 @@ class NotificationShadeDepthController @Inject constructor(
+             }
+         }
+ 
+-        // Home controls have black background, this means that we should not have blur when they
+-        // are fully visible, otherwise we'll enter Client Composition unnecessarily.
+         var globalActionsRadius = globalActionsSpring.radius
+-        if (showingHomeControls) {
+-            globalActionsRadius = 0
+-        }
+         var blur = max(shadeRadius.toInt(), globalActionsRadius)
+ 
+         // Make blur be 0 if it is necessary to stop blur effect.
+-- 
+2.25.1
+

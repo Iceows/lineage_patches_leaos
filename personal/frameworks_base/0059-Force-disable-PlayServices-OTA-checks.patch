@@ -1,0 +1,41 @@
+From 474eaa7eddc6f2b1fc5aa2883444e52be9cf2ebb Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 16 Nov 2020 15:33:50 -0500
+Subject: [PATCH 059/230] Force disable PlayServices OTA checks
+
+  from
+  https://github.com/ezio84/abc_frameworks_base/commit/2cf1ace03b7beb1355f00efbd2aa80873baf017c
+---
+ packages/SettingsProvider/res/values/defaults.xml              | 3 +++
+ .../src/com/android/providers/settings/DatabaseHelper.java     | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/packages/SettingsProvider/res/values/defaults.xml b/packages/SettingsProvider/res/values/defaults.xml
+index 7a269a8dbfc..9d4c26153d4 100644
+--- a/packages/SettingsProvider/res/values/defaults.xml
++++ b/packages/SettingsProvider/res/values/defaults.xml
+@@ -242,4 +242,7 @@
+     <bool name="def_hdmiControlAutoDeviceOff">false</bool>
+ 
+     <bool name="def_text_show_password">false</bool>
++
++    <integer name="def_ota_disable_automatic_update">1</integer>
++
+ </resources>
+diff --git a/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java b/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java
+index 39bd3fc813f..69d994575a5 100644
+--- a/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java
++++ b/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java
+@@ -2600,6 +2600,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
+             }
+             loadSetting(stmt, Settings.Global.LID_BEHAVIOR, defaultLidBehavior);
+ 
++            loadIntegerSetting(stmt, Settings.Global.OTA_DISABLE_AUTOMATIC_UPDATE,
++                    R.integer.def_ota_disable_automatic_update);
++
+             /*
+              * IMPORTANT: Do not add any more upgrade steps here as the global,
+              * secure, and system settings are no longer stored in a database
+-- 
+2.25.1
+

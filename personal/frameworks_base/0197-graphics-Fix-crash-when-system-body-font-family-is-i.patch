@@ -1,0 +1,34 @@
+From 359b083fa52b762f51043912d870d2d7d518e408 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 2 Aug 2021 18:28:35 -0700
+Subject: [PATCH 197/230] graphics: Fix crash when system body font family is
+ invalid
+
+config_bodyFontFamily should always be valid, but if not (e.g. Typeface
+== null), just use the default font instead of crashing apps.
+
+Change-Id: I23ac7d70cda592630ecb6eb686b84015bea9c6e3
+---
+ graphics/java/android/graphics/Typeface.java | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/graphics/java/android/graphics/Typeface.java b/graphics/java/android/graphics/Typeface.java
+index 042cbdcac9f..b08c02c00db 100644
+--- a/graphics/java/android/graphics/Typeface.java
++++ b/graphics/java/android/graphics/Typeface.java
+@@ -1171,6 +1171,12 @@ public class Typeface {
+     public static void updateDefaultFont(Resources res) {
+         String familyName = res.getString(com.android.internal.R.string.config_bodyFontFamily);
+         Typeface typeface = sSystemFontMap.get(familyName);
++        if (typeface == null) {
++            // This should never happen, but if the system font family name is invalid, just return
++            // instead of crashing the app.
++            return;
++        }
++
+         setDefault(typeface);
+ 
+         // Static typefaces in public API
+-- 
+2.25.1
+

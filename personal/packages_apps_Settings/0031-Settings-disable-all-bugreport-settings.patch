@@ -1,0 +1,79 @@
+From 57e9b71357da32081e4f16efb6dc83e60e5ea561 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 07:53:03 -0500
+Subject: [PATCH 31/53] Settings: disable all bugreport settings
+
+  from
+  https://github.com/omnirom/android_packages_apps_Settings/commit/2e59f165ca0f21eede3e7963cdb888173fe7b26a
+
+Change-Id: I350e592e6a7ed0b93f3935b06ef9dae97e3a1f74
+---
+ res/xml/development_settings.xml                     | 12 ++++++------
+ .../DevelopmentSettingsDashboardFragment.java        |  6 +++---
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/res/xml/development_settings.xml b/res/xml/development_settings.xml
+index 7f9abb8446..62d00437e9 100644
+--- a/res/xml/development_settings.xml
++++ b/res/xml/development_settings.xml
+@@ -30,16 +30,16 @@
+             android:summary="@string/summary_placeholder"
+             android:fragment="com.android.settings.applications.ProcessStatsSummary" />
+ 
+-        <com.android.settings.BugreportPreference
++        <!--<com.android.settings.BugreportPreference
+             android:key="bugreport"
+             android:title="@*android:string/bugreport_title"
+-            android:dialogTitle="@*android:string/bugreport_title" />
++            android:dialogTitle="@*android:string/bugreport_title" />-->
+ 
+-        <Preference
++        <!--<Preference
+             android:key="bug_report_handler"
+             android:title="@string/bug_report_handler_title"
+             android:summary="@string/summary_placeholder"
+-            android:fragment="com.android.settings.bugreporthandler.BugReportHandlerPicker" />
++            android:fragment="com.android.settings.bugreporthandler.BugReportHandlerPicker" />-->
+ 
+         <Preference
+             android:key="system_server_heap_dump"
+@@ -167,10 +167,10 @@
+             android:title="@string/enable_terminal_title"
+             android:summary="@string/enable_terminal_summary" />
+ 
+-        <SwitchPreference
++        <!--<SwitchPreference
+             android:key="bugreport_in_power"
+             android:title="@string/bugreport_in_power"
+-            android:summary="@string/bugreport_in_power_summary" />
++            android:summary="@string/bugreport_in_power_summary" />-->
+ 
+         <SwitchPreference
+             android:key="enable_verbose_vendor_logging"
+diff --git a/src/com/android/settings/development/DevelopmentSettingsDashboardFragment.java b/src/com/android/settings/development/DevelopmentSettingsDashboardFragment.java
+index d40333386d..1c8f095b10 100644
+--- a/src/com/android/settings/development/DevelopmentSettingsDashboardFragment.java
++++ b/src/com/android/settings/development/DevelopmentSettingsDashboardFragment.java
+@@ -470,8 +470,8 @@ public class DevelopmentSettingsDashboardFragment extends RestrictedDashboardFra
+             BluetoothA2dpConfigStore bluetoothA2dpConfigStore) {
+         final List<AbstractPreferenceController> controllers = new ArrayList<>();
+         controllers.add(new MemoryUsagePreferenceController(context));
+-        controllers.add(new BugReportPreferenceController(context));
+-        controllers.add(new BugReportHandlerPreferenceController(context));
++        //controllers.add(new BugReportPreferenceController(context));
++        //controllers.add(new BugReportHandlerPreferenceController(context));
+         controllers.add(new SystemServerHeapDumpPreferenceController(context));
+         controllers.add(new LocalBackupPasswordPreferenceController(context));
+         controllers.add(new StayAwakePreferenceController(context, lifecycle));
+@@ -490,7 +490,7 @@ public class DevelopmentSettingsDashboardFragment extends RestrictedDashboardFra
+         controllers.add(new WirelessDebuggingPreferenceController(context, lifecycle));
+         controllers.add(new AdbAuthorizationTimeoutPreferenceController(context));
+         controllers.add(new LocalTerminalPreferenceController(context));
+-        controllers.add(new BugReportInPowerPreferenceController(context));
++        //controllers.add(new BugReportInPowerPreferenceController(context));
+         controllers.add(new AutomaticSystemServerHeapDumpPreferenceController(context));
+         controllers.add(new MockLocationAppPreferenceController(context, fragment));
+         controllers.add(new DebugViewAttributesPreferenceController(context));
+-- 
+2.25.1
+

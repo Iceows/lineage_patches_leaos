@@ -1,0 +1,57 @@
+From e265ec62456b4ca61035cb55610861cbf14d29f5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 17 Nov 2020 07:53:13 -0500
+Subject: [PATCH 071/230] add permissions for google apps
+
+  based on file
+  https://github.com/Corvus-ROM/android_frameworks_base/commit/6e69477ae7efc840b11783cc6a388103f6b73e99#diff-433b438dd16415e35ca034bb5ee9dce76917f1af97a3161f5e505bd3c99ac2c0R870
+---
+ .../DefaultPermissionGrantPolicy.java         | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java b/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
+index cf0b0e6979a..9f65add8643 100644
+--- a/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
++++ b/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
+@@ -839,6 +839,38 @@ public final class DefaultPermissionGrantPolicy {
+             grantPermissionsToSystemPackage(pm, systemCaptionsServicePackageName, userId,
+                     MICROPHONE_PERMISSIONS);
+         }
++
++        // Google App
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.googlequicksearchbox", userId,
++                CALENDAR_PERMISSIONS, CAMERA_PERMISSIONS, CONTACTS_PERMISSIONS, ALWAYS_LOCATION_PERMISSIONS,
++                MICROPHONE_PERMISSIONS, PHONE_PERMISSIONS, SMS_PERMISSIONS, STORAGE_PERMISSIONS);
++        // Google Play Services
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.gms", userId, SENSORS_PERMISSIONS,
++                CALENDAR_PERMISSIONS, CAMERA_PERMISSIONS, CONTACTS_PERMISSIONS, ALWAYS_LOCATION_PERMISSIONS,
++                MICROPHONE_PERMISSIONS, PHONE_PERMISSIONS, SMS_PERMISSIONS, STORAGE_PERMISSIONS);
++        // Google Contacts Sync
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.syncadapters.contacts", userId,
++                CONTACTS_PERMISSIONS);
++        // Google Play Framework
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.gsf", userId, CONTACTS_PERMISSIONS,
++                PHONE_PERMISSIONS);
++        // Google Setup Wizard
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.setupwizard", userId, CONTACTS_PERMISSIONS,
++                PHONE_PERMISSIONS, ALWAYS_LOCATION_PERMISSIONS, CAMERA_PERMISSIONS);
++        // Google Play Store
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.android.vending", userId, CONTACTS_PERMISSIONS,
++                PHONE_PERMISSIONS, ALWAYS_LOCATION_PERMISSIONS, SMS_PERMISSIONS, STORAGE_PERMISSIONS);
++        // ContactsProvider2
++        grantSystemFixedPermissionsToSystemPackage(pm,
++                getDefaultProviderAuthorityPackage("com.android.providers.contacts.ContactsProvider2", userId), userId,
++                CONTACTS_PERMISSIONS, STORAGE_PERMISSIONS);
++        // Google Calendar
++        grantSystemFixedPermissionsToSystemPackage(pm,"com.google.android.calendar", userId, CALENDAR_PERMISSIONS,
++                CONTACTS_PERMISSIONS, PHONE_PERMISSIONS);
++
++        // Chromium Sign-in
++        grantSystemFixedPermissionsToSystemPackage(pm,"org.chromium.chrome", userId, CONTACTS_PERMISSIONS,
++                STORAGE_PERMISSIONS);
+     }
+ 
+     private String getDefaultSystemHandlerActivityPackageForCategory(PackageManagerWrapper pm,
+-- 
+2.25.1
+

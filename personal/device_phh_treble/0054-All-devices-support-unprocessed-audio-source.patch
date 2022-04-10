@@ -1,0 +1,23 @@
+From fd8838ef572d4165642bc9037165a06236fc5f2c Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 20 Dec 2021 13:19:32 -0500
+Subject: [PATCH 54/80] All devices support unprocessed audio source
+
+---
+ overlay/frameworks/base/core/res/res/values/config.xml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/overlay/frameworks/base/core/res/res/values/config.xml b/overlay/frameworks/base/core/res/res/values/config.xml
+index 7a15163..bad8f29 100644
+--- a/overlay/frameworks/base/core/res/res/values/config.xml
++++ b/overlay/frameworks/base/core/res/res/values/config.xml
+@@ -49,4 +49,6 @@
+         <!-- ColorDisplayManager.COLOR_MODE_AUTOMATIC -->
+         <item>3</item>
+     </array>
++
++    <bool name="config_supportAudioSourceUnprocessed">true</bool>
+ </resources>
+-- 
+2.25.1
+

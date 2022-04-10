@@ -1,0 +1,314 @@
+From 444591f1820366c0c287e5917256510fcd42836b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 25 Mar 2021 06:23:38 -0400
+Subject: [PATCH 4/6] enable clang optimizations
+
+---
+ cmds/surfacereplayer/replayer/Android.bp |  2 ++
+ libs/input/Android.bp                    |  1 +
+ libs/nativewindow/Android.bp             |  1 +
+ libs/ui/Android.bp                       |  2 ++
+ opengl/libs/Android.bp                   | 10 ++++++----
+ services/audiomanager/Android.bp         |  1 +
+ services/displayservice/Android.bp       |  1 +
+ services/gpuservice/Android.bp           |  3 +++
+ services/inputflinger/Android.bp         |  2 ++
+ services/schedulerservice/Android.bp     |  2 +-
+ services/sensorservice/Android.bp        |  4 +++-
+ services/utils/Android.bp                |  1 +
+ vulkan/libvulkan/Android.bp              |  2 ++
+ vulkan/vkjson/Android.bp                 |  4 ++++
+ 14 files changed, 30 insertions(+), 6 deletions(-)
+
+diff --git a/cmds/surfacereplayer/replayer/Android.bp b/cmds/surfacereplayer/replayer/Android.bp
+index 763231190..9895c2b81 100644
+--- a/cmds/surfacereplayer/replayer/Android.bp
++++ b/cmds/surfacereplayer/replayer/Android.bp
+@@ -6,6 +6,7 @@ cc_library_shared {
+         "Replayer.cpp",
+     ],
+     cppflags: [
++        "-O3",
+         "-Werror",
+         "-Wno-unused-parameter",
+         "-Wno-format",
+@@ -52,6 +53,7 @@ cc_binary {
+         "libtrace_proto",
+     ],
+     cppflags: [
++        "-O3",
+         "-Werror",
+         "-Wno-unused-parameter",
+ 	"-Wno-c++98-compat-pedantic",
+diff --git a/libs/input/Android.bp b/libs/input/Android.bp
+index 8efaf3d90..a1bb71833 100644
+--- a/libs/input/Android.bp
++++ b/libs/input/Android.bp
+@@ -18,6 +18,7 @@ cc_library {
+     name: "libinput",
+     host_supported: true,
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+diff --git a/libs/nativewindow/Android.bp b/libs/nativewindow/Android.bp
+index 52d73e0a5..f78d2d0e7 100644
+--- a/libs/nativewindow/Android.bp
++++ b/libs/nativewindow/Android.bp
+@@ -48,6 +48,7 @@ cc_library {
+     clang: true,
+ 
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wno-enum-compare",
+diff --git a/libs/ui/Android.bp b/libs/ui/Android.bp
+index 73adb0ae2..f31fa70d8 100644
+--- a/libs/ui/Android.bp
++++ b/libs/ui/Android.bp
+@@ -22,11 +22,13 @@ cc_library_shared {
+ 
+     clang: true,
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+     ],
+     cppflags: [
+         "-Wextra",
++        "-O3",
+     ],
+ 
+     sanitize: {
+diff --git a/opengl/libs/Android.bp b/opengl/libs/Android.bp
+index e8d3684e4..2b09a0041 100644
+--- a/opengl/libs/Android.bp
++++ b/opengl/libs/Android.bp
+@@ -3,7 +3,7 @@ cc_library {
+     name: "libETC1",
+     srcs: ["ETC1/etc1.cpp"],
+     host_supported: true,
+-    cflags: ["-Wall", "-Werror"],
++    cflags: ["-Wall", "-Werror", "-O3"],
+ 
+     target: {
+         android: {
+@@ -60,6 +60,7 @@ cc_defaults {
+         "-Wall",
+         "-Werror",
+         "-Wno-unused-variable",
++        "-O3",
+     ],
+     shared_libs: [
+         // ***** DO NOT ADD NEW DEPENDENCIES HERE *****
+@@ -93,6 +94,7 @@ cc_defaults {
+         "-Wno-error=deprecated-register",
+         "-Wno-error=unknown-attributes",
+         "-Wno-unused-variable",
++        "-O3",
+     ],
+     shared_libs: [
+         // ***** DO NOT ADD NEW DEPENDENCIES HERE *****
+@@ -199,7 +201,7 @@ cc_library_shared {
+     name: "libGLESv1_CM",
+     defaults: ["gles_libs_defaults"],
+     srcs: ["GLES_CM/gl.cpp"],
+-    cflags: ["-DLOG_TAG=\"libGLESv1\""],
++    cflags: ["-DLOG_TAG=\"libGLESv1\"", "-O3"],
+     version_script: "libGLESv1_CM.map.txt",
+ }
+ 
+@@ -210,7 +212,7 @@ cc_library_shared {
+     name: "libGLESv2",
+     defaults: ["gles_libs_defaults"],
+     srcs: ["GLES2/gl2.cpp"],
+-    cflags: ["-DLOG_TAG=\"libGLESv2\""],
++    cflags: ["-DLOG_TAG=\"libGLESv2\"", "-O3"],
+ 
+     // Bug: http://b/133874658  Disable native_coverage as we investigate a
+     // crash in surfaceflinger on coverage-enabled cuttlefish builds.
+@@ -224,5 +226,5 @@ cc_library_shared {
+     name: "libGLESv3",
+     defaults: ["gles_libs_defaults"],
+     srcs: ["GLES2/gl2.cpp"],
+-    cflags: ["-DLOG_TAG=\"libGLESv3\""],
++    cflags: ["-DLOG_TAG=\"libGLESv3\"", "-O3"],
+ }
+diff --git a/services/audiomanager/Android.bp b/services/audiomanager/Android.bp
+index 12ad47e15..d58dff059 100644
+--- a/services/audiomanager/Android.bp
++++ b/services/audiomanager/Android.bp
+@@ -12,6 +12,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wunused",
+diff --git a/services/displayservice/Android.bp b/services/displayservice/Android.bp
+index 4d2d87352..75828ccf4 100644
+--- a/services/displayservice/Android.bp
++++ b/services/displayservice/Android.bp
+@@ -39,6 +39,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
++        "-O3",
+         "-Werror",
+         "-Wall",
+     ]
+diff --git a/services/gpuservice/Android.bp b/services/gpuservice/Android.bp
+index 6eed24a17..946fe518f 100644
+--- a/services/gpuservice/Android.bp
++++ b/services/gpuservice/Android.bp
+@@ -1,6 +1,7 @@
+ cc_defaults {
+     name: "gpuservice_defaults",
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wformat",
+@@ -15,6 +16,7 @@ cc_defaults {
+     defaults: ["gpuservice_defaults"],
+     cflags: [
+         "-DLOG_TAG=\"GpuService\"",
++        "-O3",
+     ],
+     shared_libs: [
+         "libbase",
+@@ -41,6 +43,7 @@ cc_defaults {
+     name: "libgpuservice_production_defaults",
+     defaults: ["libgpuservice_defaults"],
+     cflags: [
++        "-O3",
+         "-fvisibility=hidden",
+         "-fwhole-program-vtables", // requires ThinLTO
+     ],
+diff --git a/services/inputflinger/Android.bp b/services/inputflinger/Android.bp
+index 9678bab2e..8ce6f28b5 100644
+--- a/services/inputflinger/Android.bp
++++ b/services/inputflinger/Android.bp
+@@ -16,6 +16,7 @@
+ cc_defaults {
+     name: "inputflinger_defaults",
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+@@ -62,6 +63,7 @@ cc_library_shared {
+         "libinputflinger_defaults",
+     ],
+     cflags: [
++        "-O3",
+         // TODO(b/23084678): Move inputflinger to its own process and mark it hidden
+         //-fvisibility=hidden
+     ],
+diff --git a/services/schedulerservice/Android.bp b/services/schedulerservice/Android.bp
+index 73802dbc9..539c679cd 100644
+--- a/services/schedulerservice/Android.bp
++++ b/services/schedulerservice/Android.bp
+@@ -3,7 +3,7 @@ cc_library_shared {
+     srcs: [
+         "SchedulingPolicyService.cpp",
+     ],
+-    cflags: ["-Wall", "-Werror"],
++    cflags: ["-Wall", "-Werror", "-O3"],
+     shared_libs: [
+         "libhidlbase",
+         "libmediautils",
+diff --git a/services/sensorservice/Android.bp b/services/sensorservice/Android.bp
+index 532a2e5a1..e4e6539ea 100644
+--- a/services/sensorservice/Android.bp
++++ b/services/sensorservice/Android.bp
+@@ -30,7 +30,8 @@ cc_library_shared {
+         "-Wall",
+         "-Werror",
+         "-Wextra",
+-        "-fvisibility=hidden"
++        "-fvisibility=hidden",
++        "-O3",
+     ],
+ 
+     header_libs: [
+@@ -79,6 +80,7 @@ cc_binary {
+     ],
+ 
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wextra",
+diff --git a/services/utils/Android.bp b/services/utils/Android.bp
+index f3d2bc976..65ca0d003 100644
+--- a/services/utils/Android.bp
++++ b/services/utils/Android.bp
+@@ -21,6 +21,7 @@ cc_library_static {
+     vendor_available: true,
+ 
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+     ],
+diff --git a/vulkan/libvulkan/Android.bp b/vulkan/libvulkan/Android.bp
+index aa8040b8f..e7308d24d 100644
+--- a/vulkan/libvulkan/Android.bp
++++ b/vulkan/libvulkan/Android.bp
+@@ -48,6 +48,7 @@ cc_library_shared {
+         "-Wno-switch-enum",
+         "-Wno-unused-variable",
+         "-Wno-unused-function",
++        "-O3",
+ 
+         // Have clang emit complete debug_info.
+         "-fstandalone-debug",
+@@ -62,6 +63,7 @@ cc_library_shared {
+         "-Wno-float-equal",
+         "-Wno-global-constructors",
+         "-Wno-zero-length-array",
++        "-O3",
+     ],
+ 
+     srcs: [
+diff --git a/vulkan/vkjson/Android.bp b/vulkan/vkjson/Android.bp
+index 8528898f3..b2716202a 100644
+--- a/vulkan/vkjson/Android.bp
++++ b/vulkan/vkjson/Android.bp
+@@ -5,12 +5,14 @@ cc_library_shared {
+         "vkjson_instance.cc",
+     ],
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wimplicit-fallthrough",
+     ],
+     cppflags: [
+         "-Wno-sign-compare",
++        "-O3",
+     ],
+     export_include_dirs: [
+         ".",
+@@ -34,12 +36,14 @@ cc_library_static {
+         "vkjson_instance.cc",
+     ],
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+         "-Wimplicit-fallthrough",
+     ],
+     cppflags: [
+         "-Wno-sign-compare",
++        "-O3",
+     ],
+     export_include_dirs: [
+         ".",
+-- 
+2.17.1
+

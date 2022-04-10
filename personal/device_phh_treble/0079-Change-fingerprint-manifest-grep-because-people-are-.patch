@@ -1,0 +1,38 @@
+From 7ddf02f8f9ee6491ca22fa11d46ffe4f8e3dc5b7 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 21 Mar 2022 19:02:59 -0400
+Subject: [PATCH 79/80] Change fingerprint manifest grep, because people are
+ putting manifest anywhere
+
+---
+ rw-system.sh | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index dccf7f1..810d255 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -363,14 +363,13 @@ if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml; then
+ fi
+ 
+ foundFingerprint=false
+-for manifest in /vendor/manifest.xml /vendor/etc/vintf/manifest.xml /odm/etc/vintf/manifest.xml;do
++for manifest in /vendor/manifest.xml /vendor/etc/vintf /odm/etc/vintf; do
+     if grep -q \
+-            -e android.hardware.biometrics.fingerprint \
+-            -e vendor.oppo.hardware.biometrics.fingerprint \
+-            -e vendor.oplus.hardware.biometrics.fingerprint \
+-            $manifest;
+-        then
+-        foundFingerprint=true
++      -e android.hardware.biometrics.fingerprint \
++      -e vendor.oppo.hardware.biometrics.fingerprint \
++      -e vendor.oplus.hardware.biometrics.fingerprint \
++      -r $manifest; then
++      foundFingerprint=true
+     fi
+ done
+ 
+-- 
+2.25.1
+

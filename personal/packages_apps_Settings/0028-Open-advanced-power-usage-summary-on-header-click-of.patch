@@ -1,0 +1,63 @@
+From c888be5198717067f6c65515a45993e35a648636 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 25 Nov 2020 05:33:58 -0500
+Subject: [PATCH 28/53] Open advanced power usage summary on header click of
+ battery
+
+  * from
+  https://github.com/ezio84/abc_packages_apps_Settings/commit/9dd7ad1af97ab0561a3b28f7fbb8fafa26f06c7f
+
+Change-Id: Idc3c859cee77f1157234a28b6a4b34c080ba244f
+---
+ res/xml/power_usage_summary.xml                    |  2 +-
+ .../settings/fuelgauge/PowerUsageSummary.java      | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/res/xml/power_usage_summary.xml b/res/xml/power_usage_summary.xml
+index 4d29ec128e..d6a32a935e 100644
+--- a/res/xml/power_usage_summary.xml
++++ b/res/xml/power_usage_summary.xml
+@@ -25,7 +25,7 @@
+     <com.android.settingslib.widget.LayoutPreference
+         android:key="battery_header"
+         android:title="@string/summary_placeholder"
+-        android:selectable="false"
++        android:selectable="true"
+         android:layout="@layout/battery_header"
+         settings:controller="com.android.settings.fuelgauge.BatteryHeaderPreferenceController" />
+ 
+diff --git a/src/com/android/settings/fuelgauge/PowerUsageSummary.java b/src/com/android/settings/fuelgauge/PowerUsageSummary.java
+index 57949db473..8763976e36 100644
+--- a/src/com/android/settings/fuelgauge/PowerUsageSummary.java
++++ b/src/com/android/settings/fuelgauge/PowerUsageSummary.java
+@@ -37,6 +37,7 @@ import androidx.annotation.VisibleForTesting;
+ import androidx.loader.app.LoaderManager;
+ import androidx.loader.app.LoaderManager.LoaderCallbacks;
+ import androidx.loader.content.Loader;
++import androidx.preference.Preference;
+ 
+ import com.android.settings.R;
+ import com.android.settings.SettingsActivity;
+@@ -242,6 +243,19 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
+         super.onPause();
+     }
+ 
++    @Override
++    public boolean onPreferenceTreeClick(Preference preference) {
++        if (KEY_BATTERY_HEADER.equals(preference.getKey())) {
++            new SubSettingLauncher(getContext())
++                        .setDestination(PowerUsageAdvanced.class.getName())
++                        .setSourceMetricsCategory(getMetricsCategory())
++                        .setTitleRes(R.string.advanced_battery_title)
++                        .launch();
++            return true;
++        }
++        return super.onPreferenceTreeClick(preference);
++    }
++
+     @Override
+     public int getMetricsCategory() {
+         return SettingsEnums.FUELGAUGE_POWER_USAGE_SUMMARY_V2;
+-- 
+2.25.1
+

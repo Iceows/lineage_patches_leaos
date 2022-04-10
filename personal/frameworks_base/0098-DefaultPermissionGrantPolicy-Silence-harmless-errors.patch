@@ -1,0 +1,26 @@
+From db7236fa3ec16685ad834504a34cbf0acc785f9f Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 13:27:23 -0500
+Subject: [PATCH 098/230] DefaultPermissionGrantPolicy: Silence harmless errors
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/98b8eddc6a642c6dacacbc8301272851c2102e82
+---
+ .../server/pm/permission/DefaultPermissionGrantPolicy.java       | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java b/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
+index 9f65add8643..a7085d9cb0d 100644
+--- a/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
++++ b/services/core/java/com/android/server/pm/permission/DefaultPermissionGrantPolicy.java
+@@ -284,7 +284,6 @@ public final class DefaultPermissionGrantPolicy {
+                 return mContext.getPackageManager().getPackageInfo(pkg,
+                         DEFAULT_PACKAGE_INFO_QUERY_FLAGS);
+             } catch (NameNotFoundException e) {
+-                Slog.e(TAG, "Package not found: " + pkg);
+                 return null;
+             }
+         }
+-- 
+2.25.1
+

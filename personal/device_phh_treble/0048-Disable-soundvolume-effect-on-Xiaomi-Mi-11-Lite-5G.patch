@@ -1,0 +1,52 @@
+From 44a224b2988b28cba345b0fd40c890570a34320b Mon Sep 17 00:00:00 2001
+From: Alberto Ponces <ponces26@gmail.com>
+Date: Thu, 2 Dec 2021 09:52:32 +0000
+Subject: [PATCH 48/80] Disable soundvolume effect on Xiaomi Mi 11 Lite 5G
+
+ Fixes audio distorsion on this device and may fix on other Qualcomm devices
+---
+ phh-prop-handler.sh | 16 ++++++++++++++++
+ vndk.rc             |  3 +++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 5166dd4..ce8b1ce 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -273,3 +273,19 @@ if [ "$1" == "persist.sys.phh.nolog" ]; then
+     fi
+     exit
+ fi
++
++if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
++    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
++        exit 1
++    fi
++
++    if [[ "$prop_value" == 1 ]];then
++        mount /system/phh/empty /vendor/lib/soundfx/libvolumelistener.so
++        mount /system/phh/empty /vendor/lib64/soundfx/libvolumelistener.so
++    else
++        umount /vendor/lib/soundfx/libvolumelistener.so
++        umount /vendor/lib64/soundfx/libvolumelistener.so
++    fi
++    restartAudio
++    exit
++fi
+diff --git a/vndk.rc b/vndk.rc
+index f10c509..912d323 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -47,6 +47,9 @@ on property:persist.sys.phh.vsmart.dt2w=*
+ on property:persist.sys.phh.backlight.scale=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.backlight.scale"
+ 
++on property:persist.sys.phh.disable_soundvolume_effect=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.disable_soundvolume_effect"
++
+ on property:ro.sf.lcd_density=*
+     restart surfaceflinger
+ 
+-- 
+2.25.1
+

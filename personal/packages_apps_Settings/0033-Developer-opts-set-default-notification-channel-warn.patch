@@ -1,0 +1,30 @@
+From ae474a8bdb2e8c6ca2a4cce459e680ebac24da4e Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 07:55:28 -0500
+Subject: [PATCH 33/53] Developer opts: set default notification channel
+ warnings
+
+  from
+  https://github.com/omnirom/android_packages_apps_Settings/commit/d2272e61d3467b179b5dbf5b65f2c851345e71a2
+
+Change-Id: Idedbda68672a41d82e3adc3b28e4b6a5c4acb1c7
+---
+ .../NotificationChannelWarningsPreferenceController.java        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/com/android/settings/development/NotificationChannelWarningsPreferenceController.java b/src/com/android/settings/development/NotificationChannelWarningsPreferenceController.java
+index 104fcde17d..19fa0aab03 100644
+--- a/src/com/android/settings/development/NotificationChannelWarningsPreferenceController.java
++++ b/src/com/android/settings/development/NotificationChannelWarningsPreferenceController.java
+@@ -64,7 +64,7 @@ public class NotificationChannelWarningsPreferenceController extends
+ 
+     @Override
+     public void updateState(Preference preference) {
+-        final int defaultWarningEnabled = isDebuggable() ? DEBUGGING_ENABLED : DEBUGGING_DISABLED;
++        final int defaultWarningEnabled = SETTING_VALUE_OFF;
+         final int mode = Settings.Global.getInt(mContext.getContentResolver(),
+                 Settings.Global.SHOW_NOTIFICATION_CHANNEL_WARNINGS, defaultWarningEnabled);
+         ((SwitchPreference) mPreference).setChecked(mode != SETTING_VALUE_OFF);
+-- 
+2.25.1
+

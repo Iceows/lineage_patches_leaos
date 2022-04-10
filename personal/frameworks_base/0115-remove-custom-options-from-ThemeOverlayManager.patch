@@ -1,0 +1,102 @@
+From 6880c12ba515c5c46df5c0a5640eb6bd4a5541b4 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 25 Dec 2020 16:20:26 -0500
+Subject: [PATCH 115/230] remove custom options from ThemeOverlayManager
+
+---
+ .../systemui/theme/ThemeOverlayManager.java   | 50 ++-----------------
+ 1 file changed, 3 insertions(+), 47 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayManager.java b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayManager.java
+index 191196f6954..665cb6307b6 100644
+--- a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayManager.java
++++ b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayManager.java
+@@ -67,27 +67,6 @@ class ThemeOverlayManager {
+     @VisibleForTesting
+     static final String OVERLAY_CATEGORY_ICON_THEME_PICKER =
+             "android.theme.customization.icon_pack.themepicker";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_QSPANEL =
+-            "android.theme.customization.qspanel";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_STATUSBAR =
+-            "android.theme.customization.statusbar";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_DARKUI =
+-            "android.theme.customization.darkui";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_QSALPHA =
+-            "android.theme.customization.qsalpha";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_SPEEDUI =
+-            "android.theme.customization.speedui";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_PADDING =
+-            "android.theme.customization.padding";
+-    @VisibleForTesting
+-    static final String OVERLAY_CATEGORY_ROUNDED =
+-            "android.theme.customization.rounded";
+ 
+     /*
+      * All theme customization categories used by the system, in order that they should be applied,
+@@ -98,13 +77,6 @@ class ThemeOverlayManager {
+             OVERLAY_CATEGORY_SHAPE,
+             OVERLAY_CATEGORY_FONT,
+             OVERLAY_CATEGORY_COLOR,
+-            OVERLAY_CATEGORY_QSPANEL,
+-            OVERLAY_CATEGORY_PADDING,
+-            OVERLAY_CATEGORY_STATUSBAR,
+-            OVERLAY_CATEGORY_QSALPHA,
+-            OVERLAY_CATEGORY_DARKUI,
+-            OVERLAY_CATEGORY_SPEEDUI,
+-						OVERLAY_CATEGORY_ROUNDED,
+             OVERLAY_CATEGORY_ICON_ANDROID,
+             OVERLAY_CATEGORY_ICON_SYSUI,
+             OVERLAY_CATEGORY_ICON_SETTINGS,
+@@ -116,13 +88,6 @@ class ThemeOverlayManager {
+             OVERLAY_CATEGORY_COLOR,
+             OVERLAY_CATEGORY_FONT,
+             OVERLAY_CATEGORY_SHAPE,
+-            OVERLAY_CATEGORY_QSPANEL,
+-            OVERLAY_CATEGORY_PADDING,
+-            OVERLAY_CATEGORY_STATUSBAR,
+-            OVERLAY_CATEGORY_QSALPHA,
+-            OVERLAY_CATEGORY_DARKUI,
+-            OVERLAY_CATEGORY_SPEEDUI,
+-						OVERLAY_CATEGORY_ROUNDED,
+             OVERLAY_CATEGORY_ICON_ANDROID,
+             OVERLAY_CATEGORY_ICON_SYSUI);
+ 
+@@ -142,12 +107,10 @@ class ThemeOverlayManager {
+         mLauncherPackage = launcherPackage;
+         mThemePickerPackage = themePickerPackage;
+         mTargetPackageToCategories.put(ANDROID_PACKAGE, Sets.newHashSet(
+-                OVERLAY_CATEGORY_COLOR, OVERLAY_CATEGORY_FONT, OVERLAY_CATEGORY_STATUSBAR,
+-                OVERLAY_CATEGORY_SHAPE, OVERLAY_CATEGORY_ICON_ANDROID, OVERLAY_CATEGORY_DARKUI,
+-                OVERLAY_CATEGORY_SPEEDUI, OVERLAY_CATEGORY_ROUNDED));
++                OVERLAY_CATEGORY_COLOR, OVERLAY_CATEGORY_FONT,
++                OVERLAY_CATEGORY_SHAPE, OVERLAY_CATEGORY_ICON_ANDROID));
+         mTargetPackageToCategories.put(SYSUI_PACKAGE,
+-                Sets.newHashSet(OVERLAY_CATEGORY_ICON_SYSUI, OVERLAY_CATEGORY_QSPANEL,
+-                                OVERLAY_CATEGORY_QSALPHA, OVERLAY_CATEGORY_PADDING));
++                Sets.newHashSet(OVERLAY_CATEGORY_ICON_SYSUI));
+         mTargetPackageToCategories.put(SETTINGS_PACKAGE,
+                 Sets.newHashSet(OVERLAY_CATEGORY_ICON_SETTINGS));
+         mTargetPackageToCategories.put(mLauncherPackage,
+@@ -158,13 +121,6 @@ class ThemeOverlayManager {
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_FONT, ANDROID_PACKAGE);
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_SHAPE, ANDROID_PACKAGE);
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ICON_ANDROID, ANDROID_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_STATUSBAR, ANDROID_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_DARKUI, ANDROID_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_SPEEDUI, ANDROID_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ROUNDED, ANDROID_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_QSPANEL, SYSUI_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_QSALPHA, SYSUI_PACKAGE);
+-        mCategoryToTargetPackage.put(OVERLAY_CATEGORY_PADDING, SYSUI_PACKAGE);
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ICON_SYSUI, SYSUI_PACKAGE);
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ICON_SETTINGS, SETTINGS_PACKAGE);
+         mCategoryToTargetPackage.put(OVERLAY_CATEGORY_ICON_LAUNCHER, mLauncherPackage);
+-- 
+2.25.1
+

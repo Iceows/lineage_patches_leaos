@@ -1,0 +1,28 @@
+From 460bd6d633b632eed2b19b8d8edb315eab60d576 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:16:56 -0500
+Subject: [PATCH 117/230] Fix wrong variable in AccountManagerService's
+ TokenCache
+
+  from
+  https://gitlab.com/CalyxOS/platform_frameworks_base/-/commit/48a008791ad3aeb610de3a30be4a1403a5077d57
+---
+ services/core/java/com/android/server/accounts/TokenCache.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/accounts/TokenCache.java b/services/core/java/com/android/server/accounts/TokenCache.java
+index e38cf5f3ece..66e550fe3c4 100644
+--- a/services/core/java/com/android/server/accounts/TokenCache.java
++++ b/services/core/java/com/android/server/accounts/TokenCache.java
+@@ -148,7 +148,7 @@ import java.util.Objects;
+                 accountEvictor = new Evictor();
+             }
+             accountEvictor.add(k);
+-            mAccountEvictors.put(k.account, tokenEvictor);
++            mAccountEvictors.put(k.account, accountEvictor);
+ 
+             // Only cache the token once we can remove it directly or by account.
+             put(k, v);
+-- 
+2.25.1
+

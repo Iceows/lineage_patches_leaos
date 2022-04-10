@@ -1,0 +1,58 @@
+From 1be448fc273409b21be821eba7e467607964f4bc Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 3 Mar 2021 08:04:36 -0500
+Subject: [PATCH 45/53] Allow hiding notification headers [2/2]
+
+  based on https://github.com/SuperiorOS/android_packages_apps_SuperiorSettings/commit/c803b14329437b82334fb1c825c8c8d43c7f1218
+
+Change-Id: I533d43e5bab3cf6ce411c25965e56252d76d9425
+---
+ res/values-ru/custom_strings.xml | 3 +++
+ res/values/custom_strings.xml    | 3 +++
+ res/xml/display_settings.xml     | 6 ++++++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/res/values-ru/custom_strings.xml b/res/values-ru/custom_strings.xml
+index 4a20540128..7631745eb2 100644
+--- a/res/values-ru/custom_strings.xml
++++ b/res/values-ru/custom_strings.xml
+@@ -55,4 +55,7 @@
+     <!-- Three-fingers-swipe to screenshot -->
+     <string name="three_finger_gesture">Жест для сохранения снимка экрана</string>
+     <string name="three_finger_gesture_summary">Проведите тремя пальцами вниз по экрану для сохранения его снимка</string>
++    <!-- Notification headers -->
++    <string name="notification_headers_title">Заголовки уведомлений</string>
++    <string name="notification_headers_summary">Показывать заголовки в списке уведомлений\nТребуется перезапуск SystemUI</string>
+ </resources>
+diff --git a/res/values/custom_strings.xml b/res/values/custom_strings.xml
+index 07c07cf876..f072425ed5 100644
+--- a/res/values/custom_strings.xml
++++ b/res/values/custom_strings.xml
+@@ -50,4 +50,7 @@
+     <!-- Three-fingers-swipe to screenshot -->
+     <string name="three_finger_gesture">Swipe to screenshot</string>
+     <string name="three_finger_gesture_summary">Swipe down with three fingers to take a screenshot</string>
++    <!-- Notification headers -->
++    <string name="notification_headers_title">Notification Headers</string>
++    <string name="notification_headers_summary">Show headers in the notification shade\nRequires a SystemUI restart</string>
+ </resources>
+diff --git a/res/xml/display_settings.xml b/res/xml/display_settings.xml
+index f0f91f5a90..8236c83181 100644
+--- a/res/xml/display_settings.xml
++++ b/res/xml/display_settings.xml
+@@ -211,6 +211,12 @@
+         android:title="@string/display_vr_pref_title"
+         android:fragment="com.android.settings.display.VrDisplayPreferencePicker" />
+ 
++    <com.caos.settings.preference.SystemSettingSwitchPreference
++        android:key="notification_headers"
++        android:title="@string/notification_headers_title"
++        android:summary="@string/notification_headers_summary"
++        android:defaultValue="true" />
++
+     <PreferenceCategory
+         android:key="theme_customization_category"
+         android:title="@string/theme_customization_category"
+-- 
+2.25.1
+

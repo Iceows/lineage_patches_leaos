@@ -1,0 +1,30 @@
+From 2c827b7723306889061371941a1baa785ce79408 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 01:58:25 -0500
+Subject: [PATCH 090/230] Fix deadlock between AppOpsService and
+ HistoricalRegistry
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/fb981fead4f8d94f68fe8f0af4096f3dcd530c80
+---
+ services/core/java/com/android/server/appop/AppOpsService.java | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/services/core/java/com/android/server/appop/AppOpsService.java b/services/core/java/com/android/server/appop/AppOpsService.java
+index 63b5af59c3c..35cb76a889c 100644
+--- a/services/core/java/com/android/server/appop/AppOpsService.java
++++ b/services/core/java/com/android/server/appop/AppOpsService.java
+@@ -1803,9 +1803,8 @@ public class AppOpsService extends IAppOpsService.Stub {
+                     }
+                 }
+             }
+-
+-            mHistoricalRegistry.clearHistory(uid, packageName);
+         }
++        mHistoricalRegistry.clearHistory(uid, packageName);
+     }
+ 
+     public void uidRemoved(int uid) {
+-- 
+2.25.1
+

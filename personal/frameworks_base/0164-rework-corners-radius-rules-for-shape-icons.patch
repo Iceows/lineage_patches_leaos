@@ -1,0 +1,144 @@
+From 4ae28f728f112a33ce8c4cf2f7a913fd47173e0f Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 20 Jul 2021 08:42:46 +0000
+Subject: [PATCH 164/230] rework corners radius rules for shape icons
+
+---
+ packages/overlays/IconShapeHeartOverlay/res/values/config.xml | 4 ++--
+ .../overlays/IconShapePebbleOverlay/res/values/config.xml     | 4 ++--
+ .../IconShapeRoundedRectOverlay/res/values/config.xml         | 4 ++--
+ .../overlays/IconShapeSquareOverlay/res/values/config.xml     | 4 ++--
+ .../overlays/IconShapeSquircleOverlay/res/values/config.xml   | 4 ++--
+ .../IconShapeTaperedRectOverlay/res/values/config.xml         | 4 ++--
+ .../overlays/IconShapeTeardropOverlay/res/values/config.xml   | 4 ++--
+ .../overlays/IconShapeVesselOverlay/res/values/config.xml     | 4 ++--
+ 8 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/packages/overlays/IconShapeHeartOverlay/res/values/config.xml b/packages/overlays/IconShapeHeartOverlay/res/values/config.xml
+index f9929f5f196..1919f318ded 100644
+--- a/packages/overlays/IconShapeHeartOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeHeartOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">8dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">16dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapePebbleOverlay/res/values/config.xml b/packages/overlays/IconShapePebbleOverlay/res/values/config.xml
+index e7eeb30501b..c01d7a7fbe4 100644
+--- a/packages/overlays/IconShapePebbleOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapePebbleOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">8dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">16dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapeRoundedRectOverlay/res/values/config.xml b/packages/overlays/IconShapeRoundedRectOverlay/res/values/config.xml
+index c5bb5e9bb88..2a1d241b895 100644
+--- a/packages/overlays/IconShapeRoundedRectOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeRoundedRectOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">2dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">4dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapeSquareOverlay/res/values/config.xml b/packages/overlays/IconShapeSquareOverlay/res/values/config.xml
+index 2016ece4d2c..ea2fa77d633 100644
+--- a/packages/overlays/IconShapeSquareOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeSquareOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">0dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">0dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+   
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapeSquircleOverlay/res/values/config.xml b/packages/overlays/IconShapeSquircleOverlay/res/values/config.xml
+index 7692aa6b516..f6c1d7caa85 100644
+--- a/packages/overlays/IconShapeSquircleOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeSquircleOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">4dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">8dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapeTaperedRectOverlay/res/values/config.xml b/packages/overlays/IconShapeTaperedRectOverlay/res/values/config.xml
+index 05ec716f842..9158c8a53b7 100644
+--- a/packages/overlays/IconShapeTaperedRectOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeTaperedRectOverlay/res/values/config.xml
+@@ -20,7 +20,7 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">0dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">0dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ </resources>
+diff --git a/packages/overlays/IconShapeTeardropOverlay/res/values/config.xml b/packages/overlays/IconShapeTeardropOverlay/res/values/config.xml
+index b6ee412e591..6dd5af94090 100644
+--- a/packages/overlays/IconShapeTeardropOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeTeardropOverlay/res/values/config.xml
+@@ -22,9 +22,9 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">8dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">16dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+ 
+diff --git a/packages/overlays/IconShapeVesselOverlay/res/values/config.xml b/packages/overlays/IconShapeVesselOverlay/res/values/config.xml
+index 86d31f6450b..62438696af4 100644
+--- a/packages/overlays/IconShapeVesselOverlay/res/values/config.xml
++++ b/packages/overlays/IconShapeVesselOverlay/res/values/config.xml
+@@ -20,8 +20,8 @@
+     <!-- Flag indicating whether round icons should be parsed from the application manifest. -->
+     <bool name="config_useRoundIcon">false</bool>
+     <!-- Corner radius of system dialogs -->
+-    <dimen name="config_dialogCornerRadius">8dp</dimen>
++    <dimen name="config_dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+     <!-- Corner radius for bottom sheet system dialogs -->
+-    <dimen name="config_bottomDialogCornerRadius">16dp</dimen>
++    <dimen name="config_bottomDialogCornerRadius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+ </resources>
+-- 
+2.25.1
+

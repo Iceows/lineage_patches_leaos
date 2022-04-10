@@ -1,0 +1,31 @@
+From a537482915b6a5dcbc3a982188ee96d04af4a81b Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 5 Oct 2020 21:02:11 -0700
+Subject: [PATCH 207/230] Deprioritize important developer notifications
+
+Informing the user that ADB is enabled does not necessitate an alert
+sound. It's especially annoying with the default AOSP notification sound,
+but even with a less distracting sound, this doesn't need to be so
+intrusive.
+
+Change-Id: Idee92b44cff2473a3686a2f2d95c6f5e4e91c2f8
+---
+ .../internal/notification/SystemNotificationChannels.java       | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/java/com/android/internal/notification/SystemNotificationChannels.java b/core/java/com/android/internal/notification/SystemNotificationChannels.java
+index 5cb1aa57183..85f4abd74d2 100644
+--- a/core/java/com/android/internal/notification/SystemNotificationChannels.java
++++ b/core/java/com/android/internal/notification/SystemNotificationChannels.java
+@@ -102,7 +102,7 @@ public class SystemNotificationChannels {
+         final NotificationChannel developerImportant = new NotificationChannel(
+                 DEVELOPER_IMPORTANT,
+                 context.getString(R.string.notification_channel_developer_important),
+-                NotificationManager.IMPORTANCE_HIGH);
++                NotificationManager.IMPORTANCE_MIN);
+         developerImportant.setBlockable(true);
+         channelsList.add(developerImportant);
+ 
+-- 
+2.25.1
+

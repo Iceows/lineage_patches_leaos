@@ -1,0 +1,33 @@
+From 9df6f3e8d7aa63266b8d0d4faeb830b21ff206f3 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 15 Nov 2020 06:05:51 -0500
+Subject: [PATCH 03/10] Revert "Remove sbin from fs_config.cpp"
+
+This reverts commit 2f74a26a2dbe092d63f1e46e6471369d4a19adce.
+---
+ libcutils/fs_config.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libcutils/fs_config.cpp b/libcutils/fs_config.cpp
+index 5805a4d19..8175a219f 100644
+--- a/libcutils/fs_config.cpp
++++ b/libcutils/fs_config.cpp
+@@ -80,6 +80,7 @@ static const struct fs_path_config android_dirs[] = {
+     { 00771, AID_SYSTEM,       AID_SYSTEM,       0, "data" },
+     { 00755, AID_ROOT,         AID_SYSTEM,       0, "mnt" },
+     { 00751, AID_ROOT,         AID_SHELL,        0, "product/bin" },
++    { 00750, AID_ROOT,         AID_SHELL,        0, "sbin" },
+     { 00777, AID_ROOT,         AID_ROOT,         0, "sdcard" },
+     { 00751, AID_ROOT,         AID_SDCARD_R,     0, "storage" },
+     { 00751, AID_ROOT,         AID_SHELL,        0, "system/bin" },
+@@ -209,6 +210,7 @@ static const struct fs_path_config android_files[] = {
+     { 00750, AID_ROOT,      AID_SHELL,     0, "init*" },
+     { 00755, AID_ROOT,      AID_SHELL,     0, "odm/bin/*" },
+     { 00755, AID_ROOT,      AID_SHELL,     0, "product/bin/*" },
++    { 00750, AID_ROOT,      AID_SHELL,     0, "sbin/*" },
+     { 00755, AID_ROOT,      AID_SHELL,     0, "system/bin/*" },
+     { 00755, AID_ROOT,      AID_SHELL,     0, "system/xbin/*" },
+     { 00755, AID_ROOT,      AID_SHELL,     0, "system/apex/*/bin/*" },
+-- 
+2.25.1
+

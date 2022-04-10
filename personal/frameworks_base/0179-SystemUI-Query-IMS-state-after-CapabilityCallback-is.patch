@@ -1,0 +1,41 @@
+From 2bb557469b0f75c3749ecbe0dabf9b42ca9ee1a7 Mon Sep 17 00:00:00 2001
+From: Qimeng Pan <qimengp@codeaurora.org>
+Date: Fri, 14 Dec 2018 13:42:28 +0800
+Subject: [PATCH 179/230] SystemUI: Query IMS state after CapabilityCallback is
+ regisered
+
+Query IMS state after CapabilityCallback is regisered
+CRs-Fixed: 2364714
+
+Change-Id: I9a527840ab14844f683a5a86602b54ce787581f4
+---
+ .../statusbar/policy/MobileSignalController.java    | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index 7eb4f732c60..de459fbf8eb 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -413,6 +413,19 @@ public class MobileSignalController extends SignalController<
+         } catch (ImsException e) {
+             Log.d(mTag, "unable to addCapabilitiesCallback callback.");
+         }
++        queryImsState();
++    }
++
++    private void queryImsState() {
++        TelephonyManager tm = mPhone.createForSubscriptionId(mSubscriptionInfo.getSubscriptionId());
++        boolean isVoiceCapable = tm.isVolteAvailable();
++        boolean isVideoCapable = tm.isVideoTelephonyAvailable();
++        Log.d(mTag, "tm=" + tm +" phone=" + mPhone
++                + " isVoiceCapable=" + isVoiceCapable
++                + " isVideoCapable=" +isVideoCapable);
++        if ( isVoiceCapable || isVideoCapable ) {
++            mCurrentState.isVolteRegistered = true;
++        }
+     }
+ 
+     private void removeListeners() {
+-- 
+2.25.1
+

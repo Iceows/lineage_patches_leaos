@@ -1,0 +1,25 @@
+From e57e525a98a9bb20134395e5df82be960b01f7cc Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sat, 27 Mar 2021 03:18:04 -0400
+Subject: [PATCH 149/230] add treble app to the allow-in-power-save list
+
+---
+ data/etc/platform.xml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/data/etc/platform.xml b/data/etc/platform.xml
+index cf312165dd9..e6730a32350 100644
+--- a/data/etc/platform.xml
++++ b/data/etc/platform.xml
+@@ -252,6 +252,8 @@
+     <allow-in-power-save package="com.android.cellbroadcastreceiver.module" />
+     <allow-in-power-save package="com.android.cellbroadcastreceiver" />
+     <allow-in-power-save package="com.android.shell" />
++    <!-- fix sound channels in calls (stop unloading treble-app) -->
++    <allow-in-power-save package="me.phh.treble.app" />
+ 
+     <!-- Whitelist system providers -->
+     <allow-in-power-save-except-idle package="com.android.providers.calendar" />
+-- 
+2.25.1
+

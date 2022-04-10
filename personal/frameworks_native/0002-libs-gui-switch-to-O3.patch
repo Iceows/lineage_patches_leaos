@@ -1,0 +1,54 @@
+From f3389d5c996759c7a153a8fe5b921710f7bc7aba Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 24 Mar 2021 08:21:36 -0400
+Subject: [PATCH 2/6] libs: gui: switch to -O3
+
+---
+ libs/gui/Android.bp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/libs/gui/Android.bp b/libs/gui/Android.bp
+index 2cf589d51..307b50001 100644
+--- a/libs/gui/Android.bp
++++ b/libs/gui/Android.bp
+@@ -95,6 +95,7 @@ cc_defaults {
+     target: {
+         vendor: {
+             cflags: [
++                "-O3",
+                 "-DNO_BUFFERHUB",
+                 "-DNO_INPUT",
+             ],
+@@ -138,6 +139,7 @@ cc_library_static {
+     min_sdk_version: "29",
+ 
+     cflags: [
++        "-O3",
+         "-DNO_BUFFERHUB",
+         "-DNO_BINDER",
+     ],
+@@ -178,11 +180,13 @@ cc_defaults {
+ 
+     clang: true,
+     cflags: [
++        "-O3",
+         "-Wall",
+         "-Werror",
+     ],
+ 
+     cppflags: [
++        "-O3",
+         "-Wextra",
+         "-DDEBUG_ONLY_CODE=0",
+     ],
+@@ -190,6 +194,7 @@ cc_defaults {
+     product_variables: {
+         eng: {
+             cppflags: [
++                "-O3",
+                 "-UDEBUG_ONLY_CODE",
+                 "-DDEBUG_ONLY_CODE=1",
+             ],
+-- 
+2.17.1
+

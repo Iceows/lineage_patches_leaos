@@ -1,0 +1,38 @@
+From 006514f6ad91130d901ed1393f34e6e1daf69572 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 07:56:43 -0500
+Subject: [PATCH 34/53] Settings: display fstype for mounted volumes
+
+  from
+  https://github.com/omnirom/android_packages_apps_Settings/commit/fbd49f386dab103f133df3814d0d9db66ee01c08
+
+Change-Id: I9579f74778a7ab2e611f2f35c246056b1912b5d2
+---
+ .../android/settings/deviceinfo/StorageVolumePreference.java  | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/com/android/settings/deviceinfo/StorageVolumePreference.java b/src/com/android/settings/deviceinfo/StorageVolumePreference.java
+index 6294ab90a1..cff5b2419f 100644
+--- a/src/com/android/settings/deviceinfo/StorageVolumePreference.java
++++ b/src/com/android/settings/deviceinfo/StorageVolumePreference.java
+@@ -25,6 +25,7 @@ import android.os.storage.StorageManager;
+ import android.os.storage.VolumeInfo;
+ import android.text.format.Formatter;
+ import android.util.Log;
++import android.text.TextUtils;
+ import android.view.View;
+ import android.view.View.OnClickListener;
+ import android.widget.ImageView;
+@@ -64,7 +65,8 @@ public class StorageVolumePreference extends Preference {
+         setLayoutResource(R.layout.storage_volume);
+ 
+         setKey(volume.getId());
+-        setTitle(mStorageManager.getBestVolumeDescription(volume));
++        final String fsType = volume.fsType;
++        setTitle(mStorageManager.getBestVolumeDescription(volume) + (TextUtils.isEmpty(fsType) ? "" : " / " + fsType));
+ 
+         Drawable icon;
+         if (VolumeInfo.ID_PRIVATE_INTERNAL.equals(volume.getId())) {
+-- 
+2.25.1
+

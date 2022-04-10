@@ -1,0 +1,29 @@
+From 52d61812f26c404eb3178634a254fc089c030ac5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 20 Jan 2022 08:22:14 +0000
+Subject: [PATCH 59/80] fix touch for some oppo/realme devices not always work
+
+  based on
+  https://github.com/phhusson/treble_experimentations/issues/1971
+---
+ rw-system.sh | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 374678e..216ebb5 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -933,7 +933,9 @@ fi
+ 
+ echo 1 >  /proc/tfa98xx/oppo_tfa98xx_fw_update
+ if ! grep -q -E -e '.*#write .*tp_fw_update' /vendor/etc/init/hw/*touch*;then
+-	echo 1 > /proc/touchpanel/tp_fw_update
++  if ! getprop ro.build.overlay.deviceid |grep -iq -e RMX2061 -e RMX2063; then
++    echo 1 > /proc/touchpanel/tp_fw_update
++  fi
+ fi
+ 
+ if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
+-- 
+2.25.1
+

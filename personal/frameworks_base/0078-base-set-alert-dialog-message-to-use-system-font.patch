@@ -1,0 +1,27 @@
+From 7fc78a444463e1ecfa5f4283bd07153fae3eac22 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 07:47:13 -0500
+Subject: [PATCH 078/230] base: set alert dialog message to use system font
+
+  from
+  https://github.com/omnirom/android_frameworks_base/commit/301ad6eaa007d8d9356896260165be8b7266f9e3
+---
+ core/res/res/layout/alert_dialog_material.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/res/res/layout/alert_dialog_material.xml b/core/res/res/layout/alert_dialog_material.xml
+index 178505c264a..b1510fdcb93 100644
+--- a/core/res/res/layout/alert_dialog_material.xml
++++ b/core/res/res/layout/alert_dialog_material.xml
+@@ -54,7 +54,7 @@
+                     android:layout_height="wrap_content"
+                     android:paddingEnd="?attr/dialogPreferredPadding"
+                     android:paddingStart="?attr/dialogPreferredPadding"
+-                    style="@style/TextAppearance.Material.Subhead" />
++                    style="@style/TextAppearance.DeviceDefault.Subhead" />
+ 
+                 <Space
+                     android:id="@+id/textSpacerNoButtons"
+-- 
+2.25.1
+

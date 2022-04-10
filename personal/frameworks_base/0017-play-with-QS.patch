@@ -1,0 +1,81 @@
+From d42e41b170296b05b94e4864357e81a8e1fad7f7 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 8 Mar 2020 15:26:13 +0200
+Subject: [PATCH 017/230] play with QS
+
+	modified:   packages/SystemUI/res/values/config.xml
+	modified:   packages/SystemUI/res/values/dimens.xml
+---
+ .../res/values-h740dp-port/dimens.xml         | 27 -------------------
+ packages/SystemUI/res/values/config.xml       |  4 +--
+ packages/SystemUI/res/values/dimens.xml       |  2 +-
+ 3 files changed, 3 insertions(+), 30 deletions(-)
+ delete mode 100644 packages/SystemUI/res/values-h740dp-port/dimens.xml
+
+diff --git a/packages/SystemUI/res/values-h740dp-port/dimens.xml b/packages/SystemUI/res/values-h740dp-port/dimens.xml
+deleted file mode 100644
+index 966066ffe56..00000000000
+--- a/packages/SystemUI/res/values-h740dp-port/dimens.xml
++++ /dev/null
+@@ -1,27 +0,0 @@
+-<!--
+-  ~ Copyright (C) 2020 The Android Open Source Project
+-  ~
+-  ~ Licensed under the Apache License, Version 2.0 (the "License");
+-  ~ you may not use this file except in compliance with the License.
+-  ~ You may obtain a copy of the License at
+-  ~
+-  ~      http://www.apache.org/licenses/LICENSE-2.0
+-  ~
+-  ~ Unless required by applicable law or agreed to in writing, software
+-  ~ distributed under the License is distributed on an "AS IS" BASIS,
+-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-  ~ See the License for the specific language governing permissions and
+-  ~ limitations under the License
+-  -->
+-
+-<resources>
+-    <dimen name="qs_tile_height">106dp</dimen>
+-    <dimen name="qs_tile_margin_vertical">24dp</dimen>
+-
+-    <!-- The height of the qs customize header. Should be
+-         (qs_panel_padding_top (48dp) +  brightness_mirror_height (48dp) + qs_tile_margin_top (18dp)) -
+-         (Toolbar_minWidth (56dp) + qs_tile_margin_top_bottom (12dp))
+-    -->
+-    <dimen name="qs_customize_header_min_height">46dp</dimen>
+-    <dimen name="qs_tile_margin_top">18dp</dimen>
+-</resources>
+\ No newline at end of file
+diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xml
+index a01551fa1de..406aa8bdcf6 100644
+--- a/packages/SystemUI/res/values/config.xml
++++ b/packages/SystemUI/res/values/config.xml
+@@ -96,10 +96,10 @@
+     <integer name="quick_qs_panel_max_columns">6</integer>
+ 
+     <!-- The number of columns in the QuickSettings -->
+-    <integer name="quick_settings_num_columns">3</integer>
++    <integer name="quick_settings_num_columns">4</integer>
+ 
+     <!-- The number of rows in the QuickSettings -->
+-    <integer name="quick_settings_max_rows">3</integer>
++    <integer name="quick_settings_max_rows">4</integer>
+ 
+     <!-- The number of columns that the top level tiles span in the QuickSettings -->
+     <integer name="quick_settings_user_time_settings_tile_span">1</integer>
+diff --git a/packages/SystemUI/res/values/dimens.xml b/packages/SystemUI/res/values/dimens.xml
+index 9ec9fd7f32d..585d2aefdf4 100644
+--- a/packages/SystemUI/res/values/dimens.xml
++++ b/packages/SystemUI/res/values/dimens.xml
+@@ -536,7 +536,7 @@
+     <dimen name="qs_detail_item_primary_text_size">16sp</dimen>
+     <dimen name="qs_detail_item_secondary_text_size">14sp</dimen>
+     <dimen name="qs_detail_empty_text_size">14sp</dimen>
+-    <dimen name="qs_detail_margin_top">28dp</dimen>
++    <dimen name="qs_detail_margin_top">0dp</dimen>
+     <dimen name="qs_detail_back_margin_end">16dp</dimen>
+     <dimen name="qs_detail_header_text_padding">16dp</dimen>
+     <dimen name="qs_data_usage_text_size">14sp</dimen>
+-- 
+2.25.1
+

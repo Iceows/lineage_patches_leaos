@@ -1,0 +1,29 @@
+From 0404ae1774b507c66a331088ccf4a9287ce5cee5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 26 Jul 2021 11:25:40 +0000
+Subject: [PATCH 166/230] LockIcon: Fix drawable log warning
+
+  from
+  https://github.com/crdroidandroid/android_frameworks_base/commit/9a220164296bb6b2ef33a915c14b01a5b2fa59ad
+
+Change-Id: I105247ad982e6f33e0003a27ea55799ddc0d57a8
+---
+ .../src/com/android/systemui/statusbar/phone/LockIcon.java      | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockIcon.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockIcon.java
+index 723f992e401..81a6ca75770 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockIcon.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/LockIcon.java
+@@ -171,7 +171,7 @@ public class LockIcon extends KeyguardAffordanceView {
+         int iconRes = isAnim ? getThemedAnimationResId(lockAnimIndex) : getIconForState(newState);
+ 
+         if (!mDrawableCache.contains(iconRes)) {
+-            mDrawableCache.put(iconRes, getContext().getDrawable(iconRes));
++            mDrawableCache.put(iconRes, mContext.getDrawable(iconRes));
+         }
+ 
+         return mDrawableCache.get(iconRes);
+-- 
+2.25.1
+

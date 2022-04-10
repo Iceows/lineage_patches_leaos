@@ -1,0 +1,57 @@
+From 8d5979fe63471aa08f26583d7e88649b6a7de67c Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 17 Dec 2021 19:59:31 +0000
+Subject: [PATCH 193/230] make fullscreen cutout hiding optional
+
+  some devices have big notches, which covers content
+---
+ .../java/com/android/server/wm/DisplayPolicy.java    | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/wm/DisplayPolicy.java b/services/core/java/com/android/server/wm/DisplayPolicy.java
+index 23dec2be85d..d53e48be00e 100644
+--- a/services/core/java/com/android/server/wm/DisplayPolicy.java
++++ b/services/core/java/com/android/server/wm/DisplayPolicy.java
+@@ -387,6 +387,8 @@ public class DisplayPolicy {
+     private boolean mLastNavAllowedHidden;
+     private boolean mLastNotificationShadeForcesShowingNavigation;
+ 
++    private final boolean mNoCutout = SystemProperties.getBoolean("persist.sys.phh.no_cutout", false);
++
+     int mLastSystemUiFlags;
+     // Bits that we are in the process of clearing, so we want to prevent
+     // them from being set by applications until everything has been updated
+@@ -1703,6 +1705,9 @@ public class DisplayPolicy {
+     void simulateLayoutDisplay(DisplayFrames displayFrames, InsetsState insetsState,
+             SparseArray<Rect> barContentFrames) {
+         displayFrames.onBeginLayout();
++        if(mNoCutout) {
++            updateInsetsStateForDisplayCutout(displayFrames, insetsState);
++        }
+         insetsState.setDisplayFrame(displayFrames.mUnrestricted);
+         final WindowFrames simulatedWindowFrames = new WindowFrames();
+         if (mNavigationBar != null) {
+@@ -1731,6 +1736,10 @@ public class DisplayPolicy {
+      */
+     public void beginLayoutLw(DisplayFrames displayFrames, int uiMode) {
+         displayFrames.onBeginLayout();
++        if(mNoCutout) {
++            updateInsetsStateForDisplayCutout(displayFrames,
++                   mDisplayContent.getInsetsStateController().getRawInsetsState());
++        }
+         mSystemGestures.screenWidth = displayFrames.mUnrestricted.width();
+         mSystemGestures.screenHeight = displayFrames.mUnrestricted.height();
+ 
+@@ -2591,7 +2600,8 @@ public class DisplayPolicy {
+             }
+         }
+ 
+-        final int cutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
++        final int cutoutMode = mNoCutout ? attrs.layoutInDisplayCutoutMode :
++                  LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+         final boolean attachedInParent = attached != null && !layoutInScreen;
+         final boolean requestedFullscreen = (fl & FLAG_FULLSCREEN) != 0
+                 || (requestedSysUiFl & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0
+-- 
+2.25.1
+

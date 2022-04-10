@@ -1,0 +1,77 @@
+From 6fcd7aeada22ea9bec13f4bad1782287a7de0c69 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 12 Apr 2020 00:31:56 +0300
+Subject: [PATCH 16/53] add dark theme tuning
+
+Change-Id: I2e6517e97eb8b5b4579544f35be4a4e5e8dc97cd
+---
+ res/values-fr/custom_strings.xml              | 2 ++
+ res/values-ru/custom_strings.xml              | 2 ++
+ res/values/custom_strings.xml                 | 2 ++
+ res/xml/display_settings.xml                  | 3 +++
+ src/com/android/settings/DisplaySettings.java | 2 ++
+ 5 files changed, 11 insertions(+)
+
+diff --git a/res/values-fr/custom_strings.xml b/res/values-fr/custom_strings.xml
+index 4439d89f0c..64116e2cce 100644
+--- a/res/values-fr/custom_strings.xml
++++ b/res/values-fr/custom_strings.xml
+@@ -31,4 +31,6 @@
+     <string name="theme_customization_qspanel_title">disposition des panneaux dans la dalle</string>
+     <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the statusbar icons spacing (e.g. set 2dp paddings) -->
+     <string name="theme_customization_statusbar_title">espacement de la barre de statut</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the dark mode colors -->
++    <string name="theme_customization_darkui_title">themes noir</string>
+ </resources>
+diff --git a/res/values-ru/custom_strings.xml b/res/values-ru/custom_strings.xml
+index 0dda2d0b71..d216766ed8 100644
+--- a/res/values-ru/custom_strings.xml
++++ b/res/values-ru/custom_strings.xml
+@@ -31,4 +31,6 @@
+     <string name="theme_customization_qspanel_title">Сетка быстрых настроек</string>
+     <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the statusbar icons spacing (e.g. set 2dp paddings) -->
+     <string name="theme_customization_statusbar_title">Разделение иконок в строке состояния</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the dark mode colors -->
++    <string name="theme_customization_darkui_title">Варианты тёмного оформления</string>
+ </resources>
+diff --git a/res/values/custom_strings.xml b/res/values/custom_strings.xml
+index 83ebd788d7..210708aa29 100644
+--- a/res/values/custom_strings.xml
++++ b/res/values/custom_strings.xml
+@@ -29,4 +29,6 @@
+     <string name="theme_customization_qspanel_title">QS Panel layout</string>
+     <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the statusbar icons spacing (e.g. set 2dp paddings) -->
+     <string name="theme_customization_statusbar_title">Status Bar spacing</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the dark mode colors -->
++    <string name="theme_customization_darkui_title">Dark themes</string>
+ </resources>
+diff --git a/res/xml/display_settings.xml b/res/xml/display_settings.xml
+index e06310d6bb..119e4cf83d 100644
+--- a/res/xml/display_settings.xml
++++ b/res/xml/display_settings.xml
+@@ -229,6 +229,9 @@
+         <ListPreference
+             android:key="android.theme.customization.adaptive_icon_shape"
+             android:title="@string/theme_customization_icon_shape_title"/>
++        <ListPreference
++            android:key="android.theme.customization.darkui"
++            android:title="@string/theme_customization_darkui_title"/>
+         <ListPreference
+             android:key="android.theme.customization.statusbar"
+             android:title="@string/theme_customization_statusbar_title"/>
+diff --git a/src/com/android/settings/DisplaySettings.java b/src/com/android/settings/DisplaySettings.java
+index b67f594e63..2577567201 100644
+--- a/src/com/android/settings/DisplaySettings.java
++++ b/src/com/android/settings/DisplaySettings.java
+@@ -104,6 +104,8 @@ public class DisplaySettings extends DashboardFragment {
+                 "android.theme.customization.icon_pack.android"));
+         controllers.add(new OverlayCategoryPreferenceController(context,
+                 "android.theme.customization.adaptive_icon_shape"));
++        controllers.add(new OverlayCategoryPreferenceController(context,
++                "android.theme.customization.darkui"));
+         controllers.add(new OverlayCategoryPreferenceController(context,
+                 "android.theme.customization.statusbar"));
+         controllers.add(new OverlayCategoryPreferenceController(context,
+-- 
+2.25.1
+

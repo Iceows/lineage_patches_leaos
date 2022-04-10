@@ -1,0 +1,28 @@
+From 4367420f9a076a6bb4ddc935278705684844d0b6 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Wed, 16 Mar 2022 16:26:00 -0400
+Subject: [PATCH 76/80] Enable setupwizard (we keep the prop both in product
+ and system, because gms adds it in system_ext and ordering might be inverted
+ based on system/core patches)
+
+---
+ base.mk | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/base.mk b/base.mk
+index 1b8cc9e..cf3bb64 100644
+--- a/base.mk
++++ b/base.mk
+@@ -219,6 +219,9 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+ 	ro.apex.updatable=false \
+ 	ro.setupwizard.mode=OPTIONAL
+ 
++PRODUCT_PRODUCT_PROPERTIES += \
++	ro.setupwizard.mode=OPTIONAL \
++
+ # AOSP overlays
+ PRODUCT_PACKAGES += \
+ 	NavigationBarMode2ButtonOverlay
+-- 
+2.25.1
+

@@ -1,0 +1,29 @@
+From 8bb3546cdec1998235cd02a6f424f39f47ff4b69 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jes=C3=BAs=20R?= <jrr@disroot.org>
+Date: Thu, 3 Mar 2022 19:26:16 -0600
+Subject: [PATCH 73/80] Fix bluetooth audio
+
+---
+ rw-system.sh | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index a01336b..fe1d309 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -1098,3 +1098,11 @@ fi
+ if getprop ro.vendor.build.fingerprint |grep -iq motorola/kane;then
+ 	setprop persist.sys.bt.esco_transport_unit_size 16
+ fi
++
++if getprop ro.vendor.build.fingerprint | grep -iq -e motorola/liber; then
++  cp /vendor/etc/audio_policy_configuration.xml /mnt/phh/
++  sed -i '198i <xi:include href="/vendor/etc/a2dp_audio_policy_configuration.xml"/>' /mnt/phh/audio_policy_configuration.xml
++  mount -o bind /mnt/phh/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
++  chcon -h u:object_r:vendor_configs_file:s0 /vendor/etc/audio_policy_configuration.xml
++  chmod 644 /vendor/etc/audio_policy_configuration.xml
++fi
+\ No newline at end of file
+-- 
+2.25.1
+

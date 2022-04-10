@@ -1,0 +1,63 @@
+From 305f498a4d497a39d844ad884424bb10cca2e13f Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Wed, 9 Mar 2022 19:05:22 +0100
+Subject: [PATCH] Enable software key authentification by property
+
+Enable software key authentification by setting ro.crypto.keyauth.enable to 1
+---
+ KeyStorage.cpp | 18 ++++++++++++++++++
+ KeyStorage.h   |  6 +++---
+ 2 files changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/KeyStorage.cpp b/KeyStorage.cpp
+index b64ddea..040ad73 100644
+--- a/KeyStorage.cpp
++++ b/KeyStorage.cpp
+@@ -81,6 +81,24 @@ static const char* kFn_secdiscardable = "secdiscardable";
+ static const char* kFn_stretching = "stretching";
+ static const char* kFn_version = "version";
+ 
++
++
++// Huawei patch by Iceows - Enable software authentification key
++KeyAuthentication::KeyAuthentication(const std::string& t, const std::string& s) : token{t}, secret{s}  {
++
++      if (s.empty()) {
++        char kacrypt_prop[PROPERTY_VALUE_MAX];
++
++        property_get("ro.crypto.keyauth.enable", kacrypt_prop, "");
++        if (strlen(kacrypt_prop) > 0 && std::stoi(kacrypt_prop)) {
++          // Set software hard code key
++          LOG(INFO) << "Enable key authentification - ro.crypto.keyauth.enable=1";
++          secret = "N0BZGwYKev0auvSYIocce4MB876RES8C";
++        }
++      }
++}
++
++
+ static bool checkSize(const std::string& kind, size_t actual, size_t expected) {
+     if (actual != expected) {
+         LOG(ERROR) << "Wrong number of bytes in " << kind << ", expected " << expected << " got "
+diff --git a/KeyStorage.h b/KeyStorage.h
+index 5228f08..f0a10f5 100644
+--- a/KeyStorage.h
++++ b/KeyStorage.h
+@@ -31,12 +31,12 @@ namespace vold {
+ // If only "secret" is nonempty, it is used to decrypt in a non-Keymaster process.
+ class KeyAuthentication {
+   public:
+-    KeyAuthentication(const std::string& t, const std::string& s) : token{t}, secret{s} {};
++    KeyAuthentication(const std::string& t, const std::string& s);
+ 
+     bool usesKeymaster() const { return !token.empty() || secret.empty(); };
+ 
+-    const std::string token;
+-    const std::string secret;
++    std::string token;
++    std::string secret;
+ };
+ 
+ extern const KeyAuthentication kEmptyAuthentication;
+-- 
+2.30.2
+

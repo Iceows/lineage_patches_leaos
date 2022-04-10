@@ -1,0 +1,31 @@
+From 0c449cbcd2c00cd1ded3b8dffd47ba7bd3a94a3b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 13:29:49 -0500
+Subject: [PATCH 099/230] BatteryStats: Fix Another SystemUI crash
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/282c3a76a63955fa198970c3b073beac29e4e5e6
+---
+ core/java/com/android/internal/os/BatteryStatsHelper.java | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/com/android/internal/os/BatteryStatsHelper.java b/core/java/com/android/internal/os/BatteryStatsHelper.java
+index 27c166d1a04..241977dc8bf 100644
+--- a/core/java/com/android/internal/os/BatteryStatsHelper.java
++++ b/core/java/com/android/internal/os/BatteryStatsHelper.java
+@@ -520,7 +520,11 @@ public class BatteryStatsHelper {
+ 
+         processMiscUsage();
+ 
+-        Collections.sort(mUsageList);
++        try {
++           Collections.sort(mUsageList);
++        } catch (Exception e) {
++          // nothing to do
++        }
+ 
+         // At this point, we've sorted the list so we are guaranteed the max values are at the top.
+         // We have only added real powers so far.
+-- 
+2.25.1
+

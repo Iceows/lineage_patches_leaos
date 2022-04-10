@@ -1,0 +1,27 @@
+From 5c59d24bdb329f3d0e9ee6a47122d3b9bec71643 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:15:52 -0500
+Subject: [PATCH 116/230] bugfix for noteResetVideoLocked
+
+  from
+  https://gitlab.com/CalyxOS/platform_frameworks_base/-/commit/0a8ed2cac1fb15b8c99d2cf9b710f97e1c068d78
+---
+ core/java/com/android/internal/os/BatteryStatsImpl.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/java/com/android/internal/os/BatteryStatsImpl.java b/core/java/com/android/internal/os/BatteryStatsImpl.java
+index 2ac7e5f28e5..92ed90478bd 100644
+--- a/core/java/com/android/internal/os/BatteryStatsImpl.java
++++ b/core/java/com/android/internal/os/BatteryStatsImpl.java
+@@ -5433,7 +5433,7 @@ public class BatteryStatsImpl extends BatteryStats {
+         if (mVideoOnNesting > 0) {
+             final long elapsedRealtime = mClocks.elapsedRealtime();
+             final long uptime = mClocks.uptimeMillis();
+-            mAudioOnNesting = 0;
++            mVideoOnNesting = 0;
+             mHistoryCur.states2 &= ~HistoryItem.STATE2_VIDEO_ON_FLAG;
+             if (DEBUG_HISTORY) Slog.v(TAG, "Video off to: "
+                     + Integer.toHexString(mHistoryCur.states));
+-- 
+2.25.1
+

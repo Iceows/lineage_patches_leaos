@@ -1,0 +1,52 @@
+From 7d85a4658ce2f9364edb4b16ac3ceedc9cb256ea Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 14:34:08 -0500
+Subject: [PATCH 107/230] Fix a possible race condition in
+ updateDynamicSensorList()
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/80a0517c2488274783a1979db66b392d77630998
+---
+ core/java/android/hardware/SystemSensorManager.java | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/core/java/android/hardware/SystemSensorManager.java b/core/java/android/hardware/SystemSensorManager.java
+index 974913b290b..a90c6e15744 100644
+--- a/core/java/android/hardware/SystemSensorManager.java
++++ b/core/java/android/hardware/SystemSensorManager.java
+@@ -78,7 +78,10 @@ public class SystemSensorManager extends SensorManager {
+     private static InjectEventQueue sInjectEventQueue = null;
+ 
+     private final ArrayList<Sensor> mFullSensorsList = new ArrayList<>();
++    private final Object mDynamicSensorListLock = new Object();
++    @GuardedBy("mDynamicSensorListLock")
+     private List<Sensor> mFullDynamicSensorsList = new ArrayList<>();
++    @GuardedBy("mDynamicSensorListLock")
+     private boolean mDynamicSensorListDirty = true;
+ 
+     private final HashMap<Integer, Sensor> mHandleToSensor = new HashMap<>();
+@@ -368,7 +371,7 @@ public class SystemSensorManager extends SensorManager {
+     }
+ 
+     private void updateDynamicSensorList() {
+-        synchronized (mFullDynamicSensorsList) {
++        synchronized (mDynamicSensorListLock) {
+             if (mDynamicSensorListDirty) {
+                 List<Sensor> list = new ArrayList<>();
+                 nativeGetDynamicSensors(mNativeInstance, list);
+@@ -431,8 +434,10 @@ public class SystemSensorManager extends SensorManager {
+                             Log.i(TAG, "DYNS received DYNAMIC_SENSOR_CHANED broadcast");
+                         }
+                         // Dynamic sensors probably changed
+-                        mDynamicSensorListDirty = true;
+-                        updateDynamicSensorList();
++                        synchronized (mDynamicSensorListLock) {
++                            mDynamicSensorListDirty = true;
++                            updateDynamicSensorList();
++                        }
+                     }
+                 }
+             };
+-- 
+2.25.1
+

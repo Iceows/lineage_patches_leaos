@@ -1,0 +1,36 @@
+From 1311975a636b674af8dea56e81522025eb111ec4 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 6 May 2021 14:41:39 -0400
+Subject: [PATCH] Tweak ThinLTO inling heuristics in absense of PGO profile
+
+  from
+  https://github.com/crdroidandroid/android_build_soong/commit/94c828b0bb09da64b06a4d6bcb41c0a31e4618d0
+
+Change-Id: Ifc9d3e8c098b401cd53df68558b7099969505992
+---
+ cc/lto.go | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/cc/lto.go b/cc/lto.go
+index 4489fc7d..3c826d30 100644
+--- a/cc/lto.go
++++ b/cc/lto.go
+@@ -110,12 +110,11 @@ func (lto *lto) flags(ctx BaseModuleContext, flags Flags) Flags {
+ 			flags.Local.LdFlags = append(flags.Local.LdFlags, cachePolicyFormat+policy)
+ 		}
+ 
+-		// If the module does not have a profile, be conservative and do not inline
+-		// or unroll loops during LTO, in order to prevent significant size bloat.
++		// If the module does not have a profile, be conservative and limit cross TU inline
++		// limit to 5 LLVM IR instructions, to balance binary size increase and performance.
+ 		if !ctx.isPgoCompile() {
+ 			flags.Local.LdFlags = append(flags.Local.LdFlags,
+-				"-Wl,-plugin-opt,-inline-threshold=0",
+-				"-Wl,-plugin-opt,-unroll-threshold=0")
++				"-Wl,-plugin-opt,-import-instr-limit=5")
+ 		}
+ 	}
+ 	return flags
+-- 
+2.17.1
+

@@ -1,0 +1,26 @@
+From fb263bb80b6963ffca5f0dfc801451db5a274b64 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 16 May 2021 14:18:51 -0400
+Subject: [PATCH 32/80] rw-system: set LTE by default for 'lavender'
+
+---
+ rw-system.sh | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 009968d..1982ce7 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -552,6 +552,9 @@ fi
+ if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/lavender; then
+     setprop debug.sf.latch_unsignaled 1
+     setprop ro.netflix.bsp_rev Q660-13149-1
++    setprop ro.telephony.default_network 9,9
++    setprop persist.vendor.radio.block_allow_data 0
++    setprop telephony.lteOnGsmDevice 1
+ fi
+ 
+ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/merlin; then
+-- 
+2.25.1
+

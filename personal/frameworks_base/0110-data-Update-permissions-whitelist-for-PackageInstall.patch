@@ -1,0 +1,42 @@
+From c439b622d1a1b03c8883ac8224bb39b18a2b8f94 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 14:44:45 -0500
+Subject: [PATCH 110/230] data: Update permissions whitelist for
+ PackageInstaller
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/9fba5bec4b46075c30061163405d3b14d7862a17
+---
+ data/etc/privapp-permissions-platform.xml | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/data/etc/privapp-permissions-platform.xml b/data/etc/privapp-permissions-platform.xml
+index 7fb38dfee83..c83acaf3156 100644
+--- a/data/etc/privapp-permissions-platform.xml
++++ b/data/etc/privapp-permissions-platform.xml
+@@ -124,12 +124,19 @@ applications that come with the platform
+ 
+     <privapp-permissions package="com.android.packageinstaller">
+         <permission name="android.permission.DELETE_PACKAGES"/>
++        <permission name="android.permission.HIDE_NON_SYSTEM_OVERLAY_WINDOWS"/>
+         <permission name="android.permission.INSTALL_PACKAGES"/>
+-        <permission name="android.permission.USE_RESERVED_DISK"/>
++        <permission name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
++        <permission name="android.permission.MANAGE_APP_OPS_MODES"/>
+         <permission name="android.permission.MANAGE_USERS"/>
+-        <permission name="android.permission.UPDATE_APP_OPS_STATS"/>
+-        <permission name="android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME"/>
+         <permission name="android.permission.PACKAGE_USAGE_STATS"/>
++        <permission name="android.permission.QUERY_ALL_PACKAGES"/>
++        <permission name="android.permission.READ_INSTALL_SESSIONS"/>
++        <permission name="android.permission.RECEIVE_BOOT_COMPLETED"/>
++        <permission name="android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME"/>
++        <permission name="android.permission.UPDATE_APP_OPS_STATS"/>
++        <permission name="android.permission.USE_RESERVED_DISK"/>
++        <permission name="com.google.android.permission.INSTALL_WEARABLE_PACKAGES"/>
+     </privapp-permissions>
+ 
+     <privapp-permissions package="com.android.permissioncontroller">
+-- 
+2.25.1
+

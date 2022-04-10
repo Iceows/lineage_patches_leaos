@@ -1,0 +1,27 @@
+From 6dec9c76edc1e471f8697b06f9a24e5f22490759 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 02:34:42 -0500
+Subject: [PATCH 095/230] AutoFillUI: Don't show a "null" toast
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/0084ae2c73a180497dc43ea609f274f59624f071
+---
+ .../java/com/android/server/autofill/ui/AutoFillUI.java         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/autofill/java/com/android/server/autofill/ui/AutoFillUI.java b/services/autofill/java/com/android/server/autofill/ui/AutoFillUI.java
+index 71c3c16a2c0..6a2d51361c8 100644
+--- a/services/autofill/java/com/android/server/autofill/ui/AutoFillUI.java
++++ b/services/autofill/java/com/android/server/autofill/ui/AutoFillUI.java
+@@ -141,7 +141,7 @@ public final class AutoFillUI {
+                 return;
+             }
+             hideAllUiThread(callback);
+-            if (!TextUtils.isEmpty(message)) {
++            if (!TextUtils.isEmpty(message) && !message.toString().equals("null")) {
+                 Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+             }
+         });
+-- 
+2.25.1
+

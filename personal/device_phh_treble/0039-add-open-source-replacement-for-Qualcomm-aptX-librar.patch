@@ -1,0 +1,28 @@
+From d0f5f78e53fbef312809dd13f091164e30e3ab49 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sat, 11 Sep 2021 18:46:55 +0000
+Subject: [PATCH 39/80] add open source replacement for Qualcomm aptX libraries
+
+  from https://github.com/notmyst33d/libaptX
+---
+ base.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/base.mk b/base.mk
+index d724cb5..c33cbea 100644
+--- a/base.mk
++++ b/base.mk
+@@ -116,6 +116,10 @@ PRODUCT_PACKAGES += \
+ 	vendor.qti.hardware.radio.am-V1.0-java \
+ 	vendor.qti.qcril.am-V1.0-java \
+ 
++PRODUCT_PACKAGES += \
++	libaptX_encoder \
++	libaptXHD_encoder
++
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/interfaces.xml:system/etc/permissions/interfaces.xml
+ 
+-- 
+2.25.1
+

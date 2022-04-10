@@ -1,0 +1,59 @@
+From 8da52be040b493dc6986b19fcfc50a3df0a49181 Mon Sep 17 00:00:00 2001
+From: Bill Peckham <bpeckham@google.com>
+Date: Fri, 2 Nov 2018 16:46:03 -0700
+Subject: [PATCH 177/230] Adapt to IMS registration changes.
+
+The upstream change
+https://keystone-qcom.googlesource.com/platform/frameworks/base/+/941c0a5cfd5cdfe8a19c2928486fab9efa489ada
+modified the class to use when registering with ImsManager from
+android.telephony.ims.stub.ImsRegistrationImplBase.Callback to
+android.telephony.ims.ImsMmTelManager.RegistrationCallback. This keystone
+change adapts a Qualcomm addition to the upstream change.
+
+Change-Id: Ib93bb72797d5f87d35acd16156fc2aa2a073df4a
+---
+ .../statusbar/policy/MobileSignalController.java     | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index da74dbbca5b..2cfc6f82a90 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -29,8 +29,10 @@ import android.telephony.Annotation;
+ import android.telephony.CdmaEriInformation;
+ import android.telephony.CellSignalStrength;
+ import android.telephony.CellSignalStrengthCdma;
++import android.telephony.ims.ImsMmTelManager;
+ import android.telephony.ims.ImsReasonInfo;
+ import android.telephony.ims.stub.ImsRegistrationImplBase;
++import android.telephony.NetworkRegistrationInfo;
+ import android.telephony.PhoneStateListener;
+ import android.telephony.ServiceState;
+ import android.telephony.SignalStrength;
+@@ -202,11 +204,7 @@ public class MobileSignalController extends SignalController<
+     public void unregisterListener() {
+         mPhone.listen(mPhoneStateListener, 0);
+         mContext.getContentResolver().unregisterContentObserver(mObserver);
+-        try {
+-            mImsManager.removeRegistrationListener(mImsRegistrationCallback);
+-        }catch(ImsException e){
+-            Log.d(mTag, "exception:" + e);
+-        }
++        mImsManager.removeRegistrationListener(mImsRegistrationCallback);
+         mContext.unregisterReceiver(mVolteSwitchObserver);
+     }
+ 
+@@ -752,8 +750,8 @@ public class MobileSignalController extends SignalController<
+         }
+     }
+ 
+-    private final ImsRegistrationImplBase.Callback mImsRegistrationCallback =
+-            new ImsRegistrationImplBase.Callback() {
++    private final ImsMmTelManager.RegistrationCallback mImsRegistrationCallback =
++            new ImsMmTelManager.RegistrationCallback() {
+                 @Override
+                 public void onRegistered(
+                         @ImsRegistrationImplBase.ImsRegistrationTech int imsRadioTech) {
+-- 
+2.25.1
+

@@ -1,0 +1,27 @@
+From 47528d9d66623b8b4ca25dadd17fc48f92d91d61 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:43:40 -0500
+Subject: [PATCH 2/7] Fix high battery drain after using flashlight
+
+  from
+  https://github.com/ezio84/abc_frameworks_av/commit/070aba7caf9ef00cd6f44ea8edd229f7615b4160
+---
+ services/camera/libcameraservice/CameraFlashlight.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/camera/libcameraservice/CameraFlashlight.cpp b/services/camera/libcameraservice/CameraFlashlight.cpp
+index e629cdd798..15b2632c79 100644
+--- a/services/camera/libcameraservice/CameraFlashlight.cpp
++++ b/services/camera/libcameraservice/CameraFlashlight.cpp
+@@ -570,7 +570,7 @@ status_t CameraHardwareInterfaceFlashControl::disconnectCameraDevice() {
+     }
+     mDevice->setPreviewWindow(NULL);
+     mDevice->release();
+-    mDevice = NULL;
++    mDevice.clear();
+ 
+     return OK;
+ }
+-- 
+2.25.1
+

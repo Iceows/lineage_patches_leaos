@@ -1,0 +1,30 @@
+From df0f40fada207b2af534934f0e31aa7b6c59bb1b Mon Sep 17 00:00:00 2001
+From: vgdn1942 <vgdn1942@gmail.com>
+Date: Mon, 15 Nov 2021 09:19:40 +0300
+Subject: [PATCH 46/80] Fix broken USB on Blackview BV9500Plus
+
+---
+ rw-system.sh | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 769768f..578bdbd 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -60,7 +60,12 @@ if [ "$vndk" = 26 ];then
+ fi
+ 
+ setprop sys.usb.ffs.aio_compat true
+-setprop persist.adb.nonblocking_ffs false
++
++if getprop ro.vendor.build.fingerprint | grep -q -i -e Blackview/BV9500Plus;then
++    setprop persist.adb.nonblocking_ffs true
++else
++    setprop persist.adb.nonblocking_ffs false
++fi
+ 
+ # Redmi Note 9S/Pro/Max props
+ if getprop ro.vendor.build.fingerprint |grep -qi -e redmi/curtana -e redmi/joyeuse -e redmi/excalibur; then
+-- 
+2.25.1
+

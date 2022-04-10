@@ -1,0 +1,36 @@
+From dc276405579c6906feab4f4a5d905d10bc68f263 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 20 Jan 2022 07:34:42 +0000
+Subject: [PATCH 222/230] try to fix media permissions
+
+  for some devices (mainly with Oreo vendor, A-only) this solution can
+  fix access for media files from some apps like WhatsApp or Telegram
+  (based on @Iceows's fix)
+---
+ data/etc/platform.xml | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/data/etc/platform.xml b/data/etc/platform.xml
+index e6730a32350..c3ff5b40757 100644
+--- a/data/etc/platform.xml
++++ b/data/etc/platform.xml
+@@ -131,8 +131,14 @@
+          is negligible (one tag with the permission) compared to
+          the fragility as one can remove a built-in permission which
+          no longer needs to be mapped to gids and break grant propagation. -->
+-    <permission name="android.permission.READ_EXTERNAL_STORAGE" />
+-    <permission name="android.permission.WRITE_EXTERNAL_STORAGE" />
++    <permission name="android.permission.READ_EXTERNAL_STORAGE" >
++        <group gid="sdcard_r" />
++    </permission>
++    <permission name="android.permission.WRITE_EXTERNAL_STORAGE" >
++        <group gid="sdcard_r" />
++        <group gid="sdcard_rw" />
++        <group gid="media_rw" />
++    </permission>
+ 
+     <!-- ================================================================== -->
+     <!-- ================================================================== -->
+-- 
+2.25.1
+

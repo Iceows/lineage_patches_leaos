@@ -1,0 +1,36 @@
+From 37f0469576b0e38662c19bc80a211b6403c4b54e Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 23 Dec 2021 00:31:03 +0000
+Subject: [PATCH 221/230] Don't query a null AccessibiiltyNodeInfo when
+ populating ViewStructure
+
+  from
+  https://github.com/crdroidandroid/android_frameworks_base/commit/d41e039c3170aa68ae5a8ee2b9975b55465cc10c
+
+Change-Id: I5e6b38749eaa878e442241a0b8dc53137991605c
+---
+ core/java/android/view/View.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/core/java/android/view/View.java b/core/java/android/view/View.java
+index ca424e79ed7..6a93321df74 100644
+--- a/core/java/android/view/View.java
++++ b/core/java/android/view/View.java
+@@ -9927,9 +9927,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
+                 }
+                 AccessibilityNodeInfo cinfo = provider.createAccessibilityNodeInfo(
+                         AccessibilityNodeInfo.getVirtualDescendantId(info.getChildId(i)));
+-                ViewStructure child = structure.newChild(i);
+-                populateVirtualStructure(child, provider, cinfo, forAutofill);
+-                cinfo.recycle();
++                if (cinfo != null) {
++                    ViewStructure child = structure.newChild(i);
++                    populateVirtualStructure(child, provider, cinfo, forAutofill);
++                    cinfo.recycle();
++                }
+             }
+         }
+     }
+-- 
+2.25.1
+

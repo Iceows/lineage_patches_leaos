@@ -1,0 +1,33 @@
+From cbe9ec5d058b0c3bc28aeed5c2da21679c2b2d47 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:18:08 -0500
+Subject: [PATCH 118/230] Make sure the right DND config is used
+
+  from
+  https://gitlab.com/CalyxOS/platform_frameworks_base/-/commit/61b27f685b3a18c6c215629aa2e107d67476687f
+---
+ .../java/com/android/server/notification/ZenModeHelper.java     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/notification/ZenModeHelper.java b/services/core/java/com/android/server/notification/ZenModeHelper.java
+index 4931d3f3e95..5417275bc8f 100644
+--- a/services/core/java/com/android/server/notification/ZenModeHelper.java
++++ b/services/core/java/com/android/server/notification/ZenModeHelper.java
+@@ -869,13 +869,13 @@ public class ZenModeHelper {
+             final boolean policyChanged = !Objects.equals(getNotificationPolicy(mConfig),
+                     getNotificationPolicy(config));
+             if (!config.equals(mConfig)) {
++                mConfig = config;
+                 dispatchOnConfigChanged();
+                 updateConsolidatedPolicy(reason);
+             }
+             if (policyChanged) {
+                 dispatchOnPolicyChanged();
+             }
+-            mConfig = config;
+             mHandler.postApplyConfig(config, reason, triggeringComponent, setRingerMode);
+             return true;
+         } catch (SecurityException e) {
+-- 
+2.25.1
+

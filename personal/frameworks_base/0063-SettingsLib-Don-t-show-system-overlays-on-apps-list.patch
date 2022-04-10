@@ -1,0 +1,27 @@
+From 9ba778460883ad4772ae926b28bcfee0822bfad6 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 16 Nov 2020 15:47:08 -0500
+Subject: [PATCH 063/230] SettingsLib: Don't show system overlays on apps list
+
+  from
+  https://github.com/ezio84/abc_frameworks_base/commit/477450fe1524b91f88c29121db90d32f53b3b237
+---
+ .../com/android/settingslib/applications/ApplicationsState.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SettingsLib/src/com/android/settingslib/applications/ApplicationsState.java b/packages/SettingsLib/src/com/android/settingslib/applications/ApplicationsState.java
+index a89cf37e2d0..e1510c7fac6 100644
+--- a/packages/SettingsLib/src/com/android/settingslib/applications/ApplicationsState.java
++++ b/packages/SettingsLib/src/com/android/settingslib/applications/ApplicationsState.java
+@@ -1868,7 +1868,7 @@ public class ApplicationsState {
+ 
+         @Override
+         public boolean filterApp(AppEntry entry) {
+-            return true;
++            return !hasFlag(entry.info.privateFlags, ApplicationInfo.PRIVATE_FLAG_IS_RESOURCE_OVERLAY);
+         }
+     };
+ 
+-- 
+2.25.1
+

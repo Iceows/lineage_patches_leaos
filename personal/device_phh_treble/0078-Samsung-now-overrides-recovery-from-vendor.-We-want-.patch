@@ -1,0 +1,22 @@
+From ae78fb281dff8b2d6a63e6285697441d3425328f Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 21 Mar 2022 18:47:09 -0400
+Subject: [PATCH 78/80] Samsung now overrides recovery from vendor. We want to
+ keep user's recovery
+
+---
+ rw-system.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index fc93060..dccf7f1 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -1113,3 +1113,4 @@ if getprop ro.vendor.build.fingerprint | grep -iq -e motorola/liber; then
+ fi
+ 
+ mount /system/phh/empty /vendor/etc/permissions/samsung.hardware.uwb.xml
++mount /system/phh/empty /vendor/bin/install-recovery.sh
+-- 
+2.25.1
+

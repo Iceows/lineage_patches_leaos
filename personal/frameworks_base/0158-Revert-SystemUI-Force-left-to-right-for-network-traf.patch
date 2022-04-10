@@ -1,0 +1,26 @@
+From e7b1b71b3da1ddc7fe683ca78027b69c048ed38c Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 9 May 2021 17:18:50 -0400
+Subject: [PATCH 158/230] Revert "SystemUI: Force left-to-right for network
+ traffic monitor holder"
+
+This reverts commit 029edb38dc90614d263da266ef6f8a3930038de1.
+---
+ packages/SystemUI/res/layout/status_bar.xml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/packages/SystemUI/res/layout/status_bar.xml b/packages/SystemUI/res/layout/status_bar.xml
+index 6c6fd90fb99..a55dad43b64 100644
+--- a/packages/SystemUI/res/layout/status_bar.xml
++++ b/packages/SystemUI/res/layout/status_bar.xml
+@@ -142,7 +142,6 @@
+             android:id="@+id/network_traffic_holder"
+             android:layout_width="wrap_content"
+             android:layout_height="match_parent"
+-            android:layoutDirection="ltr"
+             android:gravity="center"
+             >
+ 
+-- 
+2.25.1
+

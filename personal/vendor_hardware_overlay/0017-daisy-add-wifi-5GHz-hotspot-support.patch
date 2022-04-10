@@ -1,0 +1,96 @@
+From 21be429688a06fb2682352f10bd5583980ab8288 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 10 Sep 2021 20:26:16 +0000
+Subject: [PATCH 17/21] daisy: add wifi 5GHz hotspot support
+
+  based on
+  https://github.com/sooti/vendor_hardware_overlay/commit/d9c40176b100629b62e453cad165afbab747e56a
+---
+ Xiaomi/MiA2Lite-wifi/Android.mk            |  8 +++++++
+ Xiaomi/MiA2Lite-wifi/AndroidManifest.xml   | 12 ++++++++++
+ Xiaomi/MiA2Lite-wifi/res/values/config.xml | 26 ++++++++++++++++++++++
+ overlay.mk                                 |  1 +
+ 4 files changed, 47 insertions(+)
+ create mode 100644 Xiaomi/MiA2Lite-wifi/Android.mk
+ create mode 100644 Xiaomi/MiA2Lite-wifi/AndroidManifest.xml
+ create mode 100644 Xiaomi/MiA2Lite-wifi/res/values/config.xml
+
+diff --git a/Xiaomi/MiA2Lite-wifi/Android.mk b/Xiaomi/MiA2Lite-wifi/Android.mk
+new file mode 100644
+index 0000000..093f33d
+--- /dev/null
++++ b/Xiaomi/MiA2Lite-wifi/Android.mk
+@@ -0,0 +1,8 @@
++LOCAL_PATH := $(call my-dir)
++include $(CLEAR_VARS)
++LOCAL_MODULE_TAGS := optional
++LOCAL_PACKAGE_NAME := treble-overlay-xiaomi-mia2lite-wifi
++LOCAL_MODULE_PATH := $(TARGET_OUT)/product/overlay
++LOCAL_IS_RUNTIME_RESOURCE_OVERLAY := true
++LOCAL_PRIVATE_PLATFORM_APIS := true
++include $(BUILD_PACKAGE)
+diff --git a/Xiaomi/MiA2Lite-wifi/AndroidManifest.xml b/Xiaomi/MiA2Lite-wifi/AndroidManifest.xml
+new file mode 100644
+index 0000000..dc8bdc7
+--- /dev/null
++++ b/Xiaomi/MiA2Lite-wifi/AndroidManifest.xml
+@@ -0,0 +1,12 @@
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++        package="me.phh.treble.overlay.xiaomi.mia2lite.wifi"
++        android:versionCode="1"
++        android:versionName="1.0">
++    <overlay
++      android:targetPackage="com.android.wifi.resources"
++      android:targetName="WifiCustomization"
++      android:requiredSystemPropertyName="ro.product.vendor.device"
++      android:requiredSystemPropertyValue="daisy"
++      android:isStatic="true"
++      android:priority="1080"/>
++</manifest>
+diff --git a/Xiaomi/MiA2Lite-wifi/res/values/config.xml b/Xiaomi/MiA2Lite-wifi/res/values/config.xml
+new file mode 100644
+index 0000000..c2118e2
+--- /dev/null
++++ b/Xiaomi/MiA2Lite-wifi/res/values/config.xml
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (c) 2009, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++
++<!-- These resources are around just to allow their values to be customized
++     for different hardware and product builds.  Do not translate. -->
++
++<resources>
++    <!-- Boolean indicating whether the wifi chipset has 5GHz frequency band support -->
++    <bool translatable="false" name="config_wifi5ghzSupport">true</bool>
++</resources>
+diff --git a/overlay.mk b/overlay.mk
+index f9c8e0b..48c9bea 100755
+--- a/overlay.mk
++++ b/overlay.mk
+@@ -212,6 +212,7 @@ PRODUCT_PACKAGES += \
+ 	treble-overlay-xiaomi-mi9se \
+ 	treble-overlay-xiaomi-mia2 \
+ 	treble-overlay-xiaomi-mia2lite \
++	treble-overlay-xiaomi-mia2lite-wifi \
+ 	treble-overlay-xiaomi-mimax3 \
+ 	treble-overlay-xiaomi-mimix2s \
+ 	treble-overlay-xiaomi-mimix3 \
+-- 
+2.25.1
+

@@ -1,0 +1,50 @@
+From 4487327f960052d85534e03d45efefc297b27693 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 25 Dec 2020 07:17:39 -0500
+Subject: [PATCH 14/80] add usefull busybox_phh links
+
+	sadly, but this way not works
+---
+ base.mk                  |  4 ++++
+ busybox_links/Android.mk | 14 ++++++++++++++
+ 2 files changed, 18 insertions(+)
+ create mode 100644 busybox_links/Android.mk
+
+diff --git a/base.mk b/base.mk
+index ed004cc..d724cb5 100644
+--- a/base.mk
++++ b/base.mk
+@@ -83,6 +83,10 @@ PRODUCT_PACKAGES += \
+ 	bootctl \
+ 	vintf \
+ 
++# add usefull symlinks
++PRODUCT_PACKAGES += \
++	busybox-links
++
+ # Fix Offline Charging on Huawmeme
+ PRODUCT_PACKAGES += \
+ 	huawei-charger
+diff --git a/busybox_links/Android.mk b/busybox_links/Android.mk
+new file mode 100644
+index 0000000..5ff60c3
+--- /dev/null
++++ b/busybox_links/Android.mk
+@@ -0,0 +1,14 @@
++include $(CLEAR_VARS)
++
++LOCAL_MODULE := busybox-links
++LOCAL_MODULE_TAGS := optional
++
++BUSYBOX_BINARY := busybox_phh
++BUSYBOX_SYMLINKS := vi vim xzcat unxz xz arp getty wget telnet traceroute sendmail less fdisk
++
++LOCAL_POST_INSTALL_CMD := \
++    $(hide) mkdir -p system/bin && \
++    $(foreach t,$(BUSYBOX_SYMLINKS),ln -sf $(BUSYBOX_BINARY) system/bin/$(t);)
++#ln -sf busybox_phh $(PRODUCT_OUT)/system/bin/fdisk
++
++include $(BUILD_PHONY_PACKAGE)
+-- 
+2.25.1
+

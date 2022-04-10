@@ -1,0 +1,51 @@
+From 39737a49f9620a4807705714d70dd0cb3f1e16ce Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 21 Sep 2021 10:20:04 +0000
+Subject: [PATCH 41/80] rework images size v5
+
+---
+ phhgsi_a64_ab/BoardConfig.mk   | 2 ++
+ phhgsi_arm64_ab/BoardConfig.mk | 2 ++
+ phhgsi_arm_ab/BoardConfig.mk   | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/phhgsi_a64_ab/BoardConfig.mk b/phhgsi_a64_ab/BoardConfig.mk
+index 1b0045f..ffcbdd3 100644
+--- a/phhgsi_a64_ab/BoardConfig.mk
++++ b/phhgsi_a64_ab/BoardConfig.mk
+@@ -3,6 +3,8 @@ include device/phh/treble/board-base.mk
+ 
+ ifeq ($(BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE),)
+ BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1073741824
++else
++BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE := 12582912
+ endif
+ 
+ TARGET_USES_64_BIT_BINDER := true
+diff --git a/phhgsi_arm64_ab/BoardConfig.mk b/phhgsi_arm64_ab/BoardConfig.mk
+index 0dd8b00..efd4869 100644
+--- a/phhgsi_arm64_ab/BoardConfig.mk
++++ b/phhgsi_arm64_ab/BoardConfig.mk
+@@ -3,4 +3,6 @@ include device/phh/treble/board-base.mk
+ 
+ ifeq ($(BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE),)
+ BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2080374784
++else
++BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE := 8388608
+ endif
+diff --git a/phhgsi_arm_ab/BoardConfig.mk b/phhgsi_arm_ab/BoardConfig.mk
+index 1f011db..c1ab37e 100644
+--- a/phhgsi_arm_ab/BoardConfig.mk
++++ b/phhgsi_arm_ab/BoardConfig.mk
+@@ -3,6 +3,8 @@ include device/phh/treble/board-base.mk
+ 
+ ifeq ($(BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE),)
+ BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1073741824
++else
++BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE := 12582912
+ endif
+ 
+ TARGET_USES_64_BIT_BINDER := false
+-- 
+2.25.1
+

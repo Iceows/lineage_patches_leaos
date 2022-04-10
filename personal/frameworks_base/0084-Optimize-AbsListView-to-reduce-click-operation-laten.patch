@@ -1,0 +1,41 @@
+From a81d949e66ad0c51fb0424b033d37d435d12ba2c Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 16 Dec 2020 14:42:40 -0500
+Subject: [PATCH 084/230] Optimize AbsListView to reduce click operation
+ latency
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/357267e671e0efac657d0044e8f34bbd6b8c8539
+---
+ core/java/android/widget/AbsListView.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/core/java/android/widget/AbsListView.java b/core/java/android/widget/AbsListView.java
+index 16e87f8bca9..9c0ba624ea2 100644
+--- a/core/java/android/widget/AbsListView.java
++++ b/core/java/android/widget/AbsListView.java
+@@ -4083,6 +4083,11 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
+                                 }
+                                 mSelector.setHotspot(x, ev.getY());
+                             }
++                            if (!mDataChanged && !mIsDetaching && isAttachedToWindow()) {
++                                if (!post(performClick)) {
++                                    performClick.run();
++                                }
++                            }
+                             if (mTouchModeReset != null) {
+                                 removeCallbacks(mTouchModeReset);
+                             }
+@@ -4093,9 +4098,6 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
+                                     mTouchMode = TOUCH_MODE_REST;
+                                     child.setPressed(false);
+                                     setPressed(false);
+-                                    if (!mDataChanged && !mIsDetaching && isAttachedToWindow()) {
+-                                        performClick.run();
+-                                    }
+                                 }
+                             };
+                             postDelayed(mTouchModeReset,
+-- 
+2.25.1
+

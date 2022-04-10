@@ -1,0 +1,29 @@
+From b2f88db01d92dee911c6455b9c851c0d7592ea8c Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:41:25 -0500
+Subject: [PATCH 1/7] libstagefright: Free buffers on observer died
+
+  from
+  https://github.com/ezio84/abc_frameworks_av/commit/57fde3dba0c731872877a1b3f1a8bf5e2809de00
+---
+ media/libstagefright/omx/OMXNodeInstance.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/media/libstagefright/omx/OMXNodeInstance.cpp b/media/libstagefright/omx/OMXNodeInstance.cpp
+index d996e1a085..d6515c12c2 100644
+--- a/media/libstagefright/omx/OMXNodeInstance.cpp
++++ b/media/libstagefright/omx/OMXNodeInstance.cpp
+@@ -590,6 +590,10 @@ status_t OMXNodeInstance::freeNode() {
+ 
+     Mutex::Autolock _l(mLock);
+ 
++    if (mActiveBuffers.size() > 0) {
++        freeActiveBuffers();
++    }
++
+     status_t err = mOwner->freeNode(this);
+ 
+     mDispatcher.clear();
+-- 
+2.25.1
+

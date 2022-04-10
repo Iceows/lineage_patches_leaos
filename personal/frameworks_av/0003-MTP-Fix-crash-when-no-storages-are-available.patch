@@ -1,0 +1,27 @@
+From ee625defb04042a06f7162cdb9c33a59a5c974fd Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 7 Jan 2021 14:44:23 -0500
+Subject: [PATCH 3/7] MTP: Fix crash when no storages are available
+
+  from
+  https://github.com/ezio84/abc_frameworks_av/commit/16747d6a5f47ea853328fddc70a3e315958ab694
+---
+ media/mtp/MtpServer.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/media/mtp/MtpServer.cpp b/media/mtp/MtpServer.cpp
+index 8677b90480..ed19539b6f 100644
+--- a/media/mtp/MtpServer.cpp
++++ b/media/mtp/MtpServer.cpp
+@@ -152,7 +152,7 @@ void MtpServer::removeStorage(MtpStorage* storage) {
+ 
+ MtpStorage* MtpServer::getStorage(MtpStorageID id) {
+     if (id == 0)
+-        return mStorages[0];
++        return mStorages.empty() ? nullptr : mStorages[0];
+     for (MtpStorage *storage : mStorages) {
+         if (storage->getStorageID() == id)
+             return storage;
+-- 
+2.25.1
+

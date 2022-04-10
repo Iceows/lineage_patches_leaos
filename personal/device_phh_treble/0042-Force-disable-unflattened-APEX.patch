@@ -1,0 +1,32 @@
+From 5db411c577f2c5f3a8dc85dd9de2dc0cda981e6f Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Wed, 13 Oct 2021 11:00:54 -0400
+Subject: [PATCH 42/80] Force disable unflattened APEX
+
+Android 12 - CAPEX relies on untested features of FS, and well, as one
+could expect, it's broken.
+Notably, it relies on O_DIRECT over FBE, which is an Android-specific
+feature, and which is broken on a number of devices.
+Notably, RedMagic 5G won't boot with CAPEX, blaming dm-verity issue on
+apex
+
+Thanks @c03d1 for the debug
+---
+ base.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/base.mk b/base.mk
+index c33cbea..27d3767 100644
+--- a/base.mk
++++ b/base.mk
+@@ -215,6 +215,7 @@ PRODUCT_PACKAGES += \
+ 
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+ 	debug.fdsan=warn_once \
++	ro.apex.updatable=false \
+ 
+ # AOSP overlays
+ PRODUCT_PACKAGES += \
+-- 
+2.25.1
+

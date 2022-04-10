@@ -1,0 +1,50 @@
+From 0ee0d6a01eddebbb503b100e70ae5fed94708718 Mon Sep 17 00:00:00 2001
+From: Aarqw12 <lcockx@protonmail.com>
+Date: Thu, 12 Aug 2021 07:09:44 -0400
+Subject: [PATCH 14/21] miatoll : remove wifi_firmware_debugging
+
+---
+ Xiaomi/RedmiNote9Pro/res/values/config.xml    | 1 -
+ Xiaomi/RedmiNote9ProMax/res/values/config.xml | 1 -
+ Xiaomi/RedmiNote9S/res/values/config.xml      | 1 -
+ 3 files changed, 3 deletions(-)
+
+diff --git a/Xiaomi/RedmiNote9Pro/res/values/config.xml b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+index 30410d5..4ef790b 100644
+--- a/Xiaomi/RedmiNote9Pro/res/values/config.xml
++++ b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+@@ -37,7 +37,6 @@
+ 	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+ 	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+ 	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_enable_wifi_firmware_debugging">true</bool>
+ 	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+ 	<bool name="config_wifi_report_he_ready">true</bool>
+ 	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+diff --git a/Xiaomi/RedmiNote9ProMax/res/values/config.xml b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+index 30410d5..4ef790b 100644
+--- a/Xiaomi/RedmiNote9ProMax/res/values/config.xml
++++ b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+@@ -37,7 +37,6 @@
+ 	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+ 	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+ 	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_enable_wifi_firmware_debugging">true</bool>
+ 	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+ 	<bool name="config_wifi_report_he_ready">true</bool>
+ 	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+diff --git a/Xiaomi/RedmiNote9S/res/values/config.xml b/Xiaomi/RedmiNote9S/res/values/config.xml
+index 30410d5..4ef790b 100644
+--- a/Xiaomi/RedmiNote9S/res/values/config.xml
++++ b/Xiaomi/RedmiNote9S/res/values/config.xml
+@@ -37,7 +37,6 @@
+ 	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+ 	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+ 	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_enable_wifi_firmware_debugging">true</bool>
+ 	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+ 	<bool name="config_wifi_report_he_ready">true</bool>
+ 	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+-- 
+2.25.1
+

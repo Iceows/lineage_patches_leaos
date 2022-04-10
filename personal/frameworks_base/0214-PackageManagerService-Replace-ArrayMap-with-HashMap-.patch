@@ -1,0 +1,573 @@
+From 2a740ce0cad26c30ab38b2115cb00829f1e58843 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 5 Apr 2021 22:58:24 -0700
+Subject: [PATCH 214/230] PackageManagerService: Replace ArrayMap with HashMap
+ for performance
+
+When opening and closing activities in Settings, a significant amount of
+CPU time is spent looking up ArrayMap entries, as reported by simpleperf:
+
+0.12%     /system/framework/arm64/boot-framework.oat
+                             android.util.ArrayMap.binarySearchHashes
+
+PackageManagerService is responsible for a significant portion of the time
+spent in ArrayMap lookups:
+
+0.08%     0.08%  /system/framework/arm64/boot-framework.oat
+                  android.util.ArrayMap.binarySearchHashes
+       |
+       -- android.util.ArrayMap.binarySearchHashes
+          |
+           --50.00%-- android.util.ArrayMap.indexOf
+               |
+               |--36.71%-- android.util.ArrayMap.get
+               |    |--0.87%-- [hit in function]
+               |    |
+               |    |--8.21%-- com.android.server.pm.PackageManagerService$PackageManagerInternalImpl.getPackage
+               |    |    |
+               |    |    |--74.06%-- com.android.server.pm.ComponentResolver$ActivityIntentResolver.newResult
+               |    |    |
+               |    |     --25.94%-- com.android.server.usage.AppStandbyController$Injector.getValidCrossProfileTargets
+               |    |
+               |    |--7.13%-- com.android.server.pm.PackageManagerService.resolveInternalPackageNameInternalLocked
+               |    |    |
+               |    |    |--56.77%-- com.android.server.pm.PackageManagerService.getPackageInfoInternal
+               |    |    |    |
+               |    |    |    |--54.96%-- com.android.server.power.PowerManagerService.acquireWakeLockInternal
+               |    |    |    |
+               |    |    |     --45.04%-- com.android.server.power.PowerManagerService.userActivityInternal
+               |    |    |
+               |    |    |--22.44%-- com.android.server.pm.PackageManagerService$PackageManagerInternalImpl.getPackage
+               |    |    |
+               |    |     --20.79%-- com.android.server.pm.PackageManagerService.getPackageSettingInternal
+               |    |
+               |    |--7.08%-- com.android.server.pm.PackageManagerService.getPackageSettingInternal
+               |    |    |
+               |    |    |--40.25%-- com.android.server.pm.PackageManagerService.getPackageUidInternal
+               |    |    |
+               |    |    |--33.33%-- com.android.server.pm.PackageManagerService.getPackageSetting
+               |    |    |    |
+               |    |    |    |--63.07%-- com.android.server.pm.PackageManagerService$PackageManagerInternalImpl.filterAppAccess
+               |    |    |    |
+               |    |    |     --36.93%-- com.android.server.pm.permission.PermissionManagerService.checkPermissionInternal
+               |    |    |
+               |    |     --26.42%-- com.android.server.pm.PackageManagerService.applyPostResolutionFilter
+
+Empirical testing reveals that mPackages contains 359 entries on my
+device, at which HashMap is 64% faster than ArrayMap for lookups and
+85% faster [1] for insertions. The increased memory usage should be
+a worthwhile trade-off at this size, so we can safely convert the map
+to a HashMap in order to improve performance in this hotpath.
+
+Because profiling sample hits can also be seen in Settings.mPackages,
+which is the same size as PackageManagerService.mPackages, both have
+been converted to HashMaps.
+
+[1] https://docs.google.com/spreadsheets/d/136UJS2yVlZyPx30KDNgj4AWldkp9xbzIcWkLFj9RGgk/edit
+
+Test: simpleperf record -a; verify that PackageManagerService no longer
+      appears under ArrayMap.binarySearchHashes
+Change-Id: Ie888a6d88390529fde7cb4ba4758058c74b1ff01
+---
+ .../com/android/server/pm/AppsFilter.java     | 65 +++++++++----------
+ .../android/server/pm/InstantAppRegistry.java |  8 +--
+ .../server/pm/KeySetManagerService.java       |  6 +-
+ .../server/pm/PackageManagerService.java      | 59 +++++++----------
+ .../java/com/android/server/pm/Settings.java  | 32 ++++-----
+ 5 files changed, 70 insertions(+), 100 deletions(-)
+
+diff --git a/services/core/java/com/android/server/pm/AppsFilter.java b/services/core/java/com/android/server/pm/AppsFilter.java
+index c7187143a39..8e6633df515 100644
+--- a/services/core/java/com/android/server/pm/AppsFilter.java
++++ b/services/core/java/com/android/server/pm/AppsFilter.java
+@@ -62,6 +62,7 @@ import com.android.server.pm.parsing.pkg.AndroidPackage;
+ import java.io.PrintWriter;
+ import java.util.Arrays;
+ import java.util.List;
++import java.util.Map;
+ import java.util.Objects;
+ import java.util.Set;
+ import java.util.StringTokenizer;
+@@ -173,7 +174,7 @@ public class AppsFilter {
+         void runWithState(CurrentStateCallback callback);
+ 
+         interface CurrentStateCallback {
+-            void currentState(ArrayMap<String, PackageSetting> settings, UserInfo[] users);
++            void currentState(Map<String, PackageSetting> settings, UserInfo[] users);
+         }
+     }
+ 
+@@ -531,7 +532,7 @@ public class AppsFilter {
+                 synchronized (mCacheLock) {
+                     if (mShouldFilterCache != null) {
+                         updateShouldFilterCacheForPackage(mShouldFilterCache, null, newPkgSetting,
+-                                settings, users, settings.size());
++                                settings, users);
+                     } // else, rebuild entire cache when system is ready
+                 }
+             });
+@@ -541,7 +542,7 @@ public class AppsFilter {
+     }
+ 
+     private void addPackageInternal(PackageSetting newPkgSetting,
+-            ArrayMap<String, PackageSetting> existingSettings) {
++            Map<String, PackageSetting> existingSettings) {
+         if (Objects.equals("android", newPkgSetting.name)) {
+             // let's set aside the framework signatures
+             mSystemSigningDetails = newPkgSetting.signatures.mSigningDetails;
+@@ -578,8 +579,7 @@ public class AppsFilter {
+             mForceQueryable.add(newPkgSetting.appId);
+         }
+ 
+-        for (int i = existingSettings.size() - 1; i >= 0; i--) {
+-            final PackageSetting existingSetting = existingSettings.valueAt(i);
++        for (final PackageSetting existingSetting : existingSettings.values()) {
+             if (existingSetting.appId == newPkgSetting.appId || existingSetting.pkg == null) {
+                 continue;
+             }
+@@ -617,8 +617,7 @@ public class AppsFilter {
+ 
+         int existingSize = existingSettings.size();
+         ArrayMap<String, AndroidPackage> existingPkgs = new ArrayMap<>(existingSize);
+-        for (int index = 0; index < existingSize; index++) {
+-            PackageSetting pkgSetting = existingSettings.valueAt(index);
++        for (PackageSetting pkgSetting : existingSettings.values()) {
+             if (pkgSetting.pkg != null) {
+                 existingPkgs.put(pkgSetting.name, pkgSetting.pkg);
+             }
+@@ -657,12 +656,12 @@ public class AppsFilter {
+     }
+ 
+     private SparseArray<SparseBooleanArray> updateEntireShouldFilterCacheInner(
+-            ArrayMap<String, PackageSetting> settings, UserInfo[] users) {
++            Map<String, PackageSetting> settings, UserInfo[] users) {
+         SparseArray<SparseBooleanArray> cache =
+                 new SparseArray<>(users.length * settings.size());
+-        for (int i = settings.size() - 1; i >= 0; i--) {
++        for (PackageSetting ps : settings.values()) {
+             updateShouldFilterCacheForPackage(cache,
+-                    null /*skipPackage*/, settings.valueAt(i), settings, users, i);
++                    null /*skipPackage*/, ps, settings, users);
+         }
+         return cache;
+     }
+@@ -678,9 +677,9 @@ public class AppsFilter {
+                 usersRef[0] = users;
+                 // store away the references to the immutable packages, since settings are retained
+                 // during updates.
+-                for (int i = 0, max = settings.size(); i < max; i++) {
+-                    final AndroidPackage pkg = settings.valueAt(i).pkg;
+-                    packagesCache.put(settings.keyAt(i), pkg);
++                for (Map.Entry<String, PackageSetting> entry : settings.entrySet()) {
++                    final AndroidPackage pkg = entry.getValue().pkg;
++                    packagesCache.put(entry.getKey(), pkg);
+                 }
+             });
+             SparseArray<SparseBooleanArray> cache =
+@@ -692,9 +691,9 @@ public class AppsFilter {
+                     changed[0] = true;
+                     return;
+                 }
+-                for (int i = 0, max = settings.size(); i < max; i++) {
+-                    final AndroidPackage pkg = settings.valueAt(i).pkg;
+-                    if (!Objects.equals(pkg, packagesCache.get(settings.keyAt(i)))) {
++                for (Map.Entry<String, PackageSetting> entry : settings.entrySet()) {
++                    final AndroidPackage pkg = entry.getValue().pkg;
++                    if (!Objects.equals(pkg, packagesCache.get(entry.getKey()))) {
+                         changed[0] = true;
+                         return;
+                     }
+@@ -727,18 +726,16 @@ public class AppsFilter {
+             if (mShouldFilterCache != null) {
+                 mStateProvider.runWithState((settings, users) -> {
+                     updateShouldFilterCacheForPackage(mShouldFilterCache, null /* skipPackage */,
+-                            settings.get(packageName), settings, users,
+-                            settings.size() /*maxIndex*/);
++                            settings.get(packageName), settings, users);
+                 });
+             }
+         }
+     }
+ 
+     private void updateShouldFilterCacheForPackage(SparseArray<SparseBooleanArray> cache,
+-            @Nullable String skipPackageName, PackageSetting subjectSetting, ArrayMap<String,
+-            PackageSetting> allSettings, UserInfo[] allUsers, int maxIndex) {
+-        for (int i = Math.min(maxIndex, allSettings.size() - 1); i >= 0; i--) {
+-            PackageSetting otherSetting = allSettings.valueAt(i);
++            @Nullable String skipPackageName, PackageSetting subjectSetting, Map<String,
++            PackageSetting> allSettings, UserInfo[] allUsers) {
++        for (PackageSetting otherSetting : allSettings.values()) {
+             if (subjectSetting.appId == otherSetting.appId) {
+                 continue;
+             }
+@@ -778,10 +775,9 @@ public class AppsFilter {
+     }
+ 
+     private ArraySet<String> collectProtectedBroadcasts(
+-            ArrayMap<String, PackageSetting> existingSettings, @Nullable String excludePackage) {
++            Map<String, PackageSetting> existingSettings, @Nullable String excludePackage) {
+         ArraySet<String> ret = new ArraySet<>();
+-        for (int i = existingSettings.size() - 1; i >= 0; i--) {
+-            PackageSetting setting = existingSettings.valueAt(i);
++        for (PackageSetting setting : existingSettings.values()) {
+             if (setting.pkg == null || setting.pkg.getPackageName().equals(excludePackage)) {
+                 continue;
+             }
+@@ -795,21 +791,19 @@ public class AppsFilter {
+ 
+     /**
+      * This method recomputes all component / intent-based visibility and is intended to match the
+-     * relevant logic of {@link #addPackageInternal(PackageSetting, ArrayMap)}
++     * relevant logic of {@link #addPackageInternal(PackageSetting, Map)}
+      */
+     private void recomputeComponentVisibility(
+-            ArrayMap<String, PackageSetting> existingSettings) {
++            Map<String, PackageSetting> existingSettings) {
+         mQueriesViaComponent.clear();
+-        for (int i = existingSettings.size() - 1; i >= 0; i--) {
+-            PackageSetting setting = existingSettings.valueAt(i);
++        for (PackageSetting setting : existingSettings.values()) {
+             if (setting.pkg == null || requestsQueryAllPackages(setting.pkg)) {
+                 continue;
+             }
+-            for (int j = existingSettings.size() - 1; j >= 0; j--) {
+-                if (i == j) {
++            for (final PackageSetting otherSetting : existingSettings.values()) {
++                if (setting == otherSetting) {
+                     continue;
+                 }
+-                final PackageSetting otherSetting = existingSettings.valueAt(j);
+                 if (otherSetting.pkg == null || mForceQueryable.contains(otherSetting.appId)) {
+                     continue;
+                 }
+@@ -837,7 +831,7 @@ public class AppsFilter {
+      */
+     @Nullable
+     public SparseArray<int[]> getVisibilityWhitelist(PackageSetting setting, int[] users,
+-            ArrayMap<String, PackageSetting> existingSettings) {
++            Map<String, PackageSetting> existingSettings) {
+         if (mForceQueryable.contains(setting.appId)) {
+             return null;
+         }
+@@ -848,8 +842,7 @@ public class AppsFilter {
+             int[] appIds = new int[existingSettings.size()];
+             int[] buffer = null;
+             int whitelistSize = 0;
+-            for (int i = existingSettings.size() - 1; i >= 0; i--) {
+-                final PackageSetting existingSetting = existingSettings.valueAt(i);
++            for (final PackageSetting existingSetting : existingSettings.values()) {
+                 final int existingAppId = existingSetting.appId;
+                 if (existingAppId < Process.FIRST_APPLICATION_UID) {
+                     continue;
+@@ -949,7 +942,7 @@ public class AppsFilter {
+                             continue;
+                         }
+                         updateShouldFilterCacheForPackage(mShouldFilterCache, setting.name,
+-                                siblingSetting, settings, users, settings.size());
++                                siblingSetting, settings, users);
+                     }
+                 }
+             }
+diff --git a/services/core/java/com/android/server/pm/InstantAppRegistry.java b/services/core/java/com/android/server/pm/InstantAppRegistry.java
+index 0eaac4140c1..afeb654a0cb 100644
+--- a/services/core/java/com/android/server/pm/InstantAppRegistry.java
++++ b/services/core/java/com/android/server/pm/InstantAppRegistry.java
+@@ -691,9 +691,7 @@ class InstantAppRegistry {
+         synchronized (mService.mLock) {
+             allUsers = mService.mUserManager.getUserIds();
+ 
+-            final int packageCount = mService.mPackages.size();
+-            for (int i = 0; i < packageCount; i++) {
+-                final AndroidPackage pkg = mService.mPackages.valueAt(i);
++            for (final AndroidPackage pkg : mService.mPackages.values()) {
+                 final PackageSetting ps = mService.getPackageSetting(pkg.getPackageName());
+                 if (ps == null) {
+                     continue;
+@@ -825,9 +823,7 @@ class InstantAppRegistry {
+             @UserIdInt int userId) {
+         List<InstantAppInfo> result = null;
+ 
+-        final int packageCount = mService.mPackages.size();
+-        for (int i = 0; i < packageCount; i++) {
+-            final AndroidPackage pkg = mService.mPackages.valueAt(i);
++        for (final AndroidPackage pkg : mService.mPackages.values()) {
+             final PackageSetting ps = mService.getPackageSetting(pkg.getPackageName());
+             if (ps == null || !ps.getInstantApp(userId)) {
+                 continue;
+diff --git a/services/core/java/com/android/server/pm/KeySetManagerService.java b/services/core/java/com/android/server/pm/KeySetManagerService.java
+index dabcc35103b..37cb093619a 100644
+--- a/services/core/java/com/android/server/pm/KeySetManagerService.java
++++ b/services/core/java/com/android/server/pm/KeySetManagerService.java
+@@ -64,7 +64,7 @@ public class KeySetManagerService {
+ 
+     protected final LongSparseArray<ArraySet<Long>> mKeySetMapping;
+ 
+-    private final ArrayMap<String, PackageSetting> mPackages;
++    private final Map<String, PackageSetting> mPackages;
+ 
+     private long lastIssuedKeySetId = 0;
+ 
+@@ -113,7 +113,7 @@ public class KeySetManagerService {
+         }
+     }
+ 
+-    public KeySetManagerService(ArrayMap<String, PackageSetting> packages) {
++    public KeySetManagerService(Map<String, PackageSetting> packages) {
+         mKeySets = new LongSparseArray<KeySetHandle>();
+         mPublicKeys = new LongSparseArray<PublicKeyHandle>();
+         mKeySetMapping = new LongSparseArray<ArraySet<Long>>();
+@@ -602,7 +602,7 @@ public class KeySetManagerService {
+     public void dumpLPr(PrintWriter pw, String packageName,
+                         DumpState dumpState) {
+         boolean printedHeader = false;
+-        for (ArrayMap.Entry<String, PackageSetting> e : mPackages.entrySet()) {
++        for (Map.Entry<String, PackageSetting> e : mPackages.entrySet()) {
+             String keySetPackage = e.getKey();
+             if (packageName != null && !packageName.equals(keySetPackage)) {
+                 continue;
+diff --git a/services/core/java/com/android/server/pm/PackageManagerService.java b/services/core/java/com/android/server/pm/PackageManagerService.java
+index 2f81877369a..f29191a4db5 100644
+--- a/services/core/java/com/android/server/pm/PackageManagerService.java
++++ b/services/core/java/com/android/server/pm/PackageManagerService.java
+@@ -760,7 +760,7 @@ public class PackageManagerService extends IPackageManager.Stub
+ 
+     // Keys are String (package name), values are Package.
+     @GuardedBy("mLock")
+-    final ArrayMap<String, AndroidPackage> mPackages = new ArrayMap<>();
++    final HashMap<String, AndroidPackage> mPackages = new HashMap<>();
+ 
+     // Keys are isolated uids and values are the uid of the application
+     // that created the isolated proccess.
+@@ -3029,15 +3029,18 @@ public class PackageManagerService extends IPackageManager.Stub
+ 
+             // Clean up orphaned packages for which the code path doesn't exist
+             // and they are an update to a system app - caused by bug/32321269
+-            final int packageSettingCount = mSettings.mPackages.size();
+-            for (int i = packageSettingCount - 1; i >= 0; i--) {
+-                PackageSetting ps = mSettings.mPackages.valueAt(i);
++            List<Map.Entry<String, PackageSetting>> orphanedPackages = new ArrayList<>();
++            for (Map.Entry<String, PackageSetting> entry : mSettings.mPackages.entrySet()) {
++                PackageSetting ps = entry.getValue();
+                 if (!isExternal(ps) && (ps.codePath == null || !ps.codePath.exists())
+                         && mSettings.getDisabledSystemPkgLPr(ps.name) != null) {
+-                    mSettings.mPackages.removeAt(i);
+-                    mSettings.enableSystemPackageLPw(ps.name);
++                    orphanedPackages.add(entry);
+                 }
+             }
++            for (Map.Entry<String, PackageSetting> entry : orphanedPackages) {
++                mSettings.mPackages.remove(entry.getKey());
++                mSettings.enableSystemPackageLPw(entry.getValue().name);
++            }
+ 
+             if (!mOnlyCore && mFirstBoot) {
+                 requestCopyPreoptedFiles();
+@@ -3540,8 +3543,7 @@ public class PackageManagerService extends IPackageManager.Stub
+             // profile compilation (without waiting to collect a fresh set of profiles).
+             if (mIsUpgrade && !mOnlyCore) {
+                 Slog.i(TAG, "Build fingerprint changed; clearing code caches");
+-                for (int i = 0; i < mSettings.mPackages.size(); i++) {
+-                    final PackageSetting ps = mSettings.mPackages.valueAt(i);
++                for (final PackageSetting ps : mSettings.mPackages.values()) {
+                     if (Objects.equals(StorageManager.UUID_PRIVATE_INTERNAL, ps.volumeUuid)) {
+                         // No apps are running this early, so no need to freeze
+                         clearAppDataLIF(ps.pkg, UserHandle.USER_ALL,
+@@ -3557,9 +3559,7 @@ public class PackageManagerService extends IPackageManager.Stub
+             // their icons in launcher.
+             if (!mOnlyCore && mIsPreQUpgrade) {
+                 Slog.i(TAG, "Whitelisting all existing apps to hide their icons");
+-                int size = mSettings.mPackages.size();
+-                for (int i = 0; i < size; i++) {
+-                    final PackageSetting ps = mSettings.mPackages.valueAt(i);
++                for (final PackageSetting ps : mSettings.mPackages.values()) {
+                     if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                         continue;
+                     }
+@@ -5695,10 +5695,7 @@ public class PackageManagerService extends IPackageManager.Stub
+     private List<VersionedPackage> getPackagesUsingSharedLibraryLPr(
+             SharedLibraryInfo libInfo, int flags, int userId) {
+         List<VersionedPackage> versionedPackages = null;
+-        final int packageCount = mSettings.mPackages.size();
+-        for (int i = 0; i < packageCount; i++) {
+-            PackageSetting ps = mSettings.mPackages.valueAt(i);
+-
++        for (PackageSetting ps : mSettings.mPackages.values()) {
+             if (ps == null) {
+                 continue;
+             }
+@@ -10831,8 +10828,8 @@ public class PackageManagerService extends IPackageManager.Stub
+                     ? changingPkgPair.first : null;
+             final PackageSetting changingPkgSetting = changingPkgPair != null
+                     ? changingPkgPair.second : null;
+-            for (int i = mPackages.size() - 1; i >= 0; --i) {
+-                final AndroidPackage pkg = mPackages.valueAt(i);
++
++            for (final AndroidPackage pkg : mPackages.values()) {
+                 final PackageSetting pkgSetting = mSettings.getPackageLPr(pkg.getPackageName());
+                 if (changingPkg != null
+                         && !hasString(pkg.getUsesLibraries(), changingPkg.getLibraryNames())
+@@ -20055,9 +20052,7 @@ public class PackageManagerService extends IPackageManager.Stub
+     /** This method takes a specific user id as well as UserHandle.USER_ALL. */
+     @GuardedBy("mLock")
+     private void clearIntentFilterVerificationsLPw(int userId) {
+-        final int packageCount = mPackages.size();
+-        for (int i = 0; i < packageCount; i++) {
+-            AndroidPackage pkg = mPackages.valueAt(i);
++        for (AndroidPackage pkg : mPackages.values()) {
+             clearIntentFilterVerificationsLPw(pkg.getPackageName(), userId, true);
+         }
+     }
+@@ -22815,9 +22810,7 @@ public class PackageManagerService extends IPackageManager.Stub
+     private List<String> collectAbsoluteCodePaths() {
+         synchronized (mLock) {
+             List<String> codePaths = new ArrayList<>();
+-            final int packageCount = mSettings.mPackages.size();
+-            for (int i = 0; i < packageCount; i++) {
+-                final PackageSetting ps = mSettings.mPackages.valueAt(i);
++            for (final PackageSetting ps : mSettings.mPackages.values()) {
+                 codePaths.add(ps.codePath.getAbsolutePath());
+             }
+             return codePaths;
+@@ -24318,11 +24311,8 @@ public class PackageManagerService extends IPackageManager.Stub
+         @Override
+         public PackageList getPackageList(PackageListObserver observer) {
+             synchronized (mLock) {
+-                final int N = mPackages.size();
+-                final ArrayList<String> list = new ArrayList<>(N);
+-                for (int i = 0; i < N; i++) {
+-                    list.add(mPackages.keyAt(i));
+-                }
++                final ArrayList<String> list = new ArrayList<>(mPackages.size());
++                list.addAll(mPackages.keySet());
+                 final PackageList packageList = new PackageList(list, observer);
+                 if (observer != null) {
+                     mPackageListObservers.add(packageList);
+@@ -25051,8 +25041,8 @@ public class PackageManagerService extends IPackageManager.Stub
+         @Override
+         public void forEachPackageSetting(Consumer<PackageSetting> actionLocked) {
+             synchronized (mLock) {
+-                for (int index = 0; index < mSettings.mPackages.size(); index++) {
+-                    actionLocked.accept(mSettings.mPackages.valueAt(index));
++                for (PackageSetting ps : mSettings.mPackages.values()) {
++                    actionLocked.accept(ps);
+                 }
+             }
+         }
+@@ -25410,9 +25400,8 @@ public class PackageManagerService extends IPackageManager.Stub
+ 
+     void forEachPackage(Consumer<AndroidPackage> actionLocked) {
+         synchronized (mLock) {
+-            int numPackages = mPackages.size();
+-            for (int i = 0; i < numPackages; i++) {
+-                actionLocked.accept(mPackages.valueAt(i));
++            for (AndroidPackage pkg : mPackages.values()) {
++                actionLocked.accept(pkg);
+             }
+         }
+     }
+@@ -25420,9 +25409,7 @@ public class PackageManagerService extends IPackageManager.Stub
+     void forEachInstalledPackage(@NonNull Consumer<AndroidPackage> actionLocked,
+             @UserIdInt int userId) {
+         synchronized (mLock) {
+-            int numPackages = mPackages.size();
+-            for (int i = 0; i < numPackages; i++) {
+-                AndroidPackage pkg = mPackages.valueAt(i);
++            for (AndroidPackage pkg : mPackages.values()) {
+                 PackageSetting setting = mSettings.getPackageLPr(pkg.getPackageName());
+                 if (setting == null || !setting.getInstalled(userId)) {
+                     continue;
+diff --git a/services/core/java/com/android/server/pm/Settings.java b/services/core/java/com/android/server/pm/Settings.java
+index 98b41d714e2..447c9a5c8f5 100644
+--- a/services/core/java/com/android/server/pm/Settings.java
++++ b/services/core/java/com/android/server/pm/Settings.java
+@@ -137,6 +137,7 @@ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.Date;
++import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+@@ -294,7 +295,7 @@ public final class Settings {
+     private final File mKernelMappingFilename;
+ 
+     /** Map from package name to settings */
+-    final ArrayMap<String, PackageSetting> mPackages = new ArrayMap<>();
++    final HashMap<String, PackageSetting> mPackages = new HashMap<>();
+ 
+     /**
+      * List of packages that were involved in installing other packages, i.e. are listed
+@@ -1088,8 +1089,8 @@ public final class Settings {
+         if (!mInstallerPackages.contains(packageName)) {
+             return;
+         }
+-        for (int i = 0; i < mPackages.size(); i++) {
+-            mPackages.valueAt(i).removeInstallerPackage(packageName);
++        for (PackageSetting ps : mPackages.values()) {
++            ps.removeInstallerPackage(packageName);
+         }
+         mInstallerPackages.remove(packageName);
+     }
+@@ -1941,9 +1942,7 @@ public final class Settings {
+     void writeAllDomainVerificationsLPr(XmlSerializer serializer, int userId)
+             throws IllegalArgumentException, IllegalStateException, IOException {
+         serializer.startTag(null, TAG_ALL_INTENT_FILTER_VERIFICATION);
+-        final int N = mPackages.size();
+-        for (int i = 0; i < N; i++) {
+-            PackageSetting ps = mPackages.valueAt(i);
++        for (PackageSetting ps : mPackages.values()) {
+             IntentFilterVerificationInfo ivi = ps.getIntentFilterVerificationInfo();
+             if (ivi != null) {
+                 writeDomainVerificationsLPr(serializer, ivi);
+@@ -4508,8 +4507,7 @@ public final class Settings {
+      */
+     List<PackageSetting> getVolumePackagesLPr(String volumeUuid) {
+         ArrayList<PackageSetting> res = new ArrayList<>();
+-        for (int i = 0; i < mPackages.size(); i++) {
+-            final PackageSetting setting = mPackages.valueAt(i);
++        for (PackageSetting setting : mPackages.values()) {
+             if (Objects.equals(volumeUuid, setting.volumeUuid)) {
+                 res.add(setting);
+             }
+@@ -5087,9 +5085,7 @@ public final class Settings {
+     void dumpPackagesProto(ProtoOutputStream proto) {
+         List<UserInfo> users = getAllUsers(UserManagerService.getInstance());
+ 
+-        final int count = mPackages.size();
+-        for (int i = 0; i < count; i++) {
+-            final PackageSetting ps = mPackages.valueAt(i);
++        for (final PackageSetting ps : mPackages.values()) {
+             ps.dumpDebug(proto, PackageServiceDumpProto.PACKAGES, users);
+         }
+     }
+@@ -5499,10 +5495,9 @@ public final class Settings {
+ 
+                 Map<String, List<RuntimePermissionsState.PermissionState>> packagePermissions =
+                         new ArrayMap<>();
+-                int packagesSize = mPackages.size();
+-                for (int i = 0; i < packagesSize; i++) {
+-                    String packageName = mPackages.keyAt(i);
+-                    PackageSetting packageSetting = mPackages.valueAt(i);
++                for (Map.Entry<String, PackageSetting> entry : mPackages.entrySet()) {
++                    String packageName = entry.getKey();
++                    PackageSetting packageSetting = entry.getValue();
+                     if (packageSetting.sharedUser == null) {
+                         List<RuntimePermissionsState.PermissionState> permissions =
+                                 getPermissionsFromPermissionsState(
+@@ -5609,10 +5604,9 @@ public final class Settings {
+ 
+             Map<String, List<RuntimePermissionsState.PermissionState>> packagePermissions =
+                     runtimePermissions.getPackagePermissions();
+-            int packagesSize = mPackages.size();
+-            for (int i = 0; i < packagesSize; i++) {
+-                String packageName = mPackages.keyAt(i);
+-                PackageSetting packageSetting = mPackages.valueAt(i);
++            for (Map.Entry<String, PackageSetting> entry : mPackages.entrySet()) {
++                String packageName = entry.getKey();
++                PackageSetting packageSetting = entry.getValue();
+ 
+                 List<RuntimePermissionsState.PermissionState> permissions =
+                         packagePermissions.get(packageName);
+-- 
+2.25.1
+

@@ -1,0 +1,76 @@
+From 15e252b79ff6eec693836ebebc8c7aa1370d86b4 Mon Sep 17 00:00:00 2001
+From: Daniel Norman <danielnorman@google.com>
+Date: Fri, 1 Nov 2019 15:59:48 -0700
+Subject: [PATCH 181/230] ImsManager.Connector became FeatureConnector.
+
+See https://r.android.com/1132314
+
+Bug: 144056746
+Change-Id: I63ac8620390963583bedbd1bcd469890bdb0883a
+---
+ .../policy/MobileSignalController.java        | 21 ++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index 907b3be8a11..845283fd51b 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -46,6 +46,7 @@ import android.util.Log;
+ 
+ import com.android.ims.ImsException;
+ import com.android.ims.ImsManager;
++import com.android.ims.FeatureConnector;
+ import com.android.internal.annotations.VisibleForTesting;
+ import com.android.settingslib.Utils;
+ import com.android.settingslib.graph.SignalDrawable;
+@@ -95,7 +96,7 @@ public class MobileSignalController extends SignalController<
+     boolean mInflateSignalStrengths = false;
+ 
+     private ImsManager mImsManager;
+-    private ImsManager.Connector mImsManagerConnector;
++    private FeatureConnector<ImsManager> mFeatureConnector;
+     private int mCallState = TelephonyManager.CALL_STATE_IDLE;
+ 
+     // TODO: Reduce number of vars passed in, if we have the NetworkController, probably don't
+@@ -130,8 +131,18 @@ public class MobileSignalController extends SignalController<
+         updateDataSim();
+ 
+         int phoneId = mSubscriptionInfo.getSimSlotIndex();
+-        mImsManagerConnector = new ImsManager.Connector(mContext, phoneId,
+-                new ImsManager.Connector.Listener() {
++        mFeatureConnector = new FeatureConnector(mContext, phoneId,
++                new FeatureConnector.Listener<ImsManager> () {
++                    @Override
++                    public boolean isSupported() {
++                        return true;
++                    }
++
++                    @Override
++                    public ImsManager getFeatureManager() {
++                        return ImsManager.getInstance(mContext, phoneId);
++                    }
++
+                     @Override
+                     public void connectionReady(ImsManager manager) throws ImsException {
+                         Log.d(mTag, "ImsManager: connection ready.");
+@@ -206,7 +217,7 @@ public class MobileSignalController extends SignalController<
+                 true, mObserver);
+         mContext.registerReceiver(mVolteSwitchObserver,
+                 new IntentFilter("org.codeaurora.intent.action.ACTION_ENHANCE_4G_SWITCH"));
+-        mImsManagerConnector.connect();
++        mFeatureConnector.connect();
+     }
+ 
+     /**
+@@ -216,7 +227,7 @@ public class MobileSignalController extends SignalController<
+         mPhone.listen(mPhoneStateListener, 0);
+         mContext.getContentResolver().unregisterContentObserver(mObserver);
+         mContext.unregisterReceiver(mVolteSwitchObserver);
+-        mImsManagerConnector.disconnect();
++        mFeatureConnector.disconnect();
+     }
+ 
+     /**
+-- 
+2.25.1
+

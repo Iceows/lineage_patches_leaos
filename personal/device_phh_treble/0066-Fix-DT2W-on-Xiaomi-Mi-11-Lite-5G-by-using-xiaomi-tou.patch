@@ -1,0 +1,312 @@
+From 8b17f047d6766c8bfeab7c5a93244dc86d9e4654 Mon Sep 17 00:00:00 2001
+From: Alberto Ponces <ponces26@gmail.com>
+Date: Wed, 9 Feb 2022 21:05:39 +0000
+Subject: [PATCH 66/80] Fix DT2W on Xiaomi Mi 11 Lite 5G by using xiaomi-touch
+
+It may also fix for other Xiaomi devices
+---
+ base.mk                | 49 ++++++++++++++++++++++--------------------
+ cmds/Android.bp        |  7 ++++++
+ cmds/asus-motor.cpp    |  2 ++
+ cmds/xiaomi-touch.cpp  | 48 +++++++++++++++++++++++++++++++++++++++++
+ phh-prop-handler.sh    | 20 ++++++++++++-----
+ sepolicy/file_contexts |  1 +
+ 6 files changed, 99 insertions(+), 28 deletions(-)
+ create mode 100644 cmds/xiaomi-touch.cpp
+
+diff --git a/base.mk b/base.mk
+index 8637618..e8b2530 100644
+--- a/base.mk
++++ b/base.mk
+@@ -6,7 +6,7 @@ PRODUCT_COPY_FILES := \
+ 	frameworks/native/data/etc/android.hardware.telephony.ims.xml:system/etc/permissions/android.hardware.telephony.ims.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+-	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
++	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml
+ 
+ #Use a more decent APN config
+ PRODUCT_COPY_FILES += \
+@@ -45,12 +45,12 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+ #VNDK config files
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/vndk-detect:system/bin/vndk-detect \
+-	device/phh/treble/vndk.rc:system/etc/init/vndk.rc \
++	device/phh/treble/vndk.rc:system/etc/init/vndk.rc
+ 
+ #USB Audio
+ PRODUCT_COPY_FILES += \
+ 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
+-	device/phh/treble/files/fake_audio_policy_volume.xml:system/etc/fake_audio_policy_volume.xml \
++	device/phh/treble/files/fake_audio_policy_volume.xml:system/etc/fake_audio_policy_volume.xml
+ 
+ # NFC:
+ #   Provide default libnfc-nci.conf file for devices that does not have one in
+@@ -61,7 +61,7 @@ PRODUCT_COPY_FILES += \
+ 
+ # LineageOS build may need this to make NFC work
+ PRODUCT_PACKAGES += \
+-        NfcNci \
++	NfcNci
+ 
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/rw-system.sh:system/bin/rw-system.sh \
+@@ -77,11 +77,11 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
+ 
+ PRODUCT_PACKAGES += \
+-	treble-environ-rc \
++	treble-environ-rc
+ 
+ PRODUCT_PACKAGES += \
+ 	bootctl \
+-	vintf \
++	vintf
+ 
+ # add usefull symlinks
+ PRODUCT_PACKAGES += \
+@@ -99,8 +99,8 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/twrp/busybox-armv7l:system/bin/busybox_phh
+ 
+ PRODUCT_PACKAGES += \
+-    simg2img_simple \
+-    lptools
++	simg2img_simple \
++	lptools
+ 
+ ifneq (,$(wildcard external/exfat))
+ PRODUCT_PACKAGES += \
+@@ -114,7 +114,7 @@ PRODUCT_PACKAGES += \
+ 	vendor.huawei.hardware.biometrics.fingerprint-V2.1-java \
+ 	vendor.huawei.hardware.tp-V1.0-java \
+ 	vendor.qti.hardware.radio.am-V1.0-java \
+-	vendor.qti.qcril.am-V1.0-java \
++	vendor.qti.qcril.am-V1.0-java
+ 
+ PRODUCT_PACKAGES += \
+ 	libaptX_encoder \
+@@ -148,17 +148,17 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/files/zf6-goodixfp.kl:system/phh/zf6-goodixfp.kl \
+ 	device/phh/treble/files/zf6-googlekey_input.kl:system/phh/zf6-googlekey_input.kl \
+ 	device/phh/treble/files/teracube2e-mtk-kpd.kl:system/phh/teracube2e-mtk-kpd.kl \
+-	device/phh/treble/files/bv9500plus-mtk-kpd.kl:system/phh/bv9500plus-mtk-kpd.kl \
++	device/phh/treble/files/bv9500plus-mtk-kpd.kl:system/phh/bv9500plus-mtk-kpd.kl
+ 
+ SELINUX_IGNORE_NEVERALLOWS := true
+ 
+ # Universal NoCutoutOverlay
+ PRODUCT_PACKAGES += \
+-    NoCutoutOverlay
++	NoCutoutOverlay
+ 
+ PRODUCT_PACKAGES += \
+-    lightsctl \
+-    uevent
++	lightsctl \
++	uevent
+ 
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/files/adbd.rc:system/etc/init/adbd.rc
+@@ -180,20 +180,20 @@ PRODUCT_PACKAGES += \
+ 
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+-	device/phh/treble/files/ota.sh:system/bin/ota.sh \
++	device/phh/treble/files/ota.sh:system/bin/ota.sh
+ 
+ PRODUCT_COPY_FILES += \
+-	device/phh/treble/remove-telephony.sh:system/bin/remove-telephony.sh \
++	device/phh/treble/remove-telephony.sh:system/bin/remove-telephony.sh
+ 
+ PRODUCT_COPY_FILES += \
+ 	frameworks/native/data/etc/android.software.secure_lock_screen.xml:system/etc/permissions/android.software.secure_lock_screen.xml \
+-	device/phh/treble/files/android.software.controls.xml:system/etc/permissions/android.software.controls.xml \
++	device/phh/treble/files/android.software.controls.xml:system/etc/permissions/android.software.controls.xml
+ 
+ PRODUCT_COPY_FILES += \
+-        device/phh/treble/ld.config.26.txt:system/etc/ld.config.26.txt \
++	device/phh/treble/ld.config.26.txt:system/etc/ld.config.26.txt
+ 
+ PRODUCT_PACKAGES += \
+-    asus-motor
++	asus-motor
+ 
+ # Privapp-permissions whitelist for PhhTrebleApp
+ PRODUCT_COPY_FILES += \
+@@ -203,24 +203,24 @@ PRODUCT_COPY_FILES += \
+ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/remote/dbclient:system/bin/dbclient \
+ 	device/phh/treble/remote/phh-remotectl.rc:system/etc/init/phh-remotectl.rc \
+-	device/phh/treble/remote/phh-remotectl.sh:system/bin/phh-remotectl.sh \
++	device/phh/treble/remote/phh-remotectl.sh:system/bin/phh-remotectl.sh
+ 
+ PRODUCT_PACKAGES += \
+ 	android.hardware.biometrics.fingerprint@2.1-service.oppo.compat \
+-	android.hardware.biometrics.fingerprint@2.1-service.oplus.compat \
++	android.hardware.biometrics.fingerprint@2.1-service.oplus.compat
+ 
+ PRODUCT_PACKAGES += \
+ 	vr_hwc \
+ 	curl \
+-	healthd \
++	healthd
+ 
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+ 	debug.fdsan=warn_once \
+-	ro.apex.updatable=false \
++	ro.apex.updatable=false
+ 
+ # AOSP overlays
+ PRODUCT_PACKAGES += \
+-    NavigationBarMode2ButtonOverlay
++	NavigationBarMode2ButtonOverlay
+ 
+ PRODUCT_PACKAGES += \
+ 	oplus-alert-slider
+@@ -231,3 +231,6 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/proprietary-files/gome/fs16xx_01s_mono.preset:system/phh/gome/fs16xx_01s_mono.preset \
+ 	device/phh/treble/proprietary-files/gome/fs16xx_01s_right.preset:system/phh/gome/fs16xx_01s_right.preset \
+ 	device/phh/treble/proprietary-files/umidigi/fs16xx_01s_mono.preset:system/phh/umidigi/fs16xx_01s_mono.preset
++
++PRODUCT_PACKAGES += \
++	xiaomi-touch
+diff --git a/cmds/Android.bp b/cmds/Android.bp
+index bc64ff3..0fd7986 100644
+--- a/cmds/Android.bp
++++ b/cmds/Android.bp
+@@ -263,3 +263,10 @@ cc_binary {
+ 		"oplus-alert-slider.rc",
+ 	],
+ }
++
++cc_binary {
++	name: "xiaomi-touch",
++	srcs: [
++		"xiaomi-touch.cpp",
++	],
++}
+diff --git a/cmds/asus-motor.cpp b/cmds/asus-motor.cpp
+index 7f18858..6cd0ae8 100644
+--- a/cmds/asus-motor.cpp
++++ b/cmds/asus-motor.cpp
+@@ -3,6 +3,7 @@
+ #include <sys/stat.h>
+ #include <fcntl.h>
+ #include <stdlib.h>
++#include <unistd.h>
+ 
+ typedef struct {
+     int dir;
+@@ -27,4 +28,5 @@ int main(int argc, char **argv) {
+ 	cfg.speed = 4;
+ 
+ 	ioctl(fd, ASUS_MOTOR_DRV_MANUAL_MODE, &cfg);
++	close(fd);
+ }
+diff --git a/cmds/xiaomi-touch.cpp b/cmds/xiaomi-touch.cpp
+new file mode 100644
+index 0000000..0ce94fc
+--- /dev/null
++++ b/cmds/xiaomi-touch.cpp
+@@ -0,0 +1,48 @@
++#include <iostream>
++#include <unistd.h>
++#include <fcntl.h>
++#include <sys/ioctl.h>
++
++#define SET_CUR_VALUE 0
++
++#define Touch_Game_Mode 0
++#define Touch_Active_MODE 1
++#define Touch_UP_THRESHOLD 2
++#define Touch_Tolerance 3
++#define Touch_Aim_Sensitivity 4
++#define Touch_Tap_Stability 5
++#define Touch_Expert_Mode 6
++#define Touch_Edge_Filter 7
++#define Touch_Panel_Orientation 8
++#define Touch_Report_Rate 9
++#define Touch_Fod_Enable 10
++#define Touch_Aod_Enable 11
++#define Touch_Resist_RF 12
++#define Touch_Idle_Time 13
++#define Touch_Doubletap_Mode 14
++#define Touch_Grip_Mode 15
++#define Touch_FodIcon_Enable 16
++#define Touch_Nonui_Mode 17
++#define Touch_Debug_Level 18
++#define Touch_Power_Status 19
++#define Touch_Mode_NUM 20
++
++#define TOUCH_DEV_PATH "/dev/xiaomi-touch"
++#define TOUCH_ID 0
++#define TOUCH_MAGIC 0x5400
++#define TOUCH_IOC_SETMODE TOUCH_MAGIC + SET_CUR_VALUE
++
++int main(int argc, char **argv) {
++    if(argc != 3) {
++        fprintf(stderr, "Usage: %s <mode> <0|1>\n", argv[0]);
++        return -1;
++    }
++    int mode = atoi(argv[1]);
++    int enabled = atoi(argv[2]);
++    if (mode < 0 || mode > 20) return -1;
++    if (enabled != 0 && enabled != 1) return -1;
++    int fd = open(TOUCH_DEV_PATH, O_RDWR);
++    int arg[3] = {TOUCH_ID, mode, enabled};
++    ioctl(fd, TOUCH_IOC_SETMODE, &arg);
++    close(fd);
++}
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 2106fc8..b35041a 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -52,6 +52,15 @@ xiaomi_toggle_dt2w_event_node() {
+     return 1
+ }
+ 
++xiaomi_toggle_dt2w_ioctl() {
++    if [ -c "/dev/xiaomi-touch" ]; then
++        echo "Trying to set dt2w mode with ioctl on /dev/xiaomi-touch"
++        # 14 - Touch_Doubletap_Mode
++        xiaomi-touch 14 "$1"
++        return
++    fi
++    return 1
++}
+ 
+ restartAudio() {
+     setprop ctl.restart audioserver
+@@ -66,11 +75,12 @@ if [ "$1" == "persist.sys.phh.xiaomi.dt2w" ]; then
+         exit 1
+     fi
+ 
+-    if ! xiaomi_toggle_dt2w_proc_node "$prop_value"; then
+-        # Fallback to event node method
+-        xiaomi_toggle_dt2w_event_node "$prop_value"
+-    fi
+-    exit $?
++    xiaomi_toggle_dt2w_proc_node "$prop_value"
++    # Fallback to event node method
++    xiaomi_toggle_dt2w_event_node "$prop_value"
++    # Fallback to ioctl method
++    xiaomi_toggle_dt2w_ioctl "$prop_value"
++    exit
+ fi
+ 
+ if [ "$1" == "persist.sys.phh.oppo.dt2w" ]; then
+diff --git a/sepolicy/file_contexts b/sepolicy/file_contexts
+index 4492eda..de1f79a 100644
+--- a/sepolicy/file_contexts
++++ b/sepolicy/file_contexts
+@@ -6,6 +6,7 @@
+ /system/bin/phh-on-boot.sh u:object_r:phhsu_exec:s0
+ /system/bin/phh-on-data.sh u:object_r:phhsu_exec:s0
+ /system/bin/asus-motor u:object_r:phhsu_exec:s0
++/system/bin/xiaomi-touch u:object_r:phhsu_exec:s0
+ 
+ /bt_firmware(/.*)?      u:object_r:bt_firmware_file:s0
+ 
+-- 
+2.25.1
+

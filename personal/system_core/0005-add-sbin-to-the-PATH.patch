@@ -1,0 +1,24 @@
+From cf9c3028794b623325409fcacb1542b9febc8173 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 3 Mar 2021 06:31:17 -0500
+Subject: [PATCH 05/10] add /sbin to the PATH
+
+---
+ rootdir/init.environ.rc.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rootdir/init.environ.rc.in b/rootdir/init.environ.rc.in
+index fdaaf1abe..72ba861a8 100644
+--- a/rootdir/init.environ.rc.in
++++ b/rootdir/init.environ.rc.in
+@@ -10,6 +10,7 @@ on early-init
+     export ANDROID_TZDATA_ROOT /apex/com.android.tzdata
+     export EXTERNAL_STORAGE /sdcard
+     export ASEC_MOUNTPOINT /mnt/asec
++    export PATH /sbin:/product/bin:/apex/com.android.runtime/bin:/apex/com.android.art/bin:/system_ext/bin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin
+     export BOOTCLASSPATH %BOOTCLASSPATH%
+     export DEX2OATBOOTCLASSPATH %DEX2OATBOOTCLASSPATH%
+     export SYSTEMSERVERCLASSPATH %SYSTEMSERVERCLASSPATH%
+-- 
+2.25.1
+

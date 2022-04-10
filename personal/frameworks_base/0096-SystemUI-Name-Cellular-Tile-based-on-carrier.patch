@@ -1,0 +1,44 @@
+From fd383d876d3b07da5982341ba02c84fa9e35a297 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 13:25:07 -0500
+Subject: [PATCH 096/230] SystemUI: Name Cellular Tile based on carrier
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/19f33d7ed485bc60c77ca493157d8ecc0e1436ba
+---
+ .../src/com/android/systemui/qs/tiles/CellularTile.java   | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java b/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
+index 5c1e975f733..6049efc5873 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
+@@ -174,9 +174,9 @@ public class CellularTile extends QSTileImpl<SignalState> {
+             cb = mSignalCallback.mInfo;
+         }
+ 
++        DataUsageController.DataUsageInfo carrierLabelInfo = mDataController.getDataUsageInfo();
+         final Resources r = mContext.getResources();
+         state.dualTarget = true;
+-        state.label = r.getString(R.string.mobile_data);
+         boolean mobileDataEnabled = mDataController.isMobileDataSupported()
+                 && mDataController.isMobileDataEnabled();
+         state.value = mobileDataEnabled;
+@@ -184,8 +184,14 @@ public class CellularTile extends QSTileImpl<SignalState> {
+         state.activityOut = mobileDataEnabled && cb.activityOut;
+         state.expandedAccessibilityClassName = Switch.class.getName();
+         if (cb.noSim) {
++            state.label = r.getString(R.string.mobile_data);
+             state.icon = ResourceIcon.get(R.drawable.ic_qs_no_sim);
+         } else {
++            if (carrierLabelInfo != null) {
++                state.label = carrierLabelInfo.carrier;
++            } else {
++                state.label = r.getString(R.string.mobile_data);
++            }
+             state.icon = ResourceIcon.get(R.drawable.ic_swap_vert);
+         }
+ 
+-- 
+2.25.1
+

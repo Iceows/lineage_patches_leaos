@@ -1,0 +1,96 @@
+From e7f0d65e33387a889c089d57e256f19feccc1762 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 18 Dec 2020 02:03:00 -0500
+Subject: [PATCH 39/53] Settings: Display: font size in 5% steps from 80% to
+ 130%
+
+  from
+  https://github.com/syberia-project/platform_packages_apps_Settings/commit/8379feaa94a84af7a539520ebab5872c49f08160
+
+Change-Id: I40b5252d4d4d8d6278da636d79e4cd4c42c7c33d
+---
+ res/values/arrays.xml                         | 23 ++++++++++++++++++-
+ .../display/FontSizePreferenceController.java |  2 +-
+ .../ToggleFontSizePreferenceFragment.java     |  2 +-
+ .../FontSizePreferenceControllerTest.java     |  2 +-
+ 4 files changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/res/values/arrays.xml b/res/values/arrays.xml
+index 617548cadc..0464a53c63 100644
+--- a/res/values/arrays.xml
++++ b/res/values/arrays.xml
+@@ -153,10 +153,31 @@
+         <item msgid="490158884605093126">Largest</item>
+     </string-array>
+ 
++    <string-array name="entries_font_size_percent">
++        <item>80%</item>
++        <item>85%</item>
++        <item>90%</item>
++        <item>95%</item>
++        <item>100%</item>
++        <item>105%</item>
++        <item>110%</item>
++        <item>115%</item>
++        <item>120%</item>
++        <item>125%</item>
++        <item>130%</item>
++    </string-array>
++
+     <string-array name="entryvalues_font_size" translatable="false">
++        <item>0.80</item>
+         <item>0.85</item>
+-        <item>1.0</item>
++        <item>0.90</item>
++        <item>0.95</item>
++        <item>1.00</item>
++        <item>1.05</item>
++        <item>1.10</item>
+         <item>1.15</item>
++        <item>1.20</item>
++        <item>1.25</item>
+         <item>1.30</item>
+     </string-array>
+ 
+diff --git a/src/com/android/settings/display/FontSizePreferenceController.java b/src/com/android/settings/display/FontSizePreferenceController.java
+index 28c7922ea3..05a46ce15d 100644
+--- a/src/com/android/settings/display/FontSizePreferenceController.java
++++ b/src/com/android/settings/display/FontSizePreferenceController.java
+@@ -36,7 +36,7 @@ public class FontSizePreferenceController extends BasePreferenceController {
+         final float currentScale = Settings.System.getFloat(mContext.getContentResolver(),
+                 Settings.System.FONT_SCALE, 1.0f);
+         final Resources res = mContext.getResources();
+-        final String[] entries = res.getStringArray(R.array.entries_font_size);
++        final String[] entries = res.getStringArray(R.array.entries_font_size_percent);
+         final String[] strEntryValues = res.getStringArray(R.array.entryvalues_font_size);
+         final int index = ToggleFontSizePreferenceFragment.fontSizeValueToIndex(currentScale,
+                 strEntryValues);
+diff --git a/src/com/android/settings/display/ToggleFontSizePreferenceFragment.java b/src/com/android/settings/display/ToggleFontSizePreferenceFragment.java
+index db4d899cbb..3c721b4109 100644
+--- a/src/com/android/settings/display/ToggleFontSizePreferenceFragment.java
++++ b/src/com/android/settings/display/ToggleFontSizePreferenceFragment.java
+@@ -54,7 +54,7 @@ public class ToggleFontSizePreferenceFragment extends PreviewSeekBarPreferenceFr
+         final Resources res = getContext().getResources();
+         final ContentResolver resolver = getContext().getContentResolver();
+         // Mark the appropriate item in the preferences list.
+-        mEntries = res.getStringArray(R.array.entries_font_size);
++        mEntries = res.getStringArray(R.array.entries_font_size_percent);
+         final String[] strEntryValues = res.getStringArray(R.array.entryvalues_font_size);
+         final float currentScale =
+                 Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1.0f);
+diff --git a/tests/robotests/src/com/android/settings/display/FontSizePreferenceControllerTest.java b/tests/robotests/src/com/android/settings/display/FontSizePreferenceControllerTest.java
+index 58e7ccd564..53003c91bb 100644
+--- a/tests/robotests/src/com/android/settings/display/FontSizePreferenceControllerTest.java
++++ b/tests/robotests/src/com/android/settings/display/FontSizePreferenceControllerTest.java
+@@ -43,7 +43,7 @@ public class FontSizePreferenceControllerTest {
+     public void setUp() {
+         mContext = RuntimeEnvironment.application;
+         mController = new FontSizePreferenceController(mContext, TEST_KEY);
+-        mFontSizeArray = mContext.getResources().getStringArray(R.array.entries_font_size);
++        mFontSizeArray = mContext.getResources().getStringArray(R.array.entries_font_size_percent);
+     }
+ 
+     @Test
+-- 
+2.25.1
+

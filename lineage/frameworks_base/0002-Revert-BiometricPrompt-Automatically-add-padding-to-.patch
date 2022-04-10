@@ -1,0 +1,177 @@
+From 5705739b07bd3d670bc259c2ae4c918ff2a374a2 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 26 Jul 2021 10:09:52 +0000
+Subject: [PATCH 02/14] Revert "BiometricPrompt: Automatically add padding to
+ incorporate FOD"
+
+This reverts commit e6ffa411f095906d5fe9d99bf422d6a04afa17d5.
+---
+ .../AuthBiometricFingerprintView.java         | 13 --------
+ .../biometrics/AuthBiometricView.java         | 30 ++-----------------
+ .../systemui/biometrics/FODCircleView.java    | 11 -------
+ .../biometrics/FODCircleViewImpl.java         |  4 ---
+ .../systemui/statusbar/phone/StatusBar.java   |  4 ---
+ 5 files changed, 3 insertions(+), 59 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricFingerprintView.java b/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricFingerprintView.java
+index c2671733ba0..45ee4ad9ae5 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricFingerprintView.java
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricFingerprintView.java
+@@ -22,7 +22,6 @@ import android.graphics.drawable.AnimatedVectorDrawable;
+ import android.graphics.drawable.Drawable;
+ import android.util.AttributeSet;
+ import android.util.Log;
+-import android.view.View;
+ 
+ import com.android.systemui.R;
+ 
+@@ -77,18 +76,6 @@ public class AuthBiometricFingerprintView extends AuthBiometricView {
+         showTouchSensorString();
+     }
+ 
+-    @Override
+-    void onFinishInflateInternal() {
+-        super.onFinishInflateInternal();
+-        if (mHasFod) {
+-            mIconView.setVisibility(View.INVISIBLE);
+-            mIconView.setPadding(0, 0, 0, 0);
+-            // Add IndicatorView above the biometric icon
+-            removeView(mIndicatorView);
+-            addView(mIndicatorView, indexOfChild(mIconView));
+-        }
+-    }
+-
+     private void showTouchSensorString() {
+         mIndicatorView.setText(R.string.fingerprint_dialog_touch_sensor);
+         mIndicatorView.setTextColor(mTextColorHint);
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricView.java b/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricView.java
+index dfcf59decc0..f9c6d32d1d1 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricView.java
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/AuthBiometricView.java
+@@ -24,7 +24,6 @@ import android.annotation.IntDef;
+ import android.annotation.NonNull;
+ import android.annotation.Nullable;
+ import android.content.Context;
+-import android.content.pm.PackageManager;
+ import android.hardware.biometrics.BiometricPrompt;
+ import android.os.Bundle;
+ import android.os.Handler;
+@@ -41,12 +40,8 @@ import android.widget.LinearLayout;
+ import android.widget.TextView;
+ 
+ import com.android.internal.annotations.VisibleForTesting;
+-import com.android.systemui.statusbar.phone.StatusBar;
+-import com.android.systemui.Dependency;
+ import com.android.systemui.R;
+ 
+-import lineageos.app.LineageContextConstants;
+-
+ import java.lang.annotation.Retention;
+ import java.lang.annotation.RetentionPolicy;
+ import java.util.ArrayList;
+@@ -191,8 +186,6 @@ public abstract class AuthBiometricView extends LinearLayout {
+     protected boolean mDialogSizeAnimating;
+     protected Bundle mSavedState;
+ 
+-    protected boolean mHasFod;
+-
+     /**
+      * Delay after authentication is confirmed, before the dialog should be animated away.
+      */
+@@ -255,10 +248,6 @@ public abstract class AuthBiometricView extends LinearLayout {
+ 
+         mAccessibilityManager = context.getSystemService(AccessibilityManager.class);
+ 
+-        PackageManager packageManager = context.getPackageManager();
+-        mHasFod = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) &&
+-                packageManager.hasSystemFeature(LineageContextConstants.Features.FOD);
+-
+         mResetErrorRunnable = () -> {
+             updateState(getStateForAfterError());
+             handleResetAfterError();
+@@ -714,22 +703,9 @@ public abstract class AuthBiometricView extends LinearLayout {
+             final View child = getChildAt(i);
+ 
+             if (child.getId() == R.id.biometric_icon) {
+-                if (this instanceof AuthBiometricFingerprintView && mHasFod) {
+-                    final int buttonBarHeight =
+-                            findViewById(R.id.button_bar).getLayoutParams().height;
+-                    // The view is invisible, so it still takes space and
+-                    // we use that to adjust for the FOD icon
+-                    final int fodHeight = Dependency.get(StatusBar.class).getFodHeight(true) -
+-                            buttonBarHeight - findViewById(R.id.button_bar).getPaddingTop();
+-
+-                    child.measure(
+-                            MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.AT_MOST),
+-                            MeasureSpec.makeMeasureSpec(fodHeight, MeasureSpec.EXACTLY));
+-                } else {
+-                    child.measure(
+-                            MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.AT_MOST),
+-                            MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
+-                }
++                child.measure(
++                        MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.AT_MOST),
++                        MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
+             } else if (child.getId() == R.id.button_bar) {
+                 child.measure(
+                         MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY),
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleView.java b/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleView.java
+index 10b304bb843..a79e2d9e00f 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleView.java
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleView.java
+@@ -30,7 +30,6 @@ import android.os.Handler;
+ import android.os.Looper;
+ import android.os.RemoteException;
+ import android.provider.Settings;
+-import android.util.DisplayMetrics;
+ import android.view.Display;
+ import android.view.Gravity;
+ import android.view.MotionEvent;
+@@ -424,16 +423,6 @@ public class FODCircleView extends ImageView {
+         dispatchHide();
+     }
+ 
+-    public int getHeight(boolean includeDecor) {
+-        DisplayMetrics dm = new DisplayMetrics();
+-        if (includeDecor) {
+-            mWindowManager.getDefaultDisplay().getMetrics(dm);
+-        } else {
+-            mWindowManager.getDefaultDisplay().getRealMetrics(dm);
+-        }
+-        return dm.heightPixels - mPositionY + mSize / 2;
+-    }
+-
+     private void updateAlpha() {
+         setAlpha(mIsDreaming ? 0.5f : 1.0f);
+     }
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleViewImpl.java b/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleViewImpl.java
+index 8f8f255d370..1b179ef98f2 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleViewImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/FODCircleViewImpl.java
+@@ -100,10 +100,6 @@ public class FODCircleViewImpl extends SystemUI implements CommandQueue.Callback
+         }
+     }
+ 
+-    public int getHeight(boolean includeDecor) {
+-         return mFodCircleView.getHeight(includeDecor);
+-    }
+-
+     public void registerCallback(FODCircleViewImplCallback callback) {
+         Assert.isMainThread();
+         Slog.v(TAG, "*** register callback for " + callback);
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
+index 8aca0846a67..f47a23287d3 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
+@@ -4694,8 +4694,4 @@ public class StatusBar extends SystemUI implements DemoMode,
+         }
+         return null;
+     }
+-
+-    public int getFodHeight(boolean includeDecor) {
+-        return mFODCircleViewImpl.getHeight(includeDecor);
+-    }
+ }
+-- 
+2.30.2
+

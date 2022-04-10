@@ -1,0 +1,93 @@
+From ef0e3085906da2612e89a794221cb550ecc005c1 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sat, 11 Sep 2021 18:35:52 +0000
+Subject: [PATCH 173/230] we need moar rounded corners
+
+  based on
+  https://github.com/crdroidandroid/android_frameworks_base/commit/3e8e6ddb21dd4ae144ac0efc8eb1e4148ee3b581
+  https://github.com/crdroidandroid/android_frameworks_base/commit/246d966e9433791216e7dab374f2439e509855b1
+
+Change-Id: I1bfb0d2f05505848e946cc4ec146b7f643ec7ec2
+---
+ core/res/res/anim/activity_close_exit.xml           | 1 +
+ core/res/res/anim/activity_open_enter.xml           | 1 +
+ core/res/res/drawable/popup_background_material.xml | 2 +-
+ core/res/res/values/themes.xml                      | 4 ++--
+ packages/SystemUI/res/values/styles.xml             | 2 +-
+ 5 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/core/res/res/anim/activity_close_exit.xml b/core/res/res/anim/activity_close_exit.xml
+index 1599ae8cb19..514560f14b3 100644
+--- a/core/res/res/anim/activity_close_exit.xml
++++ b/core/res/res/anim/activity_close_exit.xml
+@@ -18,6 +18,7 @@
+ -->
+ 
+ <set xmlns:android="http://schemas.android.com/apk/res/android"
++    android:hasRoundedCorners="true"
+     android:shareInterpolator="false"
+     android:zAdjustment="top">
+     <alpha
+diff --git a/core/res/res/anim/activity_open_enter.xml b/core/res/res/anim/activity_open_enter.xml
+index 38d3e8ed06c..68c0221e747 100644
+--- a/core/res/res/anim/activity_open_enter.xml
++++ b/core/res/res/anim/activity_open_enter.xml
+@@ -17,6 +17,7 @@
+ -->
+ 
+ <set xmlns:android="http://schemas.android.com/apk/res/android"
++    android:hasRoundedCorners="true"
+     android:shareInterpolator="false">
+     <alpha
+         android:fromAlpha="0"
+diff --git a/core/res/res/drawable/popup_background_material.xml b/core/res/res/drawable/popup_background_material.xml
+index 9ad7bfc6812..5910b9f163a 100644
+--- a/core/res/res/drawable/popup_background_material.xml
++++ b/core/res/res/drawable/popup_background_material.xml
+@@ -18,7 +18,7 @@
+        android:shape="rectangle">
+ 
+     <corners
+-            android:radius="2dp" />
++            android:radius="?attr/dialogCornerRadius" />
+     <solid
+             android:color="?attr/colorPopupBackground" />
+ 
+diff --git a/core/res/res/values/themes.xml b/core/res/res/values/themes.xml
+index d47ce49a88c..3711829fc84 100644
+--- a/core/res/res/values/themes.xml
++++ b/core/res/res/values/themes.xml
+@@ -114,7 +114,7 @@ please see themes_device_defaults.xml.
+         <item name="buttonStyleInset">@style/Widget.Button.Inset</item>
+ 
+         <item name="buttonStyleToggle">@style/Widget.Button.Toggle</item>
+-        <item name="buttonCornerRadius">2dp</item>
++        <item name="buttonCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <item name="switchStyle">@style/Widget.CompoundButton.Switch</item>
+         <item name="mediaRouteButtonStyle">@style/Widget.DeviceDefault.MediaRouteButton</item>
+@@ -204,7 +204,7 @@ please see themes_device_defaults.xml.
+         <item name="dialogCustomTitleDecorLayout">@layout/dialog_custom_title</item>
+         <item name="dialogTitleDecorLayout">@layout/dialog_title</item>
+         <item name="dialogPreferredPadding">@dimen/dialog_padding</item>
+-        <item name="dialogCornerRadius">2dp</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <!-- AlertDialog attributes -->
+         <item name="alertDialogTheme">@style/Theme.Dialog.Alert</item>
+diff --git a/packages/SystemUI/res/values/styles.xml b/packages/SystemUI/res/values/styles.xml
+index 1c0518208de..f74901bb1d3 100644
+--- a/packages/SystemUI/res/values/styles.xml
++++ b/packages/SystemUI/res/values/styles.xml
+@@ -778,7 +778,7 @@
+         <!-- used to override dark/light theming -->
+         <item name="*android:colorBackgroundFloating">@color/GM2_grey_800</item>
+         <item name="*android:colorPopupBackground">@color/GM2_grey_800</item>
+-        <item name="*android:dialogCornerRadius">8dp</item>
++        <item name="*android:dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+     </style>
+ 
+     <style name="TextAppearance.ControlSetup">
+-- 
+2.25.1
+

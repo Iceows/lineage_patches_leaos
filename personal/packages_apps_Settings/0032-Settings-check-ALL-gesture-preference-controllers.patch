@@ -1,0 +1,29 @@
+From 83756d17b48c8a347e9dee4553983216081a0666 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 07:54:16 -0500
+Subject: [PATCH 32/53] Settings: check ALL gesture preference controllers
+
+  from
+  https://github.com/omnirom/android_packages_apps_Settings/commit/2cf7834a348356018627a857dffa1652851221c0
+
+Change-Id: Id03a0ebb88fb371b4f43f2b454950511f674858a
+---
+ .../settings/gestures/GesturesSettingPreferenceController.java  | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/com/android/settings/gestures/GesturesSettingPreferenceController.java b/src/com/android/settings/gestures/GesturesSettingPreferenceController.java
+index 9d4d538f42..ab949166a3 100644
+--- a/src/com/android/settings/gestures/GesturesSettingPreferenceController.java
++++ b/src/com/android/settings/gestures/GesturesSettingPreferenceController.java
+@@ -81,6 +81,8 @@ public class GesturesSettingPreferenceController extends BasePreferenceControlle
+         controllers.add(new DoubleTapScreenPreferenceController(context, FAKE_PREF_KEY)
+                 .setConfig(ambientDisplayConfiguration));
+         controllers.add(new PreventRingingParentPreferenceController(context, FAKE_PREF_KEY));
++        controllers.add(new SystemNavigationPreferenceController(context, FAKE_PREF_KEY));
++        controllers.add(new PowerMenuPreferenceController(context, FAKE_PREF_KEY));
+         return controllers;
+     }
+ 
+-- 
+2.25.1
+

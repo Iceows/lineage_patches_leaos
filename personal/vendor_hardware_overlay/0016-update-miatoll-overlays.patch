@@ -1,0 +1,1003 @@
+From ad50d035b1a231d29d109de754cd74e3c8d8e277 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 10 Sep 2021 20:18:00 +0000
+Subject: [PATCH 16/21] update 'miatoll' overlays
+
+  based on
+  https://github.com/phhusson/vendor_hardware_overlay/commit/afc87c135362b278906f432e36800e41178334d1
+---
+ Xiaomi/RedmiNote9Pro/res/values/colors.xml    |  26 --
+ Xiaomi/RedmiNote9Pro/res/values/config.xml    | 264 +++++++++---------
+ Xiaomi/RedmiNote9Pro/res/values/notch.xml     |   7 +
+ Xiaomi/RedmiNote9ProMax/res/values/colors.xml |  26 --
+ Xiaomi/RedmiNote9ProMax/res/values/config.xml | 264 +++++++++---------
+ Xiaomi/RedmiNote9ProMax/res/values/notch.xml  |   7 +
+ Xiaomi/RedmiNote9S/res/values/colors.xml      |  26 --
+ Xiaomi/RedmiNote9S/res/values/config.xml      | 264 +++++++++---------
+ Xiaomi/RedmiNote9S/res/values/notch.xml       |   7 +
+ 9 files changed, 414 insertions(+), 477 deletions(-)
+ delete mode 100644 Xiaomi/RedmiNote9Pro/res/values/colors.xml
+ create mode 100644 Xiaomi/RedmiNote9Pro/res/values/notch.xml
+ delete mode 100644 Xiaomi/RedmiNote9ProMax/res/values/colors.xml
+ create mode 100644 Xiaomi/RedmiNote9ProMax/res/values/notch.xml
+ delete mode 100644 Xiaomi/RedmiNote9S/res/values/colors.xml
+ create mode 100644 Xiaomi/RedmiNote9S/res/values/notch.xml
+
+diff --git a/Xiaomi/RedmiNote9Pro/res/values/colors.xml b/Xiaomi/RedmiNote9Pro/res/values/colors.xml
+deleted file mode 100644
+index 61ff6db..0000000
+--- a/Xiaomi/RedmiNote9Pro/res/values/colors.xml
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<resources>
+-    <color name="user_icon_1">#ff5e97f6</color>
+-    <color name="user_icon_2">#ff5c6bc0</color>
+-    <color name="user_icon_3">#ff26a69a</color>
+-    <color name="user_icon_4">#ffec407a</color>
+-    <color name="user_icon_5">#ff33ac71</color>
+-    <color name="user_icon_6">#ff8bc34a</color>
+-    <color name="user_icon_7">#ffff9800</color>
+-    <color name="user_icon_8">#ffff7043</color>
+-    <color name="system_error">#ffea4335</color>
+-    <color name="background_device_default_light">#ffffffff</color>
+-    <color name="primary_device_default_dark">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings_light">#fff8f9fa</color>
+-    <color name="primary_dark_device_default_dark">#ff242424</color>
+-    <color name="primary_dark_device_default_settings">#ff242424</color>
+-    <color name="primary_dark_device_default_settings_light">#ffe8eaed</color>
+-    <color name="secondary_device_default_settings">#ff3a3a3a</color>
+-    <color name="tertiary_device_default_settings">#ff616161</color>
+-    <color name="quaternary_device_default_settings">#ff9e9e9e</color>
+-    <color name="accent_device_default_light">#ff1a73e8</color>
+-    <color name="accent_device_default_dark">#ff2581df</color>
+-    <color name="error_color_device_default_dark">#ffe25142</color>
+-    <color name="error_color_device_default_light">#ffd93025</color>
+-</resources>
+diff --git a/Xiaomi/RedmiNote9Pro/res/values/config.xml b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+index 4faae64..a5c9f82 100644
+--- a/Xiaomi/RedmiNote9Pro/res/values/config.xml
++++ b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+@@ -21,43 +21,137 @@
+      for different hardware and product builds.  Do not translate. -->
+ 
+ <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+-	<bool name="config_dozeAfterScreenOffByDefault">true</bool>
+-	<bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
+-	<bool name="config_enableLockBeforeUnlockScreen">true</bool>
+-	<bool name="config_hotswapCapable">true</bool>
+-	<bool name="config_lidControlsSleep">true</bool>
+-	<bool name="config_primarycard">false</bool>
+-	<bool name="config_smart_battery_available">false</bool>
+-	<bool name="config_sms_authorization_enabled">false</bool>
+-	<bool name="config_swipe_up_gesture_setting_available">true</bool>
+-	<bool name="config_useDefaultFocusHighlight">false</bool>
+-	<bool name="config_useDevInputEventForAudioJack">true</bool>
+-	<bool name="config_useMasterVolume">false</bool>
+-	<bool name="config_useVolumeKeySounds">false</bool>
+-	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+-	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+-	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+-	<bool name="config_wifi_report_he_ready">true</bool>
+-	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+-	<bool name="config_wifi_softap_ieee80211ax_supported">false</bool>
+-	<bool name="config_wifi_wap3_sap_mode_enabled">false</bool>
+-	<bool name="useImsAlwaysForEmergencyCall">false</bool>
+-
+-	<integer name="config_MaxConcurrentDownloadsAllowed">2</integer>
+-	<integer name="config_attentionMaximumExtension">240000</integer>
+-	<integer name="config_criticalBatteryWarningLevel">10</integer>
+-	<integer name="config_downloadDataDirSize">256</integer>
+-	<integer name="config_dozeWakeLockScreenDebounce">1500</integer>
+-	<integer name="config_lowBatteryCloseWarningLevel">20</integer>
+-	<integer name="config_lowMemoryWarningValue">700000</integer>
+-	<integer name="config_releaseMemoryLimit">200000</integer>
+-	<integer name="config_sms_authorization_timeout_ms">0</integer>
+-	<integer name="config_virtualKeyQuietTimeMillis">100</integer>
+-	<integer name="data_retry_delay">-1</integer>
+-	<integer name="data_retry_idle_delay">-1</integer>
+-	<integer name="resumeboost_timeout_param">300</integer>
+-	<integer name="wifi_hotspot_security_type">6</integer>
++    <bool name="config_dozeAfterScreenOffByDefault">true</bool>
++    <bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
++    <bool name="config_lidControlsSleep">true</bool>
++    <bool name="config_swipe_up_gesture_setting_available">true</bool>
++
++    <bool name="config_bluetooth_hfp_inband_ringing_support">true</bool>
++    <bool name="config_bluetooth_le_peripheral_mode_supported">true</bool>
++    <bool name="config_carrier_volte_available">true</bool>
++    <bool name="config_device_volte_available">true</bool>
++    <bool name="config_device_vt_available">true</bool>
++    <bool name="config_device_wfc_ims_available">true</bool>
++    <bool name="config_hotswapCapable">true</bool>
++    <bool name="config_powerDecoupleInteractiveModeFromDisplay">false</bool>
++    <bool name="config_setColorTransformAccelerated">true</bool>
++    <bool name="config_useDevInputEventForAudioJack">true</bool>
++    <bool name="config_showNavigationBar">true</bool>
++    <bool name="config_wifiDisplaySupportsProtectedBuffers">true</bool>
++    <bool name="config_wifi_background_scan_support">true</bool>
++    <bool name="config_wifi_batched_scan_supported">true</bool>
++    <bool name="config_wifi_connected_mac_randomization_supported">true</bool>
++    <bool name="config_wifi_dual_band_support">true</bool>
++    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
++
++    <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. -->
++    <integer name="config_shutdownBatteryTemperature">600</integer>
++    <!-- Idle current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_idle_cur_ma">3</integer>
++    <!-- Rx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_rx_cur_ma">20</integer>
++    <!-- Tx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_tx_cur_ma">33</integer>
++    <!-- Operating voltage for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_operating_voltage_mv">3700</integer>
++
++    <integer-array name="config_availableColorModes">
++        <item>0</item>
++        <item>1</item>
++        <item>3</item>
++        <item>256</item>
++        <item>257</item>
++        <item>258</item>
++        <item>259</item>
++        <item>260</item>
++        <item>261</item>
++        <item>262</item>
++        <item>263</item>
++        <item>264</item>
++        <item>265</item>
++    </integer-array>
++
++    <string-array name="config_mobile_tcp_buffers">
++        <item>5gnr:2097152,6291456,16777216,512000,2097152,8388608</item>
++        <item>lte:2097152,4194304,8388608,262144,524288,1048576</item>
++        <item>lte_ca:4096,6291456,12582912,4096,1048576,2097152</item>
++        <item>umts:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsupa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsdpa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspap:4094,87380,1220608,4096,16384,1220608</item>
++        <item>edge:4093,26280,35040,4096,16384,35040</item>
++        <item>gprs:4092,8760,11680,4096,8760,11680</item>
++        <item>evdo:4094,87380,524288,4096,16384,262144</item>
++    </string-array>
++
++    <string-array name="config_tether_bluetooth_regexs">
++        <item>bnep\\d</item>
++        <item>bt-pan</item>
++    </string-array>
++
++    <integer-array name="config_tether_upstream_types">
++        <item>0</item>
++        <item>1</item>
++        <item>5</item>
++        <item>7</item>
++    </integer-array>
++
++    <string-array name="config_tether_usb_regexs">
++        <item>usb\\d</item>
++        <item>rndis\\d</item>
++    </string-array>
++
++    <string-array name="config_tether_wifi_regexs">
++        <item>softap0</item>
++        <item>wlan0</item>
++    </string-array>
++
++    <string-array name="config_gpsParameters">
++        <item>SUPL_HOST=supl.qxwz.com</item>
++        <item>SUPL_PORT=7275</item>
++        <item>SUPL_VER=0x20000</item>
++        <item>SUPL_MODE=3</item>
++        <item>SUPL_ES=0</item>
++        <item>LPP_PROFILE=2</item>
++        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
++        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
++        <item>GPS_LOCK=0x0</item>
++    </string-array>
++
++    <integer-array name="config_lteDbmThresholds">
++        <item>-140</item>
++        <item>-140</item>
++        <item>-125</item>
++        <item>-112</item>
++        <item>-102</item>
++        <item>-44</item>
++    </integer-array>
++
++    <string-array name="networkAttributes">
++        <item>wifi,1,1,1,-1,true</item>
++        <item>mobile,0,0,0,-1,true</item>
++        <item>mobile_mms,2,0,4,60000,true</item>
++        <item>mobile_supl,3,0,2,60000,true</item>
++        <item>mobile_dun,4,0,2,60000,true</item>
++        <item>mobile_hipri,5,0,3,60000,true</item>
++        <item>mobile_fota,10,0,2,60000,true</item>
++        <item>mobile_ims,11,0,2,60000,true</item>
++        <item>mobile_cbs,12,0,2,60000,true</item>
++        <item>bluetooth,7,7,2,-1,true</item>
++        <item>mobile_emergency,15,0,5,-1,true</item>
++        <item>ethernet,9,9,9,-1,true</item>
++    </string-array>
++
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++
++    <string-array name="radioAttributes">
++        <item>1,1</item>
++        <item>0,1</item>
++        <item>7,1</item>
++    </string-array>
+ 
+     <!-- Array of ambient lux threshold values. This is used for determining hysteresis constraint
+          values by calculating the index to use for lookup and then setting the constraint value
+@@ -341,100 +435,4 @@
+         <item>/system/lib64/libRSCpuRef.so</item>
+         <item>/system/lib64/libblas.so</item>
+     </string-array>
+-
+-    <string-array name="config_gpsParameters">
+-        <item>SUPL_HOST=supl.qxwz.com</item>
+-        <item>SUPL_PORT=7275</item>
+-        <item>SUPL_VER=0x20000</item>
+-        <item>SUPL_MODE=3</item>
+-        <item>SUPL_ES=0</item>
+-        <item>LPP_PROFILE=2</item>
+-        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
+-        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
+-        <item>GPS_LOCK=0x0</item>
+-    </string-array>
+-
+-    <integer-array name="config_lteDbmThresholds">
+-        <item>-140</item>
+-        <item>-140</item>
+-        <item>-125</item>
+-        <item>-112</item>
+-        <item>-102</item>
+-        <item>-44</item>
+-    </integer-array>
+-
+-    <integer-array name="config_tether_upstream_types">
+-        <item>1</item>
+-        <item>0</item>
+-        <item>5</item>
+-        <item>7</item>
+-    </integer-array>
+-
+-   <array name="config_wifi_dual_sap_interfaces" />
+-
+-    <string-array name="fingerprint_acquired_vendor">
+-        <item>Try again</item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>"Too fast! Couldn't recognize fingerprint"</item>
+-        <item>Move your finger a bit and try again</item>
+-        <item>Lift your finger and put it back on the scanner again</item>
+-        <item>Keep your finger on the scanner a bit longer</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Move your finger slightly</item>
+-        <item>This fingerprint has been added, use a different finger</item>
+-    </string-array>
+-
+-    <integer-array name="low_lux_level">
+-        <item>1</item>
+-        <item>2</item>
+-        <item>4</item>
+-        <item>6</item>
+-        <item>8</item>
+-        <item>10</item>
+-        <item>15</item>
+-        <item>20</item>
+-    </integer-array>
+-
+-    <string-array name="networkAttributes">
+-        <item>wifi,1,1,1,-1,true</item>
+-        <item>mobile,0,0,0,-1,true</item>
+-        <item>mobile_mms,2,0,4,300000,true</item>
+-        <item>mobile_supl,3,0,2,300000,true</item>
+-        <item>mobile_dun,4,0,2,300000,true</item>
+-        <item>mobile_hipri,5,0,3,300000,true</item>
+-        <item>mobile_fota,10,0,2,300000,true</item>
+-        <item>mobile_ims,11,0,2,300000,true</item>
+-        <item>mobile_cbs,12,0,2,300000,true</item>
+-        <item>bluetooth,7,7,2,-1,true</item>
+-        <item>ethernet,9,9,4,-1,true</item>
+-    </string-array>
+-
+-    <!-- Boolean indicating if restoring network selection should be skipped -->
+-    <!-- The restoring is handled by modem if it is true-->
+-    <bool name="skip_restoring_network_selection">true</bool>
+-    
+-    <string-array name="radioAttributes">
+-        <item>1,1</item>
+-        <item>0,1</item>
+-        <item>7,1</item>
+-        <item>9,1</item>
+-    </string-array>
+ </resources>
+diff --git a/Xiaomi/RedmiNote9Pro/res/values/notch.xml b/Xiaomi/RedmiNote9Pro/res/values/notch.xml
+new file mode 100644
+index 0000000..f340677
+--- /dev/null
++++ b/Xiaomi/RedmiNote9Pro/res/values/notch.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <dimen name="status_bar_height_portrait">100px</dimen>
++    <dimen name="status_bar_height_landscape">24dp</dimen>
++    <dimen name="rounded_corner_radius_top">93px</dimen>
++    <dimen name="rounded_corner_radius_bottom">93px</dimen>
++</resources>
+diff --git a/Xiaomi/RedmiNote9ProMax/res/values/colors.xml b/Xiaomi/RedmiNote9ProMax/res/values/colors.xml
+deleted file mode 100644
+index 61ff6db..0000000
+--- a/Xiaomi/RedmiNote9ProMax/res/values/colors.xml
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<resources>
+-    <color name="user_icon_1">#ff5e97f6</color>
+-    <color name="user_icon_2">#ff5c6bc0</color>
+-    <color name="user_icon_3">#ff26a69a</color>
+-    <color name="user_icon_4">#ffec407a</color>
+-    <color name="user_icon_5">#ff33ac71</color>
+-    <color name="user_icon_6">#ff8bc34a</color>
+-    <color name="user_icon_7">#ffff9800</color>
+-    <color name="user_icon_8">#ffff7043</color>
+-    <color name="system_error">#ffea4335</color>
+-    <color name="background_device_default_light">#ffffffff</color>
+-    <color name="primary_device_default_dark">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings_light">#fff8f9fa</color>
+-    <color name="primary_dark_device_default_dark">#ff242424</color>
+-    <color name="primary_dark_device_default_settings">#ff242424</color>
+-    <color name="primary_dark_device_default_settings_light">#ffe8eaed</color>
+-    <color name="secondary_device_default_settings">#ff3a3a3a</color>
+-    <color name="tertiary_device_default_settings">#ff616161</color>
+-    <color name="quaternary_device_default_settings">#ff9e9e9e</color>
+-    <color name="accent_device_default_light">#ff1a73e8</color>
+-    <color name="accent_device_default_dark">#ff2581df</color>
+-    <color name="error_color_device_default_dark">#ffe25142</color>
+-    <color name="error_color_device_default_light">#ffd93025</color>
+-</resources>
+diff --git a/Xiaomi/RedmiNote9ProMax/res/values/config.xml b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+index 4faae64..a5c9f82 100644
+--- a/Xiaomi/RedmiNote9ProMax/res/values/config.xml
++++ b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+@@ -21,43 +21,137 @@
+      for different hardware and product builds.  Do not translate. -->
+ 
+ <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+-	<bool name="config_dozeAfterScreenOffByDefault">true</bool>
+-	<bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
+-	<bool name="config_enableLockBeforeUnlockScreen">true</bool>
+-	<bool name="config_hotswapCapable">true</bool>
+-	<bool name="config_lidControlsSleep">true</bool>
+-	<bool name="config_primarycard">false</bool>
+-	<bool name="config_smart_battery_available">false</bool>
+-	<bool name="config_sms_authorization_enabled">false</bool>
+-	<bool name="config_swipe_up_gesture_setting_available">true</bool>
+-	<bool name="config_useDefaultFocusHighlight">false</bool>
+-	<bool name="config_useDevInputEventForAudioJack">true</bool>
+-	<bool name="config_useMasterVolume">false</bool>
+-	<bool name="config_useVolumeKeySounds">false</bool>
+-	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+-	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+-	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+-	<bool name="config_wifi_report_he_ready">true</bool>
+-	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+-	<bool name="config_wifi_softap_ieee80211ax_supported">false</bool>
+-	<bool name="config_wifi_wap3_sap_mode_enabled">false</bool>
+-	<bool name="useImsAlwaysForEmergencyCall">false</bool>
+-
+-	<integer name="config_MaxConcurrentDownloadsAllowed">2</integer>
+-	<integer name="config_attentionMaximumExtension">240000</integer>
+-	<integer name="config_criticalBatteryWarningLevel">10</integer>
+-	<integer name="config_downloadDataDirSize">256</integer>
+-	<integer name="config_dozeWakeLockScreenDebounce">1500</integer>
+-	<integer name="config_lowBatteryCloseWarningLevel">20</integer>
+-	<integer name="config_lowMemoryWarningValue">700000</integer>
+-	<integer name="config_releaseMemoryLimit">200000</integer>
+-	<integer name="config_sms_authorization_timeout_ms">0</integer>
+-	<integer name="config_virtualKeyQuietTimeMillis">100</integer>
+-	<integer name="data_retry_delay">-1</integer>
+-	<integer name="data_retry_idle_delay">-1</integer>
+-	<integer name="resumeboost_timeout_param">300</integer>
+-	<integer name="wifi_hotspot_security_type">6</integer>
++    <bool name="config_dozeAfterScreenOffByDefault">true</bool>
++    <bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
++    <bool name="config_lidControlsSleep">true</bool>
++    <bool name="config_swipe_up_gesture_setting_available">true</bool>
++
++    <bool name="config_bluetooth_hfp_inband_ringing_support">true</bool>
++    <bool name="config_bluetooth_le_peripheral_mode_supported">true</bool>
++    <bool name="config_carrier_volte_available">true</bool>
++    <bool name="config_device_volte_available">true</bool>
++    <bool name="config_device_vt_available">true</bool>
++    <bool name="config_device_wfc_ims_available">true</bool>
++    <bool name="config_hotswapCapable">true</bool>
++    <bool name="config_powerDecoupleInteractiveModeFromDisplay">false</bool>
++    <bool name="config_setColorTransformAccelerated">true</bool>
++    <bool name="config_useDevInputEventForAudioJack">true</bool>
++    <bool name="config_showNavigationBar">true</bool>
++    <bool name="config_wifiDisplaySupportsProtectedBuffers">true</bool>
++    <bool name="config_wifi_background_scan_support">true</bool>
++    <bool name="config_wifi_batched_scan_supported">true</bool>
++    <bool name="config_wifi_connected_mac_randomization_supported">true</bool>
++    <bool name="config_wifi_dual_band_support">true</bool>
++    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
++
++    <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. -->
++    <integer name="config_shutdownBatteryTemperature">600</integer>
++    <!-- Idle current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_idle_cur_ma">3</integer>
++    <!-- Rx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_rx_cur_ma">20</integer>
++    <!-- Tx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_tx_cur_ma">33</integer>
++    <!-- Operating voltage for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_operating_voltage_mv">3700</integer>
++
++    <integer-array name="config_availableColorModes">
++        <item>0</item>
++        <item>1</item>
++        <item>3</item>
++        <item>256</item>
++        <item>257</item>
++        <item>258</item>
++        <item>259</item>
++        <item>260</item>
++        <item>261</item>
++        <item>262</item>
++        <item>263</item>
++        <item>264</item>
++        <item>265</item>
++    </integer-array>
++
++    <string-array name="config_mobile_tcp_buffers">
++        <item>5gnr:2097152,6291456,16777216,512000,2097152,8388608</item>
++        <item>lte:2097152,4194304,8388608,262144,524288,1048576</item>
++        <item>lte_ca:4096,6291456,12582912,4096,1048576,2097152</item>
++        <item>umts:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsupa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsdpa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspap:4094,87380,1220608,4096,16384,1220608</item>
++        <item>edge:4093,26280,35040,4096,16384,35040</item>
++        <item>gprs:4092,8760,11680,4096,8760,11680</item>
++        <item>evdo:4094,87380,524288,4096,16384,262144</item>
++    </string-array>
++
++    <string-array name="config_tether_bluetooth_regexs">
++        <item>bnep\\d</item>
++        <item>bt-pan</item>
++    </string-array>
++
++    <integer-array name="config_tether_upstream_types">
++        <item>0</item>
++        <item>1</item>
++        <item>5</item>
++        <item>7</item>
++    </integer-array>
++
++    <string-array name="config_tether_usb_regexs">
++        <item>usb\\d</item>
++        <item>rndis\\d</item>
++    </string-array>
++
++    <string-array name="config_tether_wifi_regexs">
++        <item>softap0</item>
++        <item>wlan0</item>
++    </string-array>
++
++    <string-array name="config_gpsParameters">
++        <item>SUPL_HOST=supl.qxwz.com</item>
++        <item>SUPL_PORT=7275</item>
++        <item>SUPL_VER=0x20000</item>
++        <item>SUPL_MODE=3</item>
++        <item>SUPL_ES=0</item>
++        <item>LPP_PROFILE=2</item>
++        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
++        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
++        <item>GPS_LOCK=0x0</item>
++    </string-array>
++
++    <integer-array name="config_lteDbmThresholds">
++        <item>-140</item>
++        <item>-140</item>
++        <item>-125</item>
++        <item>-112</item>
++        <item>-102</item>
++        <item>-44</item>
++    </integer-array>
++
++    <string-array name="networkAttributes">
++        <item>wifi,1,1,1,-1,true</item>
++        <item>mobile,0,0,0,-1,true</item>
++        <item>mobile_mms,2,0,4,60000,true</item>
++        <item>mobile_supl,3,0,2,60000,true</item>
++        <item>mobile_dun,4,0,2,60000,true</item>
++        <item>mobile_hipri,5,0,3,60000,true</item>
++        <item>mobile_fota,10,0,2,60000,true</item>
++        <item>mobile_ims,11,0,2,60000,true</item>
++        <item>mobile_cbs,12,0,2,60000,true</item>
++        <item>bluetooth,7,7,2,-1,true</item>
++        <item>mobile_emergency,15,0,5,-1,true</item>
++        <item>ethernet,9,9,9,-1,true</item>
++    </string-array>
++
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++
++    <string-array name="radioAttributes">
++        <item>1,1</item>
++        <item>0,1</item>
++        <item>7,1</item>
++    </string-array>
+ 
+     <!-- Array of ambient lux threshold values. This is used for determining hysteresis constraint
+          values by calculating the index to use for lookup and then setting the constraint value
+@@ -341,100 +435,4 @@
+         <item>/system/lib64/libRSCpuRef.so</item>
+         <item>/system/lib64/libblas.so</item>
+     </string-array>
+-
+-    <string-array name="config_gpsParameters">
+-        <item>SUPL_HOST=supl.qxwz.com</item>
+-        <item>SUPL_PORT=7275</item>
+-        <item>SUPL_VER=0x20000</item>
+-        <item>SUPL_MODE=3</item>
+-        <item>SUPL_ES=0</item>
+-        <item>LPP_PROFILE=2</item>
+-        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
+-        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
+-        <item>GPS_LOCK=0x0</item>
+-    </string-array>
+-
+-    <integer-array name="config_lteDbmThresholds">
+-        <item>-140</item>
+-        <item>-140</item>
+-        <item>-125</item>
+-        <item>-112</item>
+-        <item>-102</item>
+-        <item>-44</item>
+-    </integer-array>
+-
+-    <integer-array name="config_tether_upstream_types">
+-        <item>1</item>
+-        <item>0</item>
+-        <item>5</item>
+-        <item>7</item>
+-    </integer-array>
+-
+-   <array name="config_wifi_dual_sap_interfaces" />
+-
+-    <string-array name="fingerprint_acquired_vendor">
+-        <item>Try again</item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>"Too fast! Couldn't recognize fingerprint"</item>
+-        <item>Move your finger a bit and try again</item>
+-        <item>Lift your finger and put it back on the scanner again</item>
+-        <item>Keep your finger on the scanner a bit longer</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Move your finger slightly</item>
+-        <item>This fingerprint has been added, use a different finger</item>
+-    </string-array>
+-
+-    <integer-array name="low_lux_level">
+-        <item>1</item>
+-        <item>2</item>
+-        <item>4</item>
+-        <item>6</item>
+-        <item>8</item>
+-        <item>10</item>
+-        <item>15</item>
+-        <item>20</item>
+-    </integer-array>
+-
+-    <string-array name="networkAttributes">
+-        <item>wifi,1,1,1,-1,true</item>
+-        <item>mobile,0,0,0,-1,true</item>
+-        <item>mobile_mms,2,0,4,300000,true</item>
+-        <item>mobile_supl,3,0,2,300000,true</item>
+-        <item>mobile_dun,4,0,2,300000,true</item>
+-        <item>mobile_hipri,5,0,3,300000,true</item>
+-        <item>mobile_fota,10,0,2,300000,true</item>
+-        <item>mobile_ims,11,0,2,300000,true</item>
+-        <item>mobile_cbs,12,0,2,300000,true</item>
+-        <item>bluetooth,7,7,2,-1,true</item>
+-        <item>ethernet,9,9,4,-1,true</item>
+-    </string-array>
+-
+-    <!-- Boolean indicating if restoring network selection should be skipped -->
+-    <!-- The restoring is handled by modem if it is true-->
+-    <bool name="skip_restoring_network_selection">true</bool>
+-    
+-    <string-array name="radioAttributes">
+-        <item>1,1</item>
+-        <item>0,1</item>
+-        <item>7,1</item>
+-        <item>9,1</item>
+-    </string-array>
+ </resources>
+diff --git a/Xiaomi/RedmiNote9ProMax/res/values/notch.xml b/Xiaomi/RedmiNote9ProMax/res/values/notch.xml
+new file mode 100644
+index 0000000..f340677
+--- /dev/null
++++ b/Xiaomi/RedmiNote9ProMax/res/values/notch.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <dimen name="status_bar_height_portrait">100px</dimen>
++    <dimen name="status_bar_height_landscape">24dp</dimen>
++    <dimen name="rounded_corner_radius_top">93px</dimen>
++    <dimen name="rounded_corner_radius_bottom">93px</dimen>
++</resources>
+diff --git a/Xiaomi/RedmiNote9S/res/values/colors.xml b/Xiaomi/RedmiNote9S/res/values/colors.xml
+deleted file mode 100644
+index 61ff6db..0000000
+--- a/Xiaomi/RedmiNote9S/res/values/colors.xml
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<resources>
+-    <color name="user_icon_1">#ff5e97f6</color>
+-    <color name="user_icon_2">#ff5c6bc0</color>
+-    <color name="user_icon_3">#ff26a69a</color>
+-    <color name="user_icon_4">#ffec407a</color>
+-    <color name="user_icon_5">#ff33ac71</color>
+-    <color name="user_icon_6">#ff8bc34a</color>
+-    <color name="user_icon_7">#ffff9800</color>
+-    <color name="user_icon_8">#ffff7043</color>
+-    <color name="system_error">#ffea4335</color>
+-    <color name="background_device_default_light">#ffffffff</color>
+-    <color name="primary_device_default_dark">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings">#ff2d2d2d</color>
+-    <color name="primary_device_default_settings_light">#fff8f9fa</color>
+-    <color name="primary_dark_device_default_dark">#ff242424</color>
+-    <color name="primary_dark_device_default_settings">#ff242424</color>
+-    <color name="primary_dark_device_default_settings_light">#ffe8eaed</color>
+-    <color name="secondary_device_default_settings">#ff3a3a3a</color>
+-    <color name="tertiary_device_default_settings">#ff616161</color>
+-    <color name="quaternary_device_default_settings">#ff9e9e9e</color>
+-    <color name="accent_device_default_light">#ff1a73e8</color>
+-    <color name="accent_device_default_dark">#ff2581df</color>
+-    <color name="error_color_device_default_dark">#ffe25142</color>
+-    <color name="error_color_device_default_light">#ffd93025</color>
+-</resources>
+diff --git a/Xiaomi/RedmiNote9S/res/values/config.xml b/Xiaomi/RedmiNote9S/res/values/config.xml
+index 4faae64..a5c9f82 100644
+--- a/Xiaomi/RedmiNote9S/res/values/config.xml
++++ b/Xiaomi/RedmiNote9S/res/values/config.xml
+@@ -21,43 +21,137 @@
+      for different hardware and product builds.  Do not translate. -->
+ 
+ <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+-	<bool name="config_dozeAfterScreenOffByDefault">true</bool>
+-	<bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
+-	<bool name="config_enableLockBeforeUnlockScreen">true</bool>
+-	<bool name="config_hotswapCapable">true</bool>
+-	<bool name="config_lidControlsSleep">true</bool>
+-	<bool name="config_primarycard">false</bool>
+-	<bool name="config_smart_battery_available">false</bool>
+-	<bool name="config_sms_authorization_enabled">false</bool>
+-	<bool name="config_swipe_up_gesture_setting_available">true</bool>
+-	<bool name="config_useDefaultFocusHighlight">false</bool>
+-	<bool name="config_useDevInputEventForAudioJack">true</bool>
+-	<bool name="config_useMasterVolume">false</bool>
+-	<bool name="config_useVolumeKeySounds">false</bool>
+-	<bool name="config_user_notification_of_restrictied_mobile_access">false</bool>
+-	<bool name="config_wifi_disconnect_only_on_initial_ipreachability">true</bool>
+-	<bool name="config_wifi_dual_sap_mode_enabled">false</bool>
+-	<bool name="config_wifi_framework_secondary_sta_supported">false</bool>
+-	<bool name="config_wifi_report_he_ready">true</bool>
+-	<bool name="config_wifi_softap_acs_should_exclude_dfs">true</bool>
+-	<bool name="config_wifi_softap_ieee80211ax_supported">false</bool>
+-	<bool name="config_wifi_wap3_sap_mode_enabled">false</bool>
+-	<bool name="useImsAlwaysForEmergencyCall">false</bool>
+-
+-	<integer name="config_MaxConcurrentDownloadsAllowed">2</integer>
+-	<integer name="config_attentionMaximumExtension">240000</integer>
+-	<integer name="config_criticalBatteryWarningLevel">10</integer>
+-	<integer name="config_downloadDataDirSize">256</integer>
+-	<integer name="config_dozeWakeLockScreenDebounce">1500</integer>
+-	<integer name="config_lowBatteryCloseWarningLevel">20</integer>
+-	<integer name="config_lowMemoryWarningValue">700000</integer>
+-	<integer name="config_releaseMemoryLimit">200000</integer>
+-	<integer name="config_sms_authorization_timeout_ms">0</integer>
+-	<integer name="config_virtualKeyQuietTimeMillis">100</integer>
+-	<integer name="data_retry_delay">-1</integer>
+-	<integer name="data_retry_idle_delay">-1</integer>
+-	<integer name="resumeboost_timeout_param">300</integer>
+-	<integer name="wifi_hotspot_security_type">6</integer>
++    <bool name="config_dozeAfterScreenOffByDefault">true</bool>
++    <bool name="config_dozeAlwaysOnDisplayAvailable">false</bool>
++    <bool name="config_lidControlsSleep">true</bool>
++    <bool name="config_swipe_up_gesture_setting_available">true</bool>
++
++    <bool name="config_bluetooth_hfp_inband_ringing_support">true</bool>
++    <bool name="config_bluetooth_le_peripheral_mode_supported">true</bool>
++    <bool name="config_carrier_volte_available">true</bool>
++    <bool name="config_device_volte_available">true</bool>
++    <bool name="config_device_vt_available">true</bool>
++    <bool name="config_device_wfc_ims_available">true</bool>
++    <bool name="config_hotswapCapable">true</bool>
++    <bool name="config_powerDecoupleInteractiveModeFromDisplay">false</bool>
++    <bool name="config_setColorTransformAccelerated">true</bool>
++    <bool name="config_useDevInputEventForAudioJack">true</bool>
++    <bool name="config_showNavigationBar">true</bool>
++    <bool name="config_wifiDisplaySupportsProtectedBuffers">true</bool>
++    <bool name="config_wifi_background_scan_support">true</bool>
++    <bool name="config_wifi_batched_scan_supported">true</bool>
++    <bool name="config_wifi_connected_mac_randomization_supported">true</bool>
++    <bool name="config_wifi_dual_band_support">true</bool>
++    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
++
++    <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. -->
++    <integer name="config_shutdownBatteryTemperature">600</integer>
++    <!-- Idle current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_idle_cur_ma">3</integer>
++    <!-- Rx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_rx_cur_ma">20</integer>
++    <!-- Tx current for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_tx_cur_ma">33</integer>
++    <!-- Operating voltage for bluetooth controller. 0 by default-->
++    <integer name="config_bluetooth_operating_voltage_mv">3700</integer>
++
++    <integer-array name="config_availableColorModes">
++        <item>0</item>
++        <item>1</item>
++        <item>3</item>
++        <item>256</item>
++        <item>257</item>
++        <item>258</item>
++        <item>259</item>
++        <item>260</item>
++        <item>261</item>
++        <item>262</item>
++        <item>263</item>
++        <item>264</item>
++        <item>265</item>
++    </integer-array>
++
++    <string-array name="config_mobile_tcp_buffers">
++        <item>5gnr:2097152,6291456,16777216,512000,2097152,8388608</item>
++        <item>lte:2097152,4194304,8388608,262144,524288,1048576</item>
++        <item>lte_ca:4096,6291456,12582912,4096,1048576,2097152</item>
++        <item>umts:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsupa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hsdpa:4094,87380,1220608,4096,16384,1220608</item>
++        <item>hspap:4094,87380,1220608,4096,16384,1220608</item>
++        <item>edge:4093,26280,35040,4096,16384,35040</item>
++        <item>gprs:4092,8760,11680,4096,8760,11680</item>
++        <item>evdo:4094,87380,524288,4096,16384,262144</item>
++    </string-array>
++
++    <string-array name="config_tether_bluetooth_regexs">
++        <item>bnep\\d</item>
++        <item>bt-pan</item>
++    </string-array>
++
++    <integer-array name="config_tether_upstream_types">
++        <item>0</item>
++        <item>1</item>
++        <item>5</item>
++        <item>7</item>
++    </integer-array>
++
++    <string-array name="config_tether_usb_regexs">
++        <item>usb\\d</item>
++        <item>rndis\\d</item>
++    </string-array>
++
++    <string-array name="config_tether_wifi_regexs">
++        <item>softap0</item>
++        <item>wlan0</item>
++    </string-array>
++
++    <string-array name="config_gpsParameters">
++        <item>SUPL_HOST=supl.qxwz.com</item>
++        <item>SUPL_PORT=7275</item>
++        <item>SUPL_VER=0x20000</item>
++        <item>SUPL_MODE=3</item>
++        <item>SUPL_ES=0</item>
++        <item>LPP_PROFILE=2</item>
++        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
++        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
++        <item>GPS_LOCK=0x0</item>
++    </string-array>
++
++    <integer-array name="config_lteDbmThresholds">
++        <item>-140</item>
++        <item>-140</item>
++        <item>-125</item>
++        <item>-112</item>
++        <item>-102</item>
++        <item>-44</item>
++    </integer-array>
++
++    <string-array name="networkAttributes">
++        <item>wifi,1,1,1,-1,true</item>
++        <item>mobile,0,0,0,-1,true</item>
++        <item>mobile_mms,2,0,4,60000,true</item>
++        <item>mobile_supl,3,0,2,60000,true</item>
++        <item>mobile_dun,4,0,2,60000,true</item>
++        <item>mobile_hipri,5,0,3,60000,true</item>
++        <item>mobile_fota,10,0,2,60000,true</item>
++        <item>mobile_ims,11,0,2,60000,true</item>
++        <item>mobile_cbs,12,0,2,60000,true</item>
++        <item>bluetooth,7,7,2,-1,true</item>
++        <item>mobile_emergency,15,0,5,-1,true</item>
++        <item>ethernet,9,9,9,-1,true</item>
++    </string-array>
++
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++
++    <string-array name="radioAttributes">
++        <item>1,1</item>
++        <item>0,1</item>
++        <item>7,1</item>
++    </string-array>
+ 
+     <!-- Array of ambient lux threshold values. This is used for determining hysteresis constraint
+          values by calculating the index to use for lookup and then setting the constraint value
+@@ -341,100 +435,4 @@
+         <item>/system/lib64/libRSCpuRef.so</item>
+         <item>/system/lib64/libblas.so</item>
+     </string-array>
+-
+-    <string-array name="config_gpsParameters">
+-        <item>SUPL_HOST=supl.qxwz.com</item>
+-        <item>SUPL_PORT=7275</item>
+-        <item>SUPL_VER=0x20000</item>
+-        <item>SUPL_MODE=3</item>
+-        <item>SUPL_ES=0</item>
+-        <item>LPP_PROFILE=2</item>
+-        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=0</item>
+-        <item>A_GLONASS_POS_PROTOCOL_SELECT=0x7</item>
+-        <item>GPS_LOCK=0x0</item>
+-    </string-array>
+-
+-    <integer-array name="config_lteDbmThresholds">
+-        <item>-140</item>
+-        <item>-140</item>
+-        <item>-125</item>
+-        <item>-112</item>
+-        <item>-102</item>
+-        <item>-44</item>
+-    </integer-array>
+-
+-    <integer-array name="config_tether_upstream_types">
+-        <item>1</item>
+-        <item>0</item>
+-        <item>5</item>
+-        <item>7</item>
+-    </integer-array>
+-
+-   <array name="config_wifi_dual_sap_interfaces" />
+-
+-    <string-array name="fingerprint_acquired_vendor">
+-        <item>Try again</item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>Cover the fingerprint scanner completely and apply pressure</item>
+-        <item>"Too fast! Couldn't recognize fingerprint"</item>
+-        <item>Move your finger a bit and try again</item>
+-        <item>Lift your finger and put it back on the scanner again</item>
+-        <item>Keep your finger on the scanner a bit longer</item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item></item>
+-        <item>Move your finger slightly</item>
+-        <item>This fingerprint has been added, use a different finger</item>
+-    </string-array>
+-
+-    <integer-array name="low_lux_level">
+-        <item>1</item>
+-        <item>2</item>
+-        <item>4</item>
+-        <item>6</item>
+-        <item>8</item>
+-        <item>10</item>
+-        <item>15</item>
+-        <item>20</item>
+-    </integer-array>
+-
+-    <string-array name="networkAttributes">
+-        <item>wifi,1,1,1,-1,true</item>
+-        <item>mobile,0,0,0,-1,true</item>
+-        <item>mobile_mms,2,0,4,300000,true</item>
+-        <item>mobile_supl,3,0,2,300000,true</item>
+-        <item>mobile_dun,4,0,2,300000,true</item>
+-        <item>mobile_hipri,5,0,3,300000,true</item>
+-        <item>mobile_fota,10,0,2,300000,true</item>
+-        <item>mobile_ims,11,0,2,300000,true</item>
+-        <item>mobile_cbs,12,0,2,300000,true</item>
+-        <item>bluetooth,7,7,2,-1,true</item>
+-        <item>ethernet,9,9,4,-1,true</item>
+-    </string-array>
+-
+-    <!-- Boolean indicating if restoring network selection should be skipped -->
+-    <!-- The restoring is handled by modem if it is true-->
+-    <bool name="skip_restoring_network_selection">true</bool>
+-    
+-    <string-array name="radioAttributes">
+-        <item>1,1</item>
+-        <item>0,1</item>
+-        <item>7,1</item>
+-        <item>9,1</item>
+-    </string-array>
+ </resources>
+diff --git a/Xiaomi/RedmiNote9S/res/values/notch.xml b/Xiaomi/RedmiNote9S/res/values/notch.xml
+new file mode 100644
+index 0000000..f340677
+--- /dev/null
++++ b/Xiaomi/RedmiNote9S/res/values/notch.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <dimen name="status_bar_height_portrait">100px</dimen>
++    <dimen name="status_bar_height_landscape">24dp</dimen>
++    <dimen name="rounded_corner_radius_top">93px</dimen>
++    <dimen name="rounded_corner_radius_bottom">93px</dimen>
++</resources>
+-- 
+2.25.1
+

@@ -1,0 +1,36 @@
+From 5a1c87611e3ddf560284d094b45d153508ba85a5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 13:30:56 -0500
+Subject: [PATCH 100/230] FrameLayout: Fix NPE when view is missing
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/c71bf809745bf857becd346874c4e18132e24efc
+---
+ core/java/android/widget/FrameLayout.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/java/android/widget/FrameLayout.java b/core/java/android/widget/FrameLayout.java
+index 92e9a96e489..9721ccb5055 100644
+--- a/core/java/android/widget/FrameLayout.java
++++ b/core/java/android/widget/FrameLayout.java
+@@ -190,7 +190,7 @@ public class FrameLayout extends ViewGroup {
+ 
+         for (int i = 0; i < count; i++) {
+             final View child = getChildAt(i);
+-            if (mMeasureAllChildren || child.getVisibility() != GONE) {
++            if (child != null && (mMeasureAllChildren || child.getVisibility() != GONE)) {
+                 measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                 maxWidth = Math.max(maxWidth,
+@@ -281,7 +281,7 @@ public class FrameLayout extends ViewGroup {
+ 
+         for (int i = 0; i < count; i++) {
+             final View child = getChildAt(i);
+-            if (child.getVisibility() != GONE) {
++            if (child != null && child.getVisibility() != GONE) {
+                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+ 
+                 final int width = child.getMeasuredWidth();
+-- 
+2.25.1
+

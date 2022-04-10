@@ -1,0 +1,133 @@
+From fb9d957f2ba4c53b6573c3766c86d7caa5604587 Mon Sep 17 00:00:00 2001
+From: Alberto Ponces <ponces26@gmail.com>
+Date: Wed, 29 Dec 2021 19:57:34 +0000
+Subject: [PATCH 55/80] smartpa_params: Fix audio for Umidigi X and Gome U9
+
+---
+ base.mk                                       |   7 ++++++
+ proprietary-files/gome/fs16xx_01s_left.preset | Bin 0 -> 738 bytes
+ proprietary-files/gome/fs16xx_01s_mono.preset | Bin 0 -> 738 bytes
+ .../gome/fs16xx_01s_right.preset              | Bin 0 -> 738 bytes
+ .../umidigi/fs16xx_01s_mono.preset            | Bin 0 -> 738 bytes
+ rw-system.sh                                  |  20 ++++++++++++++++++
+ 6 files changed, 27 insertions(+)
+ create mode 100644 proprietary-files/gome/fs16xx_01s_left.preset
+ create mode 100644 proprietary-files/gome/fs16xx_01s_mono.preset
+ create mode 100644 proprietary-files/gome/fs16xx_01s_right.preset
+ create mode 100644 proprietary-files/umidigi/fs16xx_01s_mono.preset
+
+diff --git a/base.mk b/base.mk
+index 0c0044d..8637618 100644
+--- a/base.mk
++++ b/base.mk
+@@ -224,3 +224,10 @@ PRODUCT_PACKAGES += \
+ 
+ PRODUCT_PACKAGES += \
+ 	oplus-alert-slider
++
++PRODUCT_COPY_FILES += \
++	device/phh/treble/empty:system/etc/smartpa_params/empty \
++	device/phh/treble/proprietary-files/gome/fs16xx_01s_left.preset:system/phh/gome/fs16xx_01s_left.preset \
++	device/phh/treble/proprietary-files/gome/fs16xx_01s_mono.preset:system/phh/gome/fs16xx_01s_mono.preset \
++	device/phh/treble/proprietary-files/gome/fs16xx_01s_right.preset:system/phh/gome/fs16xx_01s_right.preset \
++	device/phh/treble/proprietary-files/umidigi/fs16xx_01s_mono.preset:system/phh/umidigi/fs16xx_01s_mono.preset
+diff --git a/proprietary-files/gome/fs16xx_01s_left.preset b/proprietary-files/gome/fs16xx_01s_left.preset
+new file mode 100644
+index 0000000000000000000000000000000000000000..4da4434a9c74f48fd65882c8be2ea4c374406637
+GIT binary patch
+literal 738
+zcmZQ%b}KeCGcXJ`GBC8zH89dOGSW3P)-^T*G8n*s_qMU~&&sPDZj4rb0Sqr0fWmA-
+z96}s5fi;0_3~UTXfba&>4W^Y0D<K-p7|b9HRPx^^O$IB8X$&Cx*Yiw<T#0K8Sy7S<
+zug`pESocPPLDZOofpPnDhFgqm3@y*TG3=6;WT=qjWT<-Z3@kRC<2%FMe-aFt-#HkR
+z86oQSZ~M-0D^7yJ(UXJW)`I5@*~*d(F1x>j>5Uc~3`OgoGYJ2cWLU)h4NM39;AGgs
+z{tWCe(LPCr9S^@Tfaow;PKK#>K=y#J7#e0n<AdY}MofAc3qz!zF$0JOxii4wHG`R=
+n1jFC`U%~W;t(*-1yq+=4zAeeH-0K^dhKaGT3W5DP()<hnk@v{<
+
+literal 0
+HcmV?d00001
+
+diff --git a/proprietary-files/gome/fs16xx_01s_mono.preset b/proprietary-files/gome/fs16xx_01s_mono.preset
+new file mode 100644
+index 0000000000000000000000000000000000000000..39c23ed7f32d079840a40f6ebd1814a48ed55154
+GIT binary patch
+literal 738
+zcmZQ%b}KeCGcXJ`GBC8zH89gPGSD?L)HO8FH85oWgGsWV4L@DG%HhTsza@p?C4&(I
+z1Dg|v6UU#6e=f2yurWMlIL&Z_=>}6j!*Z~CZZmE(h)z`U-zQB5D~V|gAo|zyOom*E
+zYYZH{k_??ozcZ}=D#1`5#letV|D2)!izI{inQshH?ve~IjX4=U9(~4e<*Ova2F33T
+z{GTKk#P4%3^ou=bxW&lE(EjxcgP4~zLnRkC!@I3dz+(5yzcJ{|mt;`v;AFU#@QgwD
+zuO!1F_HST1=m#gm7WQXgb%`xf3;|z1Fo5X7c1{MbGKhF}-!}%|9!ZAQLQaOw#m^Xi
+zZ<S<7nf47#TcmR`v`>G=Ap1a)VTJ8CFx`KMli{)LGX~XvKy^mn8C*Cd8D^a2VA$~;
+zyE<%oi51($F2Nwp%f$eqb6yEC@cw<pV5TU+@OS@LF#TaGC&NFlXAHA%OEN6?`Ua+9
+zVl1pe46bV>86=i}1JizCoD7GSK>U1*Q4AO+$e0a{50V=gG1u$z3{TgvGJt63$MOs!
+I)};9v09ME4asU7T
+
+literal 0
+HcmV?d00001
+
+diff --git a/proprietary-files/gome/fs16xx_01s_right.preset b/proprietary-files/gome/fs16xx_01s_right.preset
+new file mode 100644
+index 0000000000000000000000000000000000000000..e0c29c5c0d3782a04fe98f938a2cf0bdab7508df
+GIT binary patch
+literal 738
+zcmd^)%}W$<7{@<jFwS6-?8-1d_n>8vFO2LAwk?7PDJyyqHbJ6`mk>Q{kkZA2iWfzM
+z4nZP<kZ55LdZ<u5=)sdmK~tj?vKh2Pk?X9=y0kMQ74#qUyzqJW!t*9wiS?L~u-R&b
+z&8QK!49haiJ4U!V8~8Rf8En*gH<Xw(T>Ov&ERX|AKuO2baT%G_tZ(IP<;*h6xHK*i
+z$@)Jm^Rt{9{W%`boGudjCdMPd>UxTfZ#q#!VQku=H7$7d)upmbkSJ1V-?rJ2WX6;f
+zpE5dKDTPwW@wNRYNg5VI=p%V7#P)q{N7AzVoxyX#RIZE1dnYPyb8Y{+f=$8uxQj<^
+zPNlEqV$Yww7q$G?JWp#|5FFJVaic<zzjBqAA%}uGnHPI5>vsk1#VW~uo2q`9r!z^+
+z0iDMW@;J-bjGhR#OI*qh1-Eup5+R#zO{OB|()L=gwy2`j+I;vNq_E}-OQ!+ucPdN_
+xI=qQq<95$YpWYqwo!^OE*EwH4_W9$TN~YOn;-lbIv+MIxYpO5wfBoNn{srS+;-~-s
+
+literal 0
+HcmV?d00001
+
+diff --git a/proprietary-files/umidigi/fs16xx_01s_mono.preset b/proprietary-files/umidigi/fs16xx_01s_mono.preset
+new file mode 100644
+index 0000000000000000000000000000000000000000..cf5291b176a91328db4ab82813fc38f69c867f2d
+GIT binary patch
+literal 738
+zcmb`DT}YEr7{`B`@@}u27wK9%(=`@DkQi*E##VHZP=o|UP(hYq7nRYv7-S$=u);vF
+zo16ub^r3`ET||PERu}6cQg#!~j{=K)jfR_OzO!uB_C_JmMHijtJp9giKKP&K=!(34
+zuP@~B20gybh3)rxe12A~vW+EcI$TNPPTlzPLyVD6N;SqB<4|TOBO%e1w=w-LeS(D6
+zWeS)AtJ;4bSLUnPV(X;9uQQE=ZLfK8L=b8C%<M56(QXr`w|`(lC(+riGS?zF6Ol1T
+z6^hb={nc4QX&aZ4MpEl%XcBO*B7ya&fswPNxR$1A{+_QhtGMR{{R=XKW`**c;I={4
+zxNk}3p+V6!+J*&>T2%_HYm&KsSwR{Q+_<J{j5f+_iz)22NL+QQct!-_DVbh}g8hr2
+zb%V-cN^t(I%*#rJi#-y3?TbviD>xV_VR%!1mXm^bJj<;G8^Ntc>U(Ff%-XTIzY%V7
+zvO8AF=+rdj=j>#=m#KeHiQG_3<Eymx#vOIb++642aZfRaKfdSw6CM5wA&q@)Dem}E
+z1Y9<9PZu@L4alt2Ds)W>?$)Xrf5k#4tgO8v7<{K{Jm8Rtz4`eU6FO^NZ?#K*+zYw?
+r8#{Hpf?!pS$$kg%aXlTGslRF@n=L%cmQi44*2$i#Pyak~i{8Qy(bDBh
+
+literal 0
+HcmV?d00001
+
+diff --git a/rw-system.sh b/rw-system.sh
+index d88b4ec..427ec83 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -1056,3 +1056,23 @@ fi
+ if getprop ro.odm.build.fingerprint |grep -q Huawei/Chicago/Chicago_VTR;then
+     setprop ctl.stop aptouch
+ fi
++
++if getprop ro.vendor.build.fingerprint | grep -iq -e GOME/GOME_U9; then
++    cp -a /system/etc/smartpa_params /mnt/phh/smartpa_params
++    cp /system/phh/gome/fs16xx_01s_left.preset /mnt/phh/smartpa_params/fs16xx_01s_left.preset
++    cp /system/phh/gome/fs16xx_01s_mono.preset /mnt/phh/smartpa_params/fs16xx_01s_mono.preset
++    cp /system/phh/gome/fs16xx_01s_right.preset /mnt/phh/smartpa_params/fs16xx_01s_right.preset
++    chmod 0644 /mnt/phh/smartpa_params/fs16xx_01s_left.preset
++    chmod 0644 /mnt/phh/smartpa_params/fs16xx_01s_mono.preset
++    chmod 0644 /mnt/phh/smartpa_params/fs16xx_01s_right.preset
++    mount -o bind /mnt/phh/smartpa_params /system/etc/smartpa_params
++    restorecon -R /system/etc/smartpa_params
++fi
++
++if getprop ro.vendor.build.fingerprint | grep -iq -e UMIDIGI/UMIDIGI_X; then
++    cp -a /system/etc/smartpa_params /mnt/phh/smartpa_params
++    cp /system/phh/umidigi/fs16xx_01s_mono.preset /mnt/phh/smartpa_params/fs16xx_01s_mono.preset
++    chmod 0644 /mnt/phh/smartpa_params/fs16xx_01s_mono.preset
++    mount -o bind /mnt/phh/smartpa_params /system/etc/smartpa_params
++    restorecon -R /system/etc/smartpa_params
++fi
+-- 
+2.25.1
+

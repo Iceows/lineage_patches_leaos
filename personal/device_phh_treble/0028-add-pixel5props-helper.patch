@@ -1,0 +1,50 @@
+From 5df6cdb06971bd8aa227fa02ad93f03bc88b630b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 23 Apr 2021 16:01:39 -0400
+Subject: [PATCH 28/80] add pixel5props helper
+
+---
+ phh-prop-handler.sh | 12 ++++++++++++
+ vndk.rc             |  3 +++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index e1a2682..5166dd4 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -230,6 +230,18 @@ if [ "$1" == "persist.sys.phh.safetynet" ]; then
+     exit
+ fi
+ 
++#pixel5props
++if [ "$1" == "persist.sys.phh.pixelprops" ]; then
++    if [[ "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ -f /data/adb/phh/secure ] && grep xxx /data/adb/phh/secure; then
++        sed -i '1,3d' /data/adb/phh/secure
++    fi
++    exit
++fi
++
+ #autorun
+ if [ "$1" == "persist.sys.phh.autorun" ]; then
+     if [[ "$prop_value" != "true" ]]; then
+diff --git a/vndk.rc b/vndk.rc
+index 779ad6b..f10c509 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -68,6 +68,9 @@ on property:persist.sys.phh.root=*
+ on property:persist.sys.phh.safetynet=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.safetynet"
+ 
++on property:persist.sys.phh.pixelprops=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.pixelprops"
++
+ on property:persist.sys.phh.autorun=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.autorun"
+ 
+-- 
+2.25.1
+

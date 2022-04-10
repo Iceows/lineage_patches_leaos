@@ -1,0 +1,117 @@
+From 80c605a577128088bc9a42f645945c9f60523539 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 25 Nov 2020 07:49:06 -0500
+Subject: [PATCH 072/230] frameworks: Reset battery stats [1/2]
+
+  from
+  https://github.com/Evolution-X/frameworks_base/commit/6d69bf8143dd8de290e2d63a59d924e1b980ebde
+---
+ .../android/internal/app/IBatteryStats.aidl   |  3 +++
+ .../internal/os/BatteryStatsHelper.java       | 19 +++++++++++++++++++
+ core/res/AndroidManifest.xml                  |  5 +++++
+ data/etc/privapp-permissions-platform.xml     |  4 ++++
+ .../server/am/BatteryStatsService.java        |  8 ++++++++
+ 5 files changed, 39 insertions(+)
+
+diff --git a/core/java/com/android/internal/app/IBatteryStats.aidl b/core/java/com/android/internal/app/IBatteryStats.aidl
+index 6a0b443b7df..ff26b0a6de4 100644
+--- a/core/java/com/android/internal/app/IBatteryStats.aidl
++++ b/core/java/com/android/internal/app/IBatteryStats.aidl
+@@ -161,4 +161,7 @@ interface IBatteryStats {
+ 
+     /** {@hide} */
+     boolean setChargingStateUpdateDelayMillis(int delay);
++
++    /** @hide **/
++    void resetStatistics();
+ }
+diff --git a/core/java/com/android/internal/os/BatteryStatsHelper.java b/core/java/com/android/internal/os/BatteryStatsHelper.java
+index b131ab83cc7..da4021a3cac 100644
+--- a/core/java/com/android/internal/os/BatteryStatsHelper.java
++++ b/core/java/com/android/internal/os/BatteryStatsHelper.java
+@@ -263,6 +263,16 @@ public class BatteryStatsHelper {
+         mStats = null;
+     }
+ 
++    private void clearAllStats() {
++        clearStats();
++        sStatsXfer = null;
++        sBatteryBroadcastXfer = null;
++        for (File f : sFileXfer.keySet()) {
++            f.delete();
++        }
++        sFileXfer.clear();
++     }
++
+     @UnsupportedAppUsage
+     public BatteryStats getStats() {
+         if (mStats == null) {
+@@ -1053,6 +1063,15 @@ public class BatteryStatsHelper {
+         }
+     }
+ 
++    public void resetStatistics() {
++        try {
++            clearAllStats();
++            mBatteryInfo.resetStatistics();
++        } catch (RemoteException e) {
++            Log.e(TAG, "RemoteException:", e);
++        }
++    }
++
+     private static BatteryStatsImpl getStats(IBatteryStats service) {
+         try {
+             ParcelFileDescriptor pfd = service.getStatisticsStream();
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index 26fd27b7b5f..86983c4d995 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -4203,6 +4203,11 @@
+     <permission android:name="android.permission.REGISTER_STATS_PULL_ATOM"
+                 android:protectionLevel="signature|privileged" />
+ 
++    <!-- @hide Allows an application to reset the device battery statistics -->
++    <permission android:name="android.permission.RESET_BATTERY_STATS"
++        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
++        android:protectionLevel="signature|system|development" />
++
+     <!-- @SystemApi Allows an application to control the backup and restore process.
+     <p>Not for use by third-party applications.
+          @hide pending API council -->
+diff --git a/data/etc/privapp-permissions-platform.xml b/data/etc/privapp-permissions-platform.xml
+index 3b6abd50eeb..7fb38dfee83 100644
+--- a/data/etc/privapp-permissions-platform.xml
++++ b/data/etc/privapp-permissions-platform.xml
+@@ -298,6 +298,10 @@ applications that come with the platform
+         <permission name="android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME"/>
+     </privapp-permissions>
+ 
++    <privapp-permissions package="com.android.settings">
++        <permission name="android.permission.RESET_BATTERY_STATS"/>
++    </privapp-permissions>
++
+     <privapp-permissions package="com.android.sharedstoragebackup">
+         <permission name="android.permission.WRITE_MEDIA_STORAGE"/>
+         <permission name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+diff --git a/services/core/java/com/android/server/am/BatteryStatsService.java b/services/core/java/com/android/server/am/BatteryStatsService.java
+index 090ac5467c6..3441d8ff58e 100644
+--- a/services/core/java/com/android/server/am/BatteryStatsService.java
++++ b/services/core/java/com/android/server/am/BatteryStatsService.java
+@@ -423,6 +423,14 @@ public final class BatteryStatsService extends IBatteryStats.Stub
+         }
+     }
+ 
++    public void resetStatistics() {
++        mContext.enforceCallingPermission(
++                android.Manifest.permission.RESET_BATTERY_STATS, null);
++        synchronized (mStats) {
++            mStats.resetAllStatsCmdLocked();
++        }
++    }
++
+     public long computeBatteryTimeRemaining() {
+         synchronized (mStats) {
+             long time = mStats.computeBatteryTimeRemaining(SystemClock.elapsedRealtime());
+-- 
+2.25.1
+

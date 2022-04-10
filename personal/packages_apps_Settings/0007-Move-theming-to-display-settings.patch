@@ -1,0 +1,87 @@
+From 03c9e0f99792b11ca75d26fcf092fb57550f146a Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 4 Feb 2020 11:09:32 +0200
+Subject: [PATCH 07/53] Move theming to display settings
+
+  * from
+  https://github.com/syberia-project/platform_packages_apps_Settings/commit/9356e92c7998684e1139bc7c8411bf39120125c4
+
+Change-Id: If9486aa9ff7c72c368f75d83241ecc23a10e6586
+---
+ res/values/strings.xml                        |  8 ++++++++
+ res/xml/display_settings.xml                  | 16 ++++++++++++++++
+ src/com/android/settings/DisplaySettings.java |  7 +++++++
+ 3 files changed, 31 insertions(+)
+
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 4b9156d0f8..fb286bc8b4 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -10666,6 +10666,14 @@
+     <!-- Notification log debug tool: the word 'none' -->
+     <string name="notification_log_details_ranking_none">Ranking object doesn\'t contain this key.</string>
+ 
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the settings category for theme overlays. -->
++    <string name="theme_customization_category">Theming</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize accent   color. -->
++    <string name="theme_customization_accent_color_title">Accent color</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize headline and body fonts. -->
++    <string name="theme_customization_font_title">Headline / Body font</string>
++    <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the      adaptive icon shape (e.g. launcher and quick settings icons). -->
++    <string name="theme_customization_icon_shape_title">Icon shape</string>
+     <!-- [CHAR_LIMIT=NONE] Developer Settings: Label for the option that turns off customizations for a given category.-->
+     <string name="theme_customization_device_default">Device default</string>
+ 
+diff --git a/res/xml/display_settings.xml b/res/xml/display_settings.xml
+index 62b76f0232..bf4dc241e0 100644
+--- a/res/xml/display_settings.xml
++++ b/res/xml/display_settings.xml
+@@ -212,4 +212,20 @@
+         android:title="@string/display_vr_pref_title"
+         android:fragment="com.android.settings.display.VrDisplayPreferencePicker" />
+ 
++    <PreferenceCategory
++        android:key="theme_customization_category"
++        android:title="@string/theme_customization_category"
++        android:order="1200"> <!-- Incremented by 100 from last order (i.e. 1100) -->
++
++        <ListPreference
++            android:key="android.theme.customization.font"
++            android:title="@string/theme_customization_font_title"/>
++        <ListPreference
++            android:key="android.theme.customization.accent_color"
++            android:title="@string/theme_customization_accent_color_title"/>
++        <ListPreference
++            android:key="android.theme.customization.adaptive_icon_shape"
++            android:title="@string/theme_customization_icon_shape_title"/>
++    </PreferenceCategory>
++
+ </PreferenceScreen>
+diff --git a/src/com/android/settings/DisplaySettings.java b/src/com/android/settings/DisplaySettings.java
+index 20a33f0a3f..a086f35742 100644
+--- a/src/com/android/settings/DisplaySettings.java
++++ b/src/com/android/settings/DisplaySettings.java
+@@ -21,6 +21,7 @@ import android.content.Context;
+ import android.os.Bundle;
+ 
+ import com.android.settings.dashboard.DashboardFragment;
++import com.android.settings.development.OverlayCategoryPreferenceController;
+ import com.android.settings.display.BrightnessLevelPreferenceController;
+ import com.android.settings.display.CameraGesturePreferenceController;
+ import com.android.settings.display.LiftToWakePreferenceController;
+@@ -95,6 +96,12 @@ public class DisplaySettings extends DashboardFragment {
+         controllers.add(new ShowOperatorNamePreferenceController(context));
+         controllers.add(new ThemePreferenceController(context));
+         controllers.add(new BrightnessLevelPreferenceController(context, lifecycle));
++        controllers.add(new OverlayCategoryPreferenceController(context,
++                "android.theme.customization.font"));
++        controllers.add(new OverlayCategoryPreferenceController(context,
++                "android.theme.customization.accent_color"));
++        controllers.add(new OverlayCategoryPreferenceController(context,
++                "android.theme.customization.adaptive_icon_shape"));
+         return controllers;
+     }
+ 
+-- 
+2.25.1
+

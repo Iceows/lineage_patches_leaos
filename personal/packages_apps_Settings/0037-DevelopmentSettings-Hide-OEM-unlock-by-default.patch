@@ -1,0 +1,30 @@
+From 785b6230fbca361f4d3c201af51a83e7ba0700e5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 18 Dec 2020 01:57:22 -0500
+Subject: [PATCH 37/53] DevelopmentSettings: Hide OEM unlock by default
+
+  from
+  https://github.com/syberia-project/platform_packages_apps_Settings/commit/c992a1f46f7301c6c747942105b7f498c6396e2f
+
+Change-Id: I7f860f75a3b51c56e9e0237b9086b42f5ce5e770
+---
+ .../settings/development/OemUnlockPreferenceController.java    | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/com/android/settings/development/OemUnlockPreferenceController.java b/src/com/android/settings/development/OemUnlockPreferenceController.java
+index f8a245f7a7..6ae06617a3 100644
+--- a/src/com/android/settings/development/OemUnlockPreferenceController.java
++++ b/src/com/android/settings/development/OemUnlockPreferenceController.java
+@@ -79,7 +79,8 @@ public class OemUnlockPreferenceController extends DeveloperOptionsPreferenceCon
+ 
+     @Override
+     public boolean isAvailable() {
+-        return mOemLockManager != null;
++        return mOemLockManager != null &&
++                SystemProperties.getBoolean("ro.oem_unlock_supported", false);
+     }
+ 
+     @Override
+-- 
+2.25.1
+

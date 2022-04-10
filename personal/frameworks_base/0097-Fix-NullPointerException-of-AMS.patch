@@ -1,0 +1,29 @@
+From 86c60ff25f67ca35a3d94e41b42f2c92ec5c2b50 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 13:26:31 -0500
+Subject: [PATCH 097/230] Fix NullPointerException of AMS
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/e42a60774615dbe151a17326673573cd3e4e63dc
+---
+ .../java/com/android/server/am/ActivityManagerService.java    | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/ActivityManagerService.java
+index 12a47a24058..3499d4b2164 100644
+--- a/services/core/java/com/android/server/am/ActivityManagerService.java
++++ b/services/core/java/com/android/server/am/ActivityManagerService.java
+@@ -17725,7 +17725,9 @@ public class ActivityManagerService extends IActivityManager.Stub
+                                 ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE,
+                                 ApplicationExitInfo.SUBREASON_EXCESSIVE_CPU,
+                                 true);
+-                        app.baseProcessTracker.reportExcessiveCpu(app.pkgList.mPkgList);
++                        if (app.baseProcessTracker != null) {
++                            app.baseProcessTracker.reportExcessiveCpu(app.pkgList.mPkgList);
++                        }
+                         for (int ipkg = app.pkgList.size() - 1; ipkg >= 0; ipkg--) {
+                             ProcessStats.ProcessStateHolder holder = app.pkgList.valueAt(ipkg);
+                             FrameworkStatsLog.write(FrameworkStatsLog.EXCESSIVE_CPU_USAGE_REPORTED,
+-- 
+2.25.1
+

@@ -1,0 +1,28 @@
+From b08279202898cd672c306b7e710050ab34ed1c8d Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 6 May 2021 14:16:01 -0400
+Subject: [PATCH 5/6] inputflinger: Enable ThinLTO
+
+  from
+  https://github.com/crdroidandroid/android_frameworks_native/commit/da46664951c0a896c76571b65545c5cc36b093d5
+---
+ services/inputflinger/Android.bp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/services/inputflinger/Android.bp b/services/inputflinger/Android.bp
+index 8ce6f28b5..4b4c79567 100644
+--- a/services/inputflinger/Android.bp
++++ b/services/inputflinger/Android.bp
+@@ -54,6 +54,9 @@ cc_defaults {
+         "libutils",
+         "libui",
+     ],
++    lto: {
++        thin: true,
++    },
+ }
+ 
+ cc_library_shared {
+-- 
+2.17.1
+

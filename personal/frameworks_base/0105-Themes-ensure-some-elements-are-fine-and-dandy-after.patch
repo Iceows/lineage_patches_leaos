@@ -1,0 +1,75 @@
+From 54535a714b7bf228e4b6244cf5fffdaf627646e6 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 14:20:05 -0500
+Subject: [PATCH 105/230] Themes: ensure some elements are fine and dandy after
+ overlay
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/0bd7016d7bce3601abeec5e45d8fd348447a5c13
+---
+ .../com/android/systemui/statusbar/NotificationShelf.java    | 5 +++++
+ .../notification/row/ActivatableNotificationView.java        | 3 +++
+ .../notification/row/ExpandableNotificationRow.java          | 4 ++++
+ .../notification/stack/NotificationStackScrollLayout.java    | 1 +
+ 4 files changed, 13 insertions(+)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShelf.java b/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShelf.java
+index d798692879f..40b58cb3632 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShelf.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/NotificationShelf.java
+@@ -170,6 +170,11 @@ public class NotificationShelf extends ActivatableNotificationView implements
+         }
+     }
+ 
++    public void onOverlayChanged() {
++        initDimens();
++        updateBackgroundColors();
++    }
++
+     @Override
+     protected void onConfigurationChanged(Configuration newConfig) {
+         super.onConfigurationChanged(newConfig);
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
+index f1727ec91c7..edde4225bfa 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
+@@ -212,6 +212,9 @@ public abstract class ActivatableNotificationView extends ExpandableOutlineView
+      * be useful in a configuration change.
+      */
+     protected void initBackground() {
++        mNormalColor = mContext.getColor(R.color.notification_material_background_color);
++        mTintedRippleColor = mContext.getColor(R.color.notification_ripple_tinted_color);
++        mNormalRippleColor = mContext.getColor(R.color.notification_ripple_untinted_color);
+         mBackgroundNormal.setCustomBackground(R.drawable.notification_material_bg);
+         mBackgroundDimmed.setCustomBackground(R.drawable.notification_material_bg_dim);
+     }
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ExpandableNotificationRow.java b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ExpandableNotificationRow.java
+index 70dd80e71e7..66fa5f0e2a1 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ExpandableNotificationRow.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ExpandableNotificationRow.java
+@@ -1200,6 +1200,10 @@ public class ExpandableNotificationRow extends ActivatableNotificationView
+         reInflateViews();
+     }
+ 
++    public void onOverlayChanged() {
++        onDensityOrFontScaleChanged();
++    }
++
+     private void reInflateViews() {
+         // Let's update our childrencontainer. This is intentionally not guarded with
+         // mIsSummaryWithChildren since we might have had children but not anymore.
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/notification/stack/NotificationStackScrollLayout.java b/packages/SystemUI/src/com/android/systemui/statusbar/notification/stack/NotificationStackScrollLayout.java
+index 6986ad75459..ce673b6b1c5 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/notification/stack/NotificationStackScrollLayout.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/notification/stack/NotificationStackScrollLayout.java
+@@ -789,6 +789,7 @@ public class NotificationStackScrollLayout extends ViewGroup implements ScrollAd
+             mCornerRadius = newRadius;
+             invalidate();
+         }
++        onUiModeChanged();
+         reinflateViews();
+     }
+ 
+-- 
+2.25.1
+

@@ -1,0 +1,46 @@
+From 55a59a2396faa7b32c0d77496556581e4f1dd564 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 16 Dec 2020 14:39:57 -0500
+Subject: [PATCH 083/230] SystemUI: remove notifications panel peek
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/42cc266530dd26f5a5ef3cf58334f67d06296684
+---
+ .../statusbar/phone/PanelViewController.java       | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java
+index a4f9b06b86a..491a0dbb7f1 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PanelViewController.java
+@@ -311,8 +311,6 @@ public abstract class PanelViewController {
+     }
+ 
+     private void startOpening(MotionEvent event) {
+-        runPeekAnimation(INITIAL_OPENING_PEEK_DURATION, getOpeningHeight(),
+-                false /* collapseWhenFinished */);
+         notifyBarPanelExpansionChanged();
+         maybeVibrateOnOpening();
+ 
+@@ -413,18 +411,6 @@ public abstract class PanelViewController {
+             if (mUpdateFlingOnLayout) {
+                 mUpdateFlingVelocity = vel;
+             }
+-        } else if (mPanelClosedOnDown && !mHeadsUpManager.hasPinnedHeadsUp() && !mTracking
+-                && !mStatusBar.isBouncerShowing()
+-                && !mKeyguardStateController.isKeyguardFadingAway()) {
+-            long timePassed = SystemClock.uptimeMillis() - mDownTime;
+-            if (timePassed < ViewConfiguration.getLongPressTimeout()) {
+-                // Lets show the user that he can actually expand the panel
+-                runPeekAnimation(
+-                        PEEK_ANIMATION_DURATION, getPeekHeight(), true /* collapseWhenFinished */);
+-            } else {
+-                // We need to collapse the panel since we peeked to the small height.
+-                mView.postOnAnimation(mPostCollapseRunnable);
+-            }
+         } else if (!mStatusBar.isBouncerShowing()) {
+             boolean expands = onEmptySpaceClick(mInitialTouchX);
+             onTrackingStopped(expands);
+-- 
+2.25.1
+

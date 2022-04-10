@@ -1,0 +1,37 @@
+From 771f2632f9e385aa15c3cd3f6ecfc407de14b274 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 16 Apr 2021 00:20:50 -0400
+Subject: [PATCH 26/80] separate vendor overlay disabling prop
+
+---
+ phh-on-data.sh | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/phh-on-data.sh b/phh-on-data.sh
+index 3c112ed..bc977f0 100644
+--- a/phh-on-data.sh
++++ b/phh-on-data.sh
+@@ -4,6 +4,12 @@ vndk="$(getprop persist.sys.vndk)"
+ [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
+ 
+ if getprop persist.sys.phh.no_vendor_overlay |grep -q true; then
++	for part in odm vendor; do
++		mount /mnt/phh/empty_dir/ /$part/overlay
++	done
++fi
++
++if getprop persist.sys.phh.no_stock_apps |grep -q true; then
+ 	for part in odm vendor; do
+ 		mount /mnt/phh/empty_dir/ /$part/overlay
+ 		mount /mnt/phh/empty_dir/ /$part/app
+@@ -14,7 +20,6 @@ if getprop persist.sys.phh.caf.media_profile |grep -q true; then
+     setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
+ fi
+ 
+-
+ minijailSrc=/system/system_ext/apex/com.android.vndk.v28/lib/libminijail.so
+ minijailSrc64=/system/system_ext/apex/com.android.vndk.v28/lib64/libminijail.so
+ if [ "$vndk" = 27 ]; then
+-- 
+2.25.1
+

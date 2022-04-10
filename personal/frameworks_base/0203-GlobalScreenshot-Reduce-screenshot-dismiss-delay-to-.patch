@@ -1,0 +1,31 @@
+From c52b2a22a85a704e26baebcc8b0c41c4cb9063db Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Sat, 19 Sep 2020 21:22:28 -0700
+Subject: [PATCH 203/230] GlobalScreenshot: Reduce screenshot dismiss delay to
+ 2 seconds
+
+2 seconds is more than enough for most cases. Keeping the overlay around
+for too long forces the user to dismiss it manually, which is a
+regression compared to the old screenshot notification UI.
+
+Change-Id: I5644a055d1285d390d77430670fd6f43862c9608
+---
+ .../src/com/android/systemui/screenshot/GlobalScreenshot.java   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+index ccf1f14cfa7..e72419a0f7a 100644
+--- a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
++++ b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+@@ -188,7 +188,7 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
+     private static final long SCREENSHOT_DISMISS_ALPHA_OFFSET_MS = 50; // delay before starting fade
+     private static final float SCREENSHOT_ACTIONS_START_SCALE_X = .7f;
+     private static final float ROUNDED_CORNER_RADIUS = .05f;
+-    private static final int SCREENSHOT_CORNER_DEFAULT_TIMEOUT_MILLIS = 6000;
++    private static final int SCREENSHOT_CORNER_DEFAULT_TIMEOUT_MILLIS = 2000;
+     private static final int MESSAGE_CORNER_TIMEOUT = 2;
+ 
+     private final Interpolator mAccelerateInterpolator = new AccelerateInterpolator();
+-- 
+2.25.1
+

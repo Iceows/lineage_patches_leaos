@@ -1,0 +1,44 @@
+From e751cd12719d913c42c0ea07c0a3d47dd6f31540 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 22 May 2020 15:46:06 +0300
+Subject: [PATCH] remove unnecessary fonts
+
+Change-Id: I020f310d499af137b5349bb5f6e2179b535b916f
+---
+ Android.bp | 10 ----------
+ fonts.mk   |  4 +---
+ 2 files changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index 95a1035..294f9b7 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -31,13 +31,3 @@ prebuilt_font {
+     name: "SourceSansPro-SemiBoldItalic.ttf",
+     src: "SourceSansPro-SemiBoldItalic.ttf",
+ }
+-
+-prebuilt_font {
+-    name: "SourceSansPro-Bold.ttf",
+-    src: "SourceSansPro-Bold.ttf",
+-}
+-
+-prebuilt_font {
+-    name: "SourceSansPro-BoldItalic.ttf",
+-    src: "SourceSansPro-BoldItalic.ttf",
+-}
+diff --git a/fonts.mk b/fonts.mk
+index 163af78..0d5941e 100644
+--- a/fonts.mk
++++ b/fonts.mk
+@@ -20,6 +20,4 @@ PRODUCT_PACKAGES := \
+     SourceSansPro-Regular.ttf \
+     SourceSansPro-Italic.ttf \
+     SourceSansPro-SemiBold.ttf \
+-    SourceSansPro-SemiBoldItalic.ttf \
+-    SourceSansPro-Bold.ttf \
+-    SourceSansPro-BoldItalic.ttf
++    SourceSansPro-SemiBoldItalic.ttf
+-- 
+2.17.1
+

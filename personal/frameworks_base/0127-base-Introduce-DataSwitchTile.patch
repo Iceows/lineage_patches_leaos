@@ -1,0 +1,437 @@
+From 42c3c895ccdfc763fbb138da9274898bebf4d8c8 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sat, 19 Dec 2020 14:31:22 -0500
+Subject: [PATCH 127/230] base: Introduce DataSwitchTile
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/615a975534dbc2be52382bca8af0ed93fa2199d7
+  https://github.com/syberia-project/platform_frameworks_base/commit/3549cfa955a3bd9335596e6c5a556570f43e3cb5
+  https://github.com/syberia-project/platform_frameworks_base/commit/1174ece833102e137514757798792ab3985e3bc4
+  https://github.com/syberia-project/platform_frameworks_base/commit/bff297c3f59c0832bfcae5407ed9d3c30636d311
+---
+ packages/SystemUI/AndroidManifest.xml         |   2 +
+ .../res/drawable/ic_qs_data_switch_1.xml      |  19 ++
+ .../res/drawable/ic_qs_data_switch_2.xml      |  19 ++
+ .../SystemUI/res/values-ru/custom_strings.xml |   6 +
+ packages/SystemUI/res/values/config.xml       |   2 +-
+ .../SystemUI/res/values/custom_strings.xml    |   6 +
+ .../systemui/qs/tileimpl/QSFactoryImpl.java   |   6 +
+ .../systemui/qs/tiles/DataSwitchTile.java     | 253 ++++++++++++++++++
+ 8 files changed, 312 insertions(+), 1 deletion(-)
+ create mode 100644 packages/SystemUI/res/drawable/ic_qs_data_switch_1.xml
+ create mode 100644 packages/SystemUI/res/drawable/ic_qs_data_switch_2.xml
+ create mode 100644 packages/SystemUI/src/com/android/systemui/qs/tiles/DataSwitchTile.java
+
+diff --git a/packages/SystemUI/AndroidManifest.xml b/packages/SystemUI/AndroidManifest.xml
+index dbdb6d3ec3d..4efc36b1fa4 100644
+--- a/packages/SystemUI/AndroidManifest.xml
++++ b/packages/SystemUI/AndroidManifest.xml
+@@ -271,6 +271,8 @@
+     <!-- Permission to make accessibility service access Bubbles -->
+     <uses-permission android:name="android.permission.ADD_TRUSTED_DISPLAY" />
+ 
++    <!-- DataSwitch tile -->
++    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS" />
+ 
+     <!-- Reboot tile -->
+     <uses-permission android:name="android.permission.REBOOT" />
+diff --git a/packages/SystemUI/res/drawable/ic_qs_data_switch_1.xml b/packages/SystemUI/res/drawable/ic_qs_data_switch_1.xml
+new file mode 100644
+index 00000000000..dea973a4811
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/ic_qs_data_switch_1.xml
+@@ -0,0 +1,19 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:pathData="M10,2H18C19.1,2 20,2.9 20,4V14H18V4H10.83L6,8.83V20H12V22H6C4.9,22 4,21.1 4,20V8L10,2Z"
++      android:fillColor="#000000"
++      android:fillType="evenOdd"/>
++  <path
++      android:pathData="M15.4492,11H14.1289V6.7969L12.832,7.1758V6.1758L15.3281,5.3125H15.4492V11Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M14,20V16H18L14,20Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M20,18L20,22L16,22L20,18Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/ic_qs_data_switch_2.xml b/packages/SystemUI/res/drawable/ic_qs_data_switch_2.xml
+new file mode 100644
+index 00000000000..037e3f10859
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/ic_qs_data_switch_2.xml
+@@ -0,0 +1,19 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:pathData="M10,2H18C19.1,2 20,2.9 20,4V14H18V4H10.83L6,8.83V20H12V22H6C4.9,22 4,21.1 4,20V8L10,2Z"
++      android:fillColor="#000000"
++      android:fillType="evenOdd"/>
++  <path
++      android:pathData="M16.5,11H12.5312V10.1406L14.3594,8.2188C14.8099,7.7057 15.0352,7.2982 15.0352,6.9961C15.0352,6.7513 14.9818,6.5651 14.875,6.4375C14.7682,6.3099 14.6133,6.2461 14.4102,6.2461C14.2096,6.2461 14.0469,6.332 13.9219,6.5039C13.7969,6.6732 13.7344,6.8854 13.7344,7.1406H12.4141C12.4141,6.7917 12.5013,6.47 12.6758,6.1758C12.8503,5.8789 13.0924,5.6471 13.4023,5.4805C13.7122,5.3138 14.0586,5.2305 14.4414,5.2305C15.056,5.2305 15.5286,5.3724 15.8594,5.6563C16.1927,5.9401 16.3594,6.3477 16.3594,6.8789C16.3594,7.1029 16.3177,7.3216 16.2344,7.5352C16.151,7.7461 16.0208,7.9688 15.8438,8.2031C15.6693,8.4349 15.3867,8.7461 14.9961,9.1367L14.2617,9.9844H16.5V11Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M14,20V16H18L14,20Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M20,18L20,22L16,22L20,18Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/packages/SystemUI/res/values-ru/custom_strings.xml b/packages/SystemUI/res/values-ru/custom_strings.xml
+index 0e259834dee..b019fdb8a14 100644
+--- a/packages/SystemUI/res/values-ru/custom_strings.xml
++++ b/packages/SystemUI/res/values-ru/custom_strings.xml
+@@ -24,4 +24,10 @@
+     <!-- Reboot/Recovery QS tile -->
+     <string name="quick_settings_reboot_label">Перезагрузка</string>
+     <string name="quick_settings_reboot_recovery_label">Рекавери</string>
++    <!-- DataSwitch Tile -->
++    <string name="qs_data_switch_label">Переключить SIM на</string>
++    <string name="qs_data_switch_toast_0">Нет SIM карт</string>
++    <string name="qs_data_switch_toast_1">Установлена только одна SIM карта</string>
++    <string name="qs_data_switch_changed_1">Используется SIM 1 для передачи данных</string>
++    <string name="qs_data_switch_changed_2">Используется SIM 2 для передачи данных</string>
+ </resources>
+diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xml
+index d6b45d55c95..3e83da11369 100644
+--- a/packages/SystemUI/res/values/config.xml
++++ b/packages/SystemUI/res/values/config.xml
+@@ -114,7 +114,7 @@
+ 
+     <!-- Tiles native to System UI. Order should match "quick_settings_tiles_default" -->
+     <string name="quick_settings_tiles_stock" translatable="false">
+-        wifi,cell,battery,dnd,flashlight,rotation,bt,airplane,nfc,location,hotspot,inversion,saver,dark,work,cast,night,screenrecord,reverse,ambient_display,aod,caffeine,heads_up,livedisplay,powershare,profiles,reading_mode,sync,usb_tether,volume_panel,vpn,anti_flicker,reboot
++        wifi,cell,battery,dnd,flashlight,rotation,bt,airplane,nfc,location,dataswitch,hotspot,inversion,saver,dark,work,cast,night,screenrecord,reverse,ambient_display,aod,caffeine,heads_up,livedisplay,powershare,profiles,reading_mode,sync,usb_tether,volume_panel,vpn,anti_flicker,reboot
+     </string>
+ 
+     <!-- The tiles to display in QuickSettings -->
+diff --git a/packages/SystemUI/res/values/custom_strings.xml b/packages/SystemUI/res/values/custom_strings.xml
+index 2d07ad8f5a8..048cf0929ec 100644
+--- a/packages/SystemUI/res/values/custom_strings.xml
++++ b/packages/SystemUI/res/values/custom_strings.xml
+@@ -22,4 +22,10 @@
+     <!-- Reboot/Recovery QS tile -->
+     <string name="quick_settings_reboot_label">Reboot</string>
+     <string name="quick_settings_reboot_recovery_label">Recovery</string>
++    <!-- DataSwitch Tile -->
++    <string name="qs_data_switch_label">Switch data card to</string>
++    <string name="qs_data_switch_toast_0">Currently no SIM card is inserted</string>
++    <string name="qs_data_switch_toast_1">Currently only one SIM card is inserted</string>
++    <string name="qs_data_switch_changed_1">Using SIM 1 for Mobile data</string>
++    <string name="qs_data_switch_changed_2">Using SIM 2 for Mobile data</string>
+ </resources>
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSFactoryImpl.java b/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSFactoryImpl.java
+index adb4cb4b054..782a83826f0 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSFactoryImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/tileimpl/QSFactoryImpl.java
+@@ -38,6 +38,7 @@ import com.android.systemui.qs.tiles.CastTile;
+ import com.android.systemui.qs.tiles.CellularTile;
+ import com.android.systemui.qs.tiles.ColorInversionTile;
+ import com.android.systemui.qs.tiles.DataSaverTile;
++import com.android.systemui.qs.tiles.DataSwitchTile;
+ import com.android.systemui.qs.tiles.DndTile;
+ import com.android.systemui.qs.tiles.FlashlightTile;
+ import com.android.systemui.qs.tiles.HeadsUpTile;
+@@ -106,6 +107,7 @@ public class QSFactoryImpl implements QSFactory {
+     private final Provider<VolumeTile> mVolumeTileProvider;
+     private final Provider<VpnTile> mVpnTileProvider;
+     private final Provider<RebootTile> mRebootTileProvider;
++    private final Provider<DataSwitchTile> mDataSwitchTileProvider;
+     private final Provider<AntiFlickerTile> mAntiFlickerTileProvider;
+ 
+     private final Lazy<QSHost> mQsHostLazy;
+@@ -145,6 +147,7 @@ public class QSFactoryImpl implements QSFactory {
+             Provider<VolumeTile> volumeTileProvider,
+             Provider<VpnTile> vpnTileProvider,
+             Provider<RebootTile> rebootTileProvider,
++            Provider<DataSwitchTile> dataSwitchTileProvider,
+             Provider<AntiFlickerTile> antiFlickerTileProvider) {
+         mQsHostLazy = qsHostLazy;
+         mWifiTileProvider = wifiTileProvider;
+@@ -180,6 +183,7 @@ public class QSFactoryImpl implements QSFactory {
+         mVolumeTileProvider = volumeTileProvider;
+         mVpnTileProvider = vpnTileProvider;
+         mRebootTileProvider = rebootTileProvider;
++        mDataSwitchTileProvider = dataSwitchTileProvider;
+         mAntiFlickerTileProvider = antiFlickerTileProvider;
+     }
+ 
+@@ -259,6 +263,8 @@ public class QSFactoryImpl implements QSFactory {
+                 return mVpnTileProvider.get();
+             case "reboot":
+                 return mRebootTileProvider.get();
++            case "dataswitch":
++                return mDataSwitchTileProvider.get();
+             case "anti_flicker":
+                 return mAntiFlickerTileProvider.get();
+         }
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/tiles/DataSwitchTile.java b/packages/SystemUI/src/com/android/systemui/qs/tiles/DataSwitchTile.java
+new file mode 100644
+index 00000000000..5b34d6325d6
+--- /dev/null
++++ b/packages/SystemUI/src/com/android/systemui/qs/tiles/DataSwitchTile.java
+@@ -0,0 +1,253 @@
++package com.android.systemui.qs.tiles;
++
++import android.content.BroadcastReceiver;
++import android.content.Context;
++import android.content.Intent;
++import android.content.IntentFilter;
++import android.os.AsyncTask;
++import android.os.ServiceManager;
++import android.os.SystemProperties;
++import android.provider.Settings;
++import android.telephony.PhoneStateListener;
++import android.telephony.SubscriptionInfo;
++import android.telephony.SubscriptionManager;
++import android.telephony.TelephonyManager;
++import android.text.TextUtils;
++import android.util.Log;
++import android.widget.Toast;
++
++import com.android.internal.telephony.IccCardConstants;
++import com.android.internal.telephony.TelephonyIntents;
++import com.android.systemui.Dependency;
++import com.android.systemui.R;
++import com.android.systemui.SysUIToast;
++import com.android.systemui.plugins.qs.QSTile.BooleanState;
++import com.android.systemui.qs.QSHost;
++import com.android.systemui.qs.tileimpl.QSTileImpl;
++import com.android.systemui.qs.tileimpl.QSTileImpl.ResourceIcon;
++
++import org.lineageos.internal.logging.LineageMetricsLogger;
++
++import java.lang.reflect.Method;
++import java.util.List;
++
++import javax.inject.Inject;
++
++public class DataSwitchTile extends QSTileImpl<BooleanState> {
++    private boolean mCanSwitch = true;
++    private MyCallStateListener mPhoneStateListener;
++    private boolean mRegistered = false;
++    private int mSimCount = 0;
++    BroadcastReceiver mSimReceiver = new BroadcastReceiver() {
++        public void onReceive(Context context, Intent intent) {
++            Log.d(TAG, "mSimReceiver:onReceive");
++            refreshState();
++        }
++    };
++    private SubscriptionManager mSubscriptionManager;
++    private TelephonyManager mTelephonyManager;
++
++    class MyCallStateListener extends PhoneStateListener {
++        MyCallStateListener() {
++        }
++
++        public void onCallStateChanged(int state, String arg1) {
++            mCanSwitch = mTelephonyManager.getCallState() == 0;
++            refreshState();
++        }
++    }
++
++    @Inject
++    public DataSwitchTile(QSHost host) {
++        super(host);
++        mSubscriptionManager = SubscriptionManager.from(host.getContext());
++        mTelephonyManager = TelephonyManager.from(host.getContext());
++        mPhoneStateListener = new MyCallStateListener();
++    }
++
++    @Override
++    public boolean isAvailable() {
++        int count = TelephonyManager.getDefault().getPhoneCount();
++        Log.d(TAG, "phoneCount: " + count);
++        return count >= 2;
++    }
++
++    @Override
++    public BooleanState newTileState() {
++        return new BooleanState();
++    }
++
++    @Override
++    public void handleSetListening(boolean listening) {
++        if (listening) {
++            if (!mRegistered) {
++                IntentFilter filter = new IntentFilter();
++                filter.addAction(TelephonyIntents.ACTION_SIM_STATE_CHANGED);
++                mContext.registerReceiver(mSimReceiver, filter);
++                mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
++                mRegistered = true;
++            }
++            refreshState();
++        } else if (mRegistered) {
++            mContext.unregisterReceiver(mSimReceiver);
++            mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
++            mRegistered = false;
++        }
++    }
++
++    private void updateSimCount() {
++        String simState = SystemProperties.get("gsm.sim.state");
++        Log.d(TAG, "DataSwitchTile:updateSimCount:simState=" + simState);
++        mSimCount = 0;
++        try {
++            String[] sims = TextUtils.split(simState, ",");
++            for (int i = 0; i < sims.length; i++) {
++                if (!sims[i].isEmpty()
++                        && !sims[i].equalsIgnoreCase(IccCardConstants.INTENT_VALUE_ICC_ABSENT)
++                        && !sims[i].equalsIgnoreCase(IccCardConstants.INTENT_VALUE_ICC_NOT_READY)) {
++                    mSimCount++;
++                }
++            }
++        } catch (Exception e) {
++            Log.e(TAG, "Error to parse sim state");
++        }
++        Log.d(TAG, "DataSwitchTile:updateSimCount:mSimCount=" + mSimCount);
++    }
++
++    @Override
++    protected void handleClick() {
++        if (!mCanSwitch) {
++            Log.d(TAG, "Call state=" + mTelephonyManager.getCallState());
++        } else if (mSimCount == 0) {
++            Log.d(TAG, "handleClick:no sim card");
++            SysUIToast.makeText(mContext,
++                    mContext.getString(R.string.qs_data_switch_toast_0),
++                    Toast.LENGTH_LONG).show();
++        } else if (mSimCount == 1) {
++            Log.d(TAG, "handleClick:only one sim card");
++            SysUIToast.makeText(mContext,
++                    mContext.getString(R.string.qs_data_switch_toast_1),
++                    Toast.LENGTH_LONG).show();
++        } else {
++            mHost.collapsePanels();
++            AsyncTask.execute(new Runnable() {
++                public final void run() {
++                    toggleMobileDataEnabled();
++                    refreshState();
++                }
++            });
++        }
++    }
++
++    @Override
++    public Intent getLongClickIntent() {
++        return new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
++    }
++
++    @Override
++    public CharSequence getTileLabel() {
++        return mContext.getString(R.string.qs_data_switch_label);
++    }
++
++    @Override
++    protected void handleUpdateState(BooleanState state, Object arg) {
++        boolean activeSIMZero;
++        if (arg == null) {
++            int defaultPhoneId = mSubscriptionManager.getDefaultDataPhoneId();
++            Log.d(TAG, "default data phone id=" + defaultPhoneId);
++            activeSIMZero = defaultPhoneId == 0;
++        } else {
++            activeSIMZero = (Boolean) arg;
++        }
++        updateSimCount();
++        switch (mSimCount) {
++            case 1:
++                state.icon = ResourceIcon.get(activeSIMZero
++                        ? R.drawable.ic_qs_data_switch_1
++                        : R.drawable.ic_qs_data_switch_2);
++                state.value = false;
++                break;
++            case 2:
++                state.icon = ResourceIcon.get(activeSIMZero
++                        ? R.drawable.ic_qs_data_switch_1
++                        : R.drawable.ic_qs_data_switch_2);
++                state.value = true;
++                break;
++            default:
++                state.icon = ResourceIcon.get(R.drawable.ic_qs_data_switch_1);
++                state.value = false;
++                break;
++        }
++        if (mSimCount < 2) {
++            state.state = 0;
++        } else if (!mCanSwitch) {
++            state.state = 0;
++            Log.d(TAG, "call state isn't idle, set to unavailable.");
++        } else {
++            state.state = state.value ? 2 : 1;
++        }
++
++        state.contentDescription =
++                mContext.getString(activeSIMZero
++                        ? R.string.qs_data_switch_changed_1
++                        : R.string.qs_data_switch_changed_2);
++        state.label = mContext.getString(R.string.qs_data_switch_label) +
++                      " " + getOppositeSlotCarrierName();
++    }
++
++    private String getOppositeSlotCarrierName() {
++        CharSequence result = "";
++        // Get opposite slot 2 ^ 3 = 1, 1 ^ 3 = 2
++        int subId = mSubscriptionManager.getDefaultDataSubscriptionId() ^ 3;
++        List<SubscriptionInfo> subInfoList =
++                mSubscriptionManager.getActiveSubscriptionInfoList(true);
++        if (subInfoList != null) {
++            for (SubscriptionInfo subInfo : subInfoList) {
++                if (subId == subInfo.getSubscriptionId()) {
++                    result = subInfo.getDisplayName();
++                    break;
++                }
++            }
++        }
++        return result.toString();
++    }
++
++    @Override
++    public int getMetricsCategory() {
++        return LineageMetricsLogger.TILE_DATASWITCH;
++    }
++
++    @Override
++    protected String composeChangeAnnouncement() {
++        return mContext.getString(mState.value
++                ? R.string.qs_data_switch_changed_1
++                : R.string.qs_data_switch_changed_2);
++    }
++
++    /**
++     * Set whether to enable data for {@code subId}, also whether to disable data for other
++     * subscription
++     */
++    private void toggleMobileDataEnabled() {
++        // Get opposite slot 2 ^ 3 = 1, 1 ^ 3 = 2
++        int subId = mSubscriptionManager.getDefaultDataSubscriptionId() ^ 3;
++        final TelephonyManager telephonyManager =
++                mTelephonyManager.createForSubscriptionId(subId);
++        telephonyManager.setDataEnabled(true);
++        mSubscriptionManager.setDefaultDataSubId(subId);
++        Log.d(TAG, "Enabled subID: " + subId);
++
++        List<SubscriptionInfo> subInfoList =
++                mSubscriptionManager.getActiveSubscriptionInfoList(true);
++        if (subInfoList != null) {
++            for (SubscriptionInfo subInfo : subInfoList) {
++                // We never disable mobile data for opportunistic subscriptions.
++                if (subInfo.getSubscriptionId() != subId && !subInfo.isOpportunistic()) {
++                    mTelephonyManager.createForSubscriptionId(
++                            subInfo.getSubscriptionId()).setDataEnabled(false);
++                    Log.d(TAG, "Disabled subID: " + subInfo.getSubscriptionId());
++                }
++            }
++        }
++    }
++}
+-- 
+2.25.1
+

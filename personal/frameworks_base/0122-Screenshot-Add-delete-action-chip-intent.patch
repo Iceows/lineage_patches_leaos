@@ -1,0 +1,51 @@
+From 10417f38f7cedd359f4ce590a4a41a38c8018a8e Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 8 Feb 2021 07:16:10 -0500
+Subject: [PATCH 122/230] Screenshot: Add delete action chip intent
+
+  from
+  https://github.com/StatiXOS/android_frameworks_base/commit/765636b2114a11517aed3ffa99e091436f111c28
+---
+ .../systemui/screenshot/GlobalScreenshot.java        | 12 ++++++++++++
+ .../android/systemui/screenshot/ScreenshotEvent.java |  2 ++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+index 85268a32e72..776972e46b0 100644
+--- a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
++++ b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+@@ -1079,6 +1079,18 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
+         mActionsView.addView(editChip);
+         chips.add(editChip);
+ 
++        ScreenshotActionChip deleteChip = (ScreenshotActionChip) inflater.inflate(
++                R.layout.global_screenshot_action_chip, mActionsView, false);
++        deleteChip.setText(imageData.deleteAction.title);
++        deleteChip.setIcon(imageData.deleteAction.getIcon(), true);
++        deleteChip.setPendingIntent(imageData.deleteAction.actionIntent, () -> {
++            mUiEventLogger.log(ScreenshotEvent.SCREENSHOT_DELETE_TAPPED);
++            dismissScreenshot("chip tapped", false);
++            mOnCompleteRunnable.run();
++        });
++        mActionsView.addView(deleteChip);
++        chips.add(deleteChip);
++
+         mScreenshotPreview.setOnClickListener(v -> {
+             try {
+                 imageData.editAction.actionIntent.send();
+diff --git a/packages/SystemUI/src/com/android/systemui/screenshot/ScreenshotEvent.java b/packages/SystemUI/src/com/android/systemui/screenshot/ScreenshotEvent.java
+index 8535d5708a6..e1dd4ef4597 100644
+--- a/packages/SystemUI/src/com/android/systemui/screenshot/ScreenshotEvent.java
++++ b/packages/SystemUI/src/com/android/systemui/screenshot/ScreenshotEvent.java
+@@ -49,6 +49,8 @@ public enum ScreenshotEvent implements UiEventLogger.UiEventEnum {
+     SCREENSHOT_EDIT_TAPPED(308),
+     @UiEvent(doc = "screenshot share button tapped")
+     SCREENSHOT_SHARE_TAPPED(309),
++    @UiEvent(doc = "screenshot delete button tapped")
++    SCREENSHOT_DELETE_TAPPED(369),
+     @UiEvent(doc = "screenshot smart action chip tapped")
+     SCREENSHOT_SMART_ACTION_TAPPED(374),
+     @UiEvent(doc = "screenshot scroll tapped")
+-- 
+2.25.1
+

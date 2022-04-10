@@ -1,0 +1,30 @@
+From 81bfbfb3b8f2f572ab9ffcab26d023d15b9b77d1 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 21 Feb 2022 05:27:26 -0500
+Subject: [PATCH 68/80] Disable fingerprint sensor input from Doogee S88 Pro
+
+See https://github.com/phhusson/treble_experimentations/issues/2204
+---
+ rw-system.sh | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index f859bf2..0428b7f 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -299,6 +299,12 @@ changeKeylayout() {
+       fi
+     fi
+ 
++    if getprop ro.vendor.build.fingerprint | grep -iq DOOGEE/S88Pro;then
++          cp /system/phh/empty /mnt/phh/keylayout/sf-keys.kl
++          chmod 0644 /mnt/phh/keylayout/sf-keys.kl
++          changed=true
++    fi
++
+     if [ "$changed" = true ]; then
+         mount -o bind ${mpk} /system/usr/keylayout
+         restorecon -R /system/usr/keylayout
+-- 
+2.25.1
+

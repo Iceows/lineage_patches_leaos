@@ -1,0 +1,210 @@
+From 5d6849b36ac35362a5de47b71519e23299190a76 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 11 Mar 2020 20:20:05 +0200
+Subject: [PATCH 41/53] add three-fingers-swipe to screenshot [2/2]
+
+  based on
+  https://github.com/Evolution-X/packages_apps_Evolver/commit/1b64fadf5debcda66382763312d77867bbb8be78
+  https://github.com/Evolution-X/packages_apps_Evolver/blob/7f3cfe97bf3d98649f9b4c123e5bd24e6665953d/src/com/evolution/settings/preference/SystemSettingSwitchPreference.java
+
+Change-Id: Iefbb4a5eac7a394b52a578cfe27b1853e9a732a0
+---
+ res/values-fr/custom_strings.xml              |  2 +
+ res/values-ru/custom_strings.xml              |  3 +
+ res/values/custom_strings.xml                 |  3 +
+ res/xml/gestures.xml                          |  6 ++
+ .../SystemSettingSwitchPreference.java        | 51 +++++++++++++
+ .../preference/SystemSettingsStore.java       | 73 +++++++++++++++++++
+ 6 files changed, 138 insertions(+)
+ create mode 100644 src/com/caos/settings/preference/SystemSettingSwitchPreference.java
+ create mode 100644 src/com/caos/settings/preference/SystemSettingsStore.java
+
+diff --git a/res/values-fr/custom_strings.xml b/res/values-fr/custom_strings.xml
+index eb2a68a94a..9eca14e2ad 100644
+--- a/res/values-fr/custom_strings.xml
++++ b/res/values-fr/custom_strings.xml
+@@ -42,4 +42,6 @@
+     <string name="theme_customization_font_title">Headline /les thèmes de fonds</string>
+     <string name="theme_customization_icon_shape_title">forme des icones</string>
+     <string name="screenshot_sound_title">Son de la Capture D\'écran</string>
++    <string name="three_finger_gesture">Glisser pour une capture d\'écran</string>
++    <string name="three_finger_gesture_summary">Glisser en bas avec ses 3 doigts pour prendre une capture d\'écran</string>
+ </resources>
+diff --git a/res/values-ru/custom_strings.xml b/res/values-ru/custom_strings.xml
+index 0e929bfaf0..4a20540128 100644
+--- a/res/values-ru/custom_strings.xml
++++ b/res/values-ru/custom_strings.xml
+@@ -52,4 +52,7 @@
+     <!-- Battery stats reset -->
+     <string name="battery_stats_reset">Сброс статистики</string>
+     <string name="battery_stats_message">Статистика батареи будет сброшена</string>
++    <!-- Three-fingers-swipe to screenshot -->
++    <string name="three_finger_gesture">Жест для сохранения снимка экрана</string>
++    <string name="three_finger_gesture_summary">Проведите тремя пальцами вниз по экрану для сохранения его снимка</string>
+ </resources>
+diff --git a/res/values/custom_strings.xml b/res/values/custom_strings.xml
+index 2112d0d526..07c07cf876 100644
+--- a/res/values/custom_strings.xml
++++ b/res/values/custom_strings.xml
+@@ -47,4 +47,7 @@
+     <!-- Battery stats reset -->
+     <string name="battery_stats_reset">Reset stats</string>
+     <string name="battery_stats_message">Battery history stats are going to be reset</string>
++    <!-- Three-fingers-swipe to screenshot -->
++    <string name="three_finger_gesture">Swipe to screenshot</string>
++    <string name="three_finger_gesture_summary">Swipe down with three fingers to take a screenshot</string>
+ </resources>
+diff --git a/res/xml/gestures.xml b/res/xml/gestures.xml
+index e0d91388ac..894605b8b1 100644
+--- a/res/xml/gestures.xml
++++ b/res/xml/gestures.xml
+@@ -100,4 +100,10 @@
+         android:title="@string/power_menu_setting_name"
+         android:fragment="com.android.settings.gestures.PowerMenuSettings"
+         settings:controller="com.android.settings.gestures.PowerMenuPreferenceController" />
++
++    <com.caos.settings.preference.SystemSettingSwitchPreference
++        android:key="three_finger_gesture"
++        android:title="@string/three_finger_gesture"
++        android:summary="@string/three_finger_gesture_summary"
++        android:defaultValue="false" />
+ </PreferenceScreen>
+diff --git a/src/com/caos/settings/preference/SystemSettingSwitchPreference.java b/src/com/caos/settings/preference/SystemSettingSwitchPreference.java
+new file mode 100644
+index 0000000000..5a2e19e69c
+--- /dev/null
++++ b/src/com/caos/settings/preference/SystemSettingSwitchPreference.java
+@@ -0,0 +1,51 @@
++/*
++ * Copyright (C) 2014 The CyanogenMod Project
++ * Copyright (C) 2017 AICP
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.caos.settings.preference;
++
++import android.content.Context;
++import androidx.preference.SwitchPreference;
++import android.util.AttributeSet;
++
++public class SystemSettingSwitchPreference extends SwitchPreference {
++
++    public SystemSettingSwitchPreference(Context context, AttributeSet attrs, int defStyle) {
++        super(context, attrs, defStyle);
++        setPreferenceDataStore(new SystemSettingsStore(context.getContentResolver()));
++    }
++
++    public SystemSettingSwitchPreference(Context context, AttributeSet attrs) {
++        super(context, attrs);
++        setPreferenceDataStore(new SystemSettingsStore(context.getContentResolver()));
++    }
++
++    public SystemSettingSwitchPreference(Context context) {
++        super(context);
++        setPreferenceDataStore(new SystemSettingsStore(context.getContentResolver()));
++    }
++
++    @Override
++    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
++        // This is what default TwoStatePreference implementation is doing without respecting
++        // real default value:
++        //setChecked(restoreValue ? getPersistedBoolean(mChecked)
++        //        : (Boolean) defaultValue);
++        // Instead, we better do
++        setChecked(restoreValue ? getPersistedBoolean((Boolean) defaultValue)
++                : (Boolean) defaultValue);
++    }
++}
+diff --git a/src/com/caos/settings/preference/SystemSettingsStore.java b/src/com/caos/settings/preference/SystemSettingsStore.java
+new file mode 100644
+index 0000000000..0d4de417a1
+--- /dev/null
++++ b/src/com/caos/settings/preference/SystemSettingsStore.java
+@@ -0,0 +1,73 @@
++/*
++ * Copyright (C) 2017 AICP
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.caos.settings.preference;
++
++import android.content.ContentResolver;
++import android.preference.PreferenceDataStore;
++import android.provider.Settings;
++
++public class SystemSettingsStore extends androidx.preference.PreferenceDataStore
++        implements PreferenceDataStore {
++
++    private ContentResolver mContentResolver;
++
++    public SystemSettingsStore(ContentResolver contentResolver) {
++        mContentResolver = contentResolver;
++    }
++
++    public boolean getBoolean(String key, boolean defValue) {
++        return getInt(key, defValue ? 1 : 0) != 0;
++    }
++
++    public float getFloat(String key, float defValue) {
++        return Settings.System.getFloat(mContentResolver, key, defValue);
++    }
++
++    public int getInt(String key, int defValue) {
++        return Settings.System.getInt(mContentResolver, key, defValue);
++    }
++
++    public long getLong(String key, long defValue) {
++        return Settings.System.getLong(mContentResolver, key, defValue);
++    }
++
++    public String getString(String key, String defValue) {
++        String result = Settings.System.getString(mContentResolver, key);
++        return result == null ? defValue : result;
++    }
++
++    public void putBoolean(String key, boolean value) {
++        putInt(key, value ? 1 : 0);
++    }
++
++    public void putFloat(String key, float value) {
++        Settings.System.putFloat(mContentResolver, key, value);
++    }
++
++    public void putInt(String key, int value) {
++        Settings.System.putInt(mContentResolver, key, value);
++    }
++
++    public void putLong(String key, long value) {
++        Settings.System.putLong(mContentResolver, key, value);
++    }
++
++    public void putString(String key, String value) {
++        Settings.System.putString(mContentResolver, key, value);
++    }
++
++}
+-- 
+2.25.1
+

@@ -1,0 +1,29 @@
+From b52949196a54fba37df67b716fb1848a30f9585b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 7 Mar 2021 01:53:42 -0500
+Subject: [PATCH 14/14] Use 'release-keys' for build tag
+
+  from
+  https://github.com/crdroidandroid/android_build/commit/356372a341cd73d6e34c4f3464ef73bc0f6fb78e
+
+Change-Id: I84654446729c935bc732de220eae9398db3eeec3
+---
+ core/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/Makefile b/core/Makefile
+index f1020e957..a3437454e 100644
+--- a/core/Makefile
++++ b/core/Makefile
+@@ -321,7 +321,7 @@ endif
+ # Both of these tags will be removed and replaced with "release-keys"
+ # when the target-files is signed in a post-build step.
+ ifeq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/make/target/product/security/testkey)
+-BUILD_KEYS := test-keys
++BUILD_KEYS := release-keys
+ else
+ BUILD_KEYS := dev-keys
+ endif
+-- 
+2.17.1
+

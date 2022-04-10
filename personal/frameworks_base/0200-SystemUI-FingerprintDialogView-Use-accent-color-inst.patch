@@ -1,0 +1,41 @@
+From bb9217841f975f271a41dcef5b2367246cbe2630 Mon Sep 17 00:00:00 2001
+From: jhenrique09 <jhenrique09.mcz@hotmail.com>
+Date: Mon, 25 Nov 2019 14:59:16 +0000
+Subject: [PATCH 200/230] SystemUI: FingerprintDialogView: Use accent color
+ instead of teal
+
+Change-Id: I97ab75e68693c071ec50e78a9159202f83cf284b
+---
+ packages/SystemUI/res/values-night/colors.xml | 2 +-
+ packages/SystemUI/res/values/colors.xml       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/packages/SystemUI/res/values-night/colors.xml b/packages/SystemUI/res/values-night/colors.xml
+index 493e5afd0ba..d4e31d24b5f 100644
+--- a/packages/SystemUI/res/values-night/colors.xml
++++ b/packages/SystemUI/res/values-night/colors.xml
+@@ -83,7 +83,7 @@
+ 
+     <!-- Biometric dialog colors -->
+     <color name="biometric_dialog_gray">#ff888888</color>
+-    <color name="biometric_dialog_accent">#ff80cbc4</color> <!-- light teal -->
++    <color name="biometric_dialog_accent">@*android:color/accent_device_default_dark</color>
+     <color name="biometric_dialog_error">#fff28b82</color> <!-- red 300 -->
+ 
+     <color name="GM2_green_500">#FF41Af6A</color>
+diff --git a/packages/SystemUI/res/values/colors.xml b/packages/SystemUI/res/values/colors.xml
+index 3fbac96c8ed..33fefd552a2 100644
+--- a/packages/SystemUI/res/values/colors.xml
++++ b/packages/SystemUI/res/values/colors.xml
+@@ -183,7 +183,7 @@
+     <!-- Biometric dialog colors -->
+     <color name="biometric_dialog_dim_color">#80000000</color>              <!-- 50% black -->
+     <color name="biometric_dialog_gray">#ff757575</color>
+-    <color name="biometric_dialog_accent">#ff008577</color>                 <!-- dark teal -->
++    <color name="biometric_dialog_accent">@*android:color/accent_device_default_light</color>
+     <color name="biometric_dialog_error">#ffd93025</color>                  <!-- red 600 -->
+ 
+     <!-- Logout button -->
+-- 
+2.25.1
+

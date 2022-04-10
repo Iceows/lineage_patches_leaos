@@ -1,0 +1,27 @@
+From 0665fc8ca5aa922e979eb348131be2198411cae3 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 02:00:55 -0500
+Subject: [PATCH 091/230] base: Lower the internal audio capture restriction
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/9a2a94b441edc7b274aef7a13f499ba9c6b3ae3f
+---
+ core/java/android/content/pm/PackageParser.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/java/android/content/pm/PackageParser.java b/core/java/android/content/pm/PackageParser.java
+index d7a90c89c95..ea83f26ee71 100644
+--- a/core/java/android/content/pm/PackageParser.java
++++ b/core/java/android/content/pm/PackageParser.java
+@@ -3590,7 +3590,7 @@ public class PackageParser {
+ 
+         if (sa.getBoolean(
+                 R.styleable.AndroidManifestApplication_allowAudioPlaybackCapture,
+-                owner.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.Q)) {
++                owner.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)) {
+             ai.privateFlags |= ApplicationInfo.PRIVATE_FLAG_ALLOW_AUDIO_PLAYBACK_CAPTURE;
+         }
+ 
+-- 
+2.25.1
+

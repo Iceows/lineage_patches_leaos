@@ -1,0 +1,29 @@
+From eec76fd73f0d20b961882ab0566c7994f23ecd6c Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Wed, 8 Dec 2021 13:36:39 -0500
+Subject: [PATCH 49/80] Fix speaker and touchscreen on Huawei P10
+
+---
+ rw-system.sh | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 9834937..7ea6edd 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -1034,3 +1034,12 @@ echo -n V > /dev/watchdog1
+ if getprop ro.boot.prjname |grep -qi 21615;then
+     mount -o bind /system/phh/empty /odm/overlay/android_framework_res_overlay.display.product.21615.apk
+ fi
++
++if [ "$(stat -c '%U'  /dev/nxp_smartpa_dev)" == "root" ] &&
++	[ "$(stat -c '%G' /dev/nxp_smartpa_dev)" == "root" ];then
++    chown root:audio /dev/nxp_smartpa_dev
++    chmod 0660 /dev/nxp_smartpa_dev
++fi
++if getprop ro.odm.build.fingerprint |grep -q Huawei/Chicago;then
++    setprop ctl.stop aptouch
++fi
+-- 
+2.25.1
+

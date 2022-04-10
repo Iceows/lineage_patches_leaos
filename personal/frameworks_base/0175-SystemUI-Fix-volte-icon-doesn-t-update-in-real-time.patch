@@ -1,0 +1,103 @@
+From 28f65b56b047d3cd8854eb5f454c2e709cbd535f Mon Sep 17 00:00:00 2001
+From: Weijie Wang <weijiew@codeaurora.org>
+Date: Tue, 28 Aug 2018 14:51:58 +0800
+Subject: [PATCH 175/230] SystemUI: Fix volte icon doesn't update in real time
+
+SystemUI will clean and reinitialize the subscripiton state
+when active subscripitons are chagned, but telephony doesn't
+report the ims registration state if it is not chagned.
+
+When two sims are both registered on ims, hotswap sim1.
+In this case, the volte icon of sim2 will not be updated in time
+
+Now we query the ims registration state first when reinitialize
+the subscripiton state; we also query the ims registration state
+when receiveing ImsRegistrationImplBase.Callback
+
+Change-Id: Ie12ca7c1e82eb2dcae933d5fb8c93937c5e1a050
+CRs-Fixed: 2304136
+---
+ .../policy/MobileSignalController.java        | 26 ++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index d504a194722..0c2b2fe41f5 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -132,6 +132,7 @@ public class MobileSignalController extends SignalController<
+ 
+         int phoneId = SubscriptionManager.getPhoneId(mSubscriptionInfo.getSubscriptionId());
+         mImsManager = ImsManager.getInstance(mContext, phoneId);
++        updateImsRegistrationState();
+ 
+         mObserver = new ContentObserver(new Handler(receiverLooper)) {
+             @Override
+@@ -205,6 +206,11 @@ public class MobileSignalController extends SignalController<
+     public void unregisterListener() {
+         mPhone.listen(mPhoneStateListener, 0);
+         mContext.getContentResolver().unregisterContentObserver(mObserver);
++        try {
++            mImsManager.removeRegistrationListener(mImsRegistrationCallback);
++        }catch(ImsException e){
++            Log.d(mTag, "exception:" + e);
++        }
+         mContext.unregisterReceiver(mVolteSwitchObserver);
+     }
+ 
+@@ -397,6 +403,11 @@ public class MobileSignalController extends SignalController<
+         return resId;
+     }
+ 
++    private void updateImsRegistrationState() {
++        mImsResitered = mPhone.isImsRegistered(mSubscriptionInfo.getSubscriptionId());
++        Log.d(mTag, "updateImsRegistrationState mImsResitered=" + mImsResitered);
++    }
++
+     @Override
+     public void notifyListeners(SignalCallback callback) {
+         MobileIconGroup icons = getIcons();
+@@ -722,6 +733,15 @@ public class MobileSignalController extends SignalController<
+         public void onActiveDataSubscriptionIdChanged(int subId) {
+             if (DEBUG) Log.d(mTag, "onActiveDataSubscriptionIdChanged: subId=" + subId);
+             updateDataSim();
++	    updateTelephony();
++	}
++
++	@Override
++        public void onCallStateChanged(int state, String phoneNumber) {
++            if (DEBUG) {
++                Log.d(mTag, "onCallStateChanged: state=" + state);
++            }
++            mCallState = state;
+             updateTelephony();
+         }
+ 
+@@ -741,7 +761,7 @@ public class MobileSignalController extends SignalController<
+                 public void onRegistered(
+                         @ImsRegistrationImplBase.ImsRegistrationTech int imsRadioTech) {
+                     Log.d(mTag, "onRegistered imsRadioTech=" + imsRadioTech);
+-                    mImsResitered = true;
++                    updateImsRegistrationState();
+                     notifyListeners();
+                 }
+ 
+@@ -749,14 +769,14 @@ public class MobileSignalController extends SignalController<
+                 public void onRegistering(
+                         @ImsRegistrationImplBase.ImsRegistrationTech int imsRadioTech) {
+                     Log.d(mTag, "onRegistering imsRadioTech=" + imsRadioTech);
+-                    mImsResitered = false;
++                    updateImsRegistrationState();
+                     notifyListeners();
+                 }
+ 
+                 @Override
+                 public void onDeregistered(ImsReasonInfo imsReasonInfo) {
+                     Log.d(mTag, "onDeregistered imsReasonInfo=" + imsReasonInfo);
+-                    mImsResitered = false;
++                    updateImsRegistrationState();
+                     notifyListeners();
+                 }
+             };
+-- 
+2.25.1
+

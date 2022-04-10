@@ -1,0 +1,542 @@
+From 0280c2f694f803587e9fa5e9ed8b79e0332c670f Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 3 Mar 2021 07:11:36 -0500
+Subject: [PATCH 130/230] add dark theme fluid overlays
+
+---
+ packages/overlays/Android.mk                  |  4 ++
+ .../CharcoalF1DarkUIOverlay/Android.mk        | 30 +++++++++++
+ .../AndroidManifest.xml                       | 24 +++++++++
+ .../res/values-night/colors.xml               | 51 +++++++++++++++++++
+ .../CharcoalF2DarkUIOverlay/Android.mk        | 30 +++++++++++
+ .../AndroidManifest.xml                       | 24 +++++++++
+ .../res/values-night/colors.xml               | 51 +++++++++++++++++++
+ .../GrayDimF1DarkUIOverlay/Android.mk         | 30 +++++++++++
+ .../AndroidManifest.xml                       | 24 +++++++++
+ .../res/values-night/colors.xml               | 51 +++++++++++++++++++
+ .../GrayDimF2DarkUIOverlay/Android.mk         | 28 ++++++++++
+ .../AndroidManifest.xml                       | 24 +++++++++
+ .../res/values-night/colors.xml               | 51 +++++++++++++++++++
+ 13 files changed, 422 insertions(+)
+ create mode 100644 packages/overlays/CharcoalF1DarkUIOverlay/Android.mk
+ create mode 100644 packages/overlays/CharcoalF1DarkUIOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/CharcoalF1DarkUIOverlay/res/values-night/colors.xml
+ create mode 100644 packages/overlays/CharcoalF2DarkUIOverlay/Android.mk
+ create mode 100644 packages/overlays/CharcoalF2DarkUIOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/CharcoalF2DarkUIOverlay/res/values-night/colors.xml
+ create mode 100644 packages/overlays/GrayDimF1DarkUIOverlay/Android.mk
+ create mode 100644 packages/overlays/GrayDimF1DarkUIOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/GrayDimF1DarkUIOverlay/res/values-night/colors.xml
+ create mode 100644 packages/overlays/GrayDimF2DarkUIOverlay/Android.mk
+ create mode 100644 packages/overlays/GrayDimF2DarkUIOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/GrayDimF2DarkUIOverlay/res/values-night/colors.xml
+
+diff --git a/packages/overlays/Android.mk b/packages/overlays/Android.mk
+index 3b6bf5a3156..544cc8f5617 100644
+--- a/packages/overlays/Android.mk
++++ b/packages/overlays/Android.mk
+@@ -124,7 +124,11 @@ LOCAL_REQUIRED_MODULES := \
+ 	Level7SpeedUIOverlay \
+ 	AmoledDarkUIOverlay \
+ 	CharcoalDarkUIOverlay \
++	CharcoalF1DarkUIOverlay \
++	CharcoalF2DarkUIOverlay \
+ 	GrayDimDarkUIOverlay \
++	GrayDimF1DarkUIOverlay \
++	GrayDimF2DarkUIOverlay \
+ 	MidnightDarkUIOverlay \
+ 	QSPanelAlpha50Overlay \
+ 	QSPanelAlpha60Overlay \
+diff --git a/packages/overlays/CharcoalF1DarkUIOverlay/Android.mk b/packages/overlays/CharcoalF1DarkUIOverlay/Android.mk
+new file mode 100644
+index 00000000000..792ecae4ff9
+--- /dev/null
++++ b/packages/overlays/CharcoalF1DarkUIOverlay/Android.mk
+@@ -0,0 +1,30 @@
++#
++#  Copyright 2019, The Android Open Source Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := CharcoalF1DarkUI
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := CharcoalF1DarkUIOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/CharcoalF1DarkUIOverlay/AndroidManifest.xml b/packages/overlays/CharcoalF1DarkUIOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..43ba00aafef
+--- /dev/null
++++ b/packages/overlays/CharcoalF1DarkUIOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.darkui.charcoalf1"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.darkui" android:priority="1"/>
++    <application android:label="Charcoal Black Fluid v1" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/CharcoalF1DarkUIOverlay/res/values-night/colors.xml b/packages/overlays/CharcoalF1DarkUIOverlay/res/values-night/colors.xml
+new file mode 100644
+index 00000000000..23dbe8afc37
+--- /dev/null
++++ b/packages/overlays/CharcoalF1DarkUIOverlay/res/values-night/colors.xml
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (C) 2019 crDroid Android Project
++ *               2020 Mod for CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <color name="notification_primary_text_color_dark">#ffe5e5e5</color>
++    <color name="notification_secondary_text_color_dark">#b3e5e5e5</color>
++    <color name="notification_default_color_dark">#ffe5e5e5</color>
++
++    <color name="notification_material_background_color">#dd151618</color> <!-- material_grey_900 -->
++    <color name="colorBackgroundFloating">#dd151618</color> <!-- material_grey_900 -->
++    <color name="primary_dark_device_default_dark">#dd151618</color> <!-- material_grey_850 -->
++    <color name="background_floating_device_default_dark">#dd151618</color>
++    <color name="background_floating_material_dark">#dd151618</color>
++    <color name="background_material_dark">#dd151618</color>
++    <color name="GM2_grey_900">#dd151618</color> <!-- material_grey_900 -->
++    <color name="primary_device_default_dark">#dd151618</color>
++
++    <color name="primary_material_dark">#ff0f1012</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_dark">#dd000000</color>
++    <color name="secondary_material_settings">#ff1a1b1e</color> <!-- material_grey_800 -->
++    <color name="primary_material_settings">#ff0f1012</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_settings">#dd151618</color> <!-- material_grey_850 -->
++
++    <color name="primary_dark_device_default_settings">#ff0f1012</color> <!-- main settings bg -->
++    <color name="tertiary_material_settings">#ff202126</color> <!-- material_grey_600 -->
++    <color name="quaternary_material_settings">#ffdadce0</color> <!-- material_grey_200 -->
++    <color name="material_grey_900">#dd151618</color>
++    <color name="material_grey_850">#dd151618</color>
++    <color name="material_grey_800">#dd1a1b1e</color>
++    <color name="material_grey_600">#ff202126</color>
++    <color name="material_grey_300">#ff3c4043</color>
++    <color name="material_grey_200">#ffdadce0</color>
++    <color name="material_grey_100">#ffeeeeee</color>
++    <color name="material_grey_50">#ffe8eaed</color>
++</resources>
+diff --git a/packages/overlays/CharcoalF2DarkUIOverlay/Android.mk b/packages/overlays/CharcoalF2DarkUIOverlay/Android.mk
+new file mode 100644
+index 00000000000..8beb314a1d7
+--- /dev/null
++++ b/packages/overlays/CharcoalF2DarkUIOverlay/Android.mk
+@@ -0,0 +1,30 @@
++#
++#  Copyright 2019, The Android Open Source Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := CharcoalF2DarkUI
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := CharcoalF2DarkUIOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/CharcoalF2DarkUIOverlay/AndroidManifest.xml b/packages/overlays/CharcoalF2DarkUIOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..7351cf3545d
+--- /dev/null
++++ b/packages/overlays/CharcoalF2DarkUIOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.darkui.charcoalf2"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.darkui" android:priority="1"/>
++    <application android:label="Charcoal Black Fluid v2" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/CharcoalF2DarkUIOverlay/res/values-night/colors.xml b/packages/overlays/CharcoalF2DarkUIOverlay/res/values-night/colors.xml
+new file mode 100644
+index 00000000000..d09f6c568d1
+--- /dev/null
++++ b/packages/overlays/CharcoalF2DarkUIOverlay/res/values-night/colors.xml
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (C) 2019 crDroid Android Project
++ *               2020 Mod for CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <color name="notification_primary_text_color_dark">#ffe5e5e5</color>
++    <color name="notification_secondary_text_color_dark">#b3e5e5e5</color>
++    <color name="notification_default_color_dark">#ffe5e5e5</color>
++
++    <color name="notification_material_background_color">#aa151618</color> <!-- material_grey_900 -->
++    <color name="colorBackgroundFloating">#aa151618</color> <!-- material_grey_900 -->
++    <color name="primary_dark_device_default_dark">#aa151618</color> <!-- material_grey_850 -->
++    <color name="background_floating_device_default_dark">#aa151618</color>
++    <color name="background_floating_material_dark">#aa151618</color>
++    <color name="background_material_dark">#aa151618</color>
++    <color name="GM2_grey_900">#aa151618</color> <!-- material_grey_900 -->
++    <color name="primary_device_default_dark">#aa151618</color>
++
++    <color name="primary_material_dark">#ff0f1012</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_dark">#aa000000</color>
++    <color name="secondary_material_settings">#ff1a1b1e</color> <!-- material_grey_800 -->
++    <color name="primary_material_settings">#ff0f1012</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_settings">#aa151618</color> <!-- material_grey_850 -->
++
++    <color name="primary_dark_device_default_settings">#ff0f1012</color> <!-- main settings bg -->
++    <color name="tertiary_material_settings">#ff202126</color> <!-- material_grey_600 -->
++    <color name="quaternary_material_settings">#ffdadce0</color> <!-- material_grey_200 -->
++    <color name="material_grey_900">#aa151618</color>
++    <color name="material_grey_850">#aa151618</color>
++    <color name="material_grey_800">#aa1a1b1e</color>
++    <color name="material_grey_600">#ff202126</color>
++    <color name="material_grey_300">#ff3c4043</color>
++    <color name="material_grey_200">#ffdadce0</color>
++    <color name="material_grey_100">#ffeeeeee</color>
++    <color name="material_grey_50">#ffe8eaed</color>
++</resources>
+diff --git a/packages/overlays/GrayDimF1DarkUIOverlay/Android.mk b/packages/overlays/GrayDimF1DarkUIOverlay/Android.mk
+new file mode 100644
+index 00000000000..5be158520df
+--- /dev/null
++++ b/packages/overlays/GrayDimF1DarkUIOverlay/Android.mk
+@@ -0,0 +1,30 @@
++#
++#  Copyright 2019, The Android Open Source Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := GrayDimF1DarkUI
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := GrayDimF1DarkUIOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/GrayDimF1DarkUIOverlay/AndroidManifest.xml b/packages/overlays/GrayDimF1DarkUIOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..ed937071b90
+--- /dev/null
++++ b/packages/overlays/GrayDimF1DarkUIOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.darkui.graydimf1"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.darkui" android:priority="1"/>
++    <application android:label="Gray Dim Fluid v1" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/GrayDimF1DarkUIOverlay/res/values-night/colors.xml b/packages/overlays/GrayDimF1DarkUIOverlay/res/values-night/colors.xml
+new file mode 100644
+index 00000000000..3325cdeaebc
+--- /dev/null
++++ b/packages/overlays/GrayDimF1DarkUIOverlay/res/values-night/colors.xml
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (C) 2019 crDroid Android Project
++ *               2020 Mod for CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <color name="notification_primary_text_color_dark">#ffe5e5e5</color>
++    <color name="notification_secondary_text_color_dark">#b3e5e5e5</color>
++    <color name="notification_default_color_dark">#ffe5e5e5</color>
++
++    <color name="notification_material_background_color">#dd27282b</color> <!-- material_grey_900 -->
++    <color name="colorBackgroundFloating">#dd27282b</color> <!-- material_grey_900 -->
++    <color name="primary_dark_device_default_dark">#dd27282b</color> <!-- material_grey_850 -->
++    <color name="background_floating_device_default_dark">#dd27282b</color>
++    <color name="background_floating_material_dark">#dd27282b</color>
++    <color name="background_material_dark">#dd27282b</color>
++    <color name="GM2_grey_900">#dd27282b</color> <!-- material_grey_900 -->
++    <color name="primary_device_default_dark">#dd27282b</color>
++
++    <color name="primary_material_dark">#ff202124</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_dark">#dd27282b</color>
++    <color name="secondary_material_settings">#ff303133</color> <!-- material_grey_800 -->
++    <color name="primary_material_settings">#ff202124</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_settings">#dd27282b</color> <!-- material_grey_850 -->
++
++    <color name="primary_dark_device_default_settings">#ff202124</color> <!-- main settings bg -->
++    <color name="tertiary_material_settings">#ff3a3a3a</color> <!-- material_grey_600 -->
++    <color name="quaternary_material_settings">#ffdadce0</color> <!-- material_grey_200 -->
++    <color name="material_grey_900">#dd27282b</color>
++    <color name="material_grey_850">#dd27282b</color>
++    <color name="material_grey_800">#dd303133</color>
++    <color name="material_grey_600">#ff3a3a3a</color>
++    <color name="material_grey_300">#ff3c4043</color>
++    <color name="material_grey_200">#ffdadce0</color>
++    <color name="material_grey_100">#ffeeeeee</color>
++    <color name="material_grey_50">#ffe8eaed</color>
++</resources>
+diff --git a/packages/overlays/GrayDimF2DarkUIOverlay/Android.mk b/packages/overlays/GrayDimF2DarkUIOverlay/Android.mk
+new file mode 100644
+index 00000000000..6d8bda282db
+--- /dev/null
++++ b/packages/overlays/GrayDimF2DarkUIOverlay/Android.mk
+@@ -0,0 +1,28 @@
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := GrayDimF2DarkUI
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := GrayDimF2DarkUIOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/GrayDimF2DarkUIOverlay/AndroidManifest.xml b/packages/overlays/GrayDimF2DarkUIOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..924e5f67289
+--- /dev/null
++++ b/packages/overlays/GrayDimF2DarkUIOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.darkui.graydimf2"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.darkui" android:priority="1"/>
++    <application android:label="Gray Dim Fluid v2" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/GrayDimF2DarkUIOverlay/res/values-night/colors.xml b/packages/overlays/GrayDimF2DarkUIOverlay/res/values-night/colors.xml
+new file mode 100644
+index 00000000000..c4c45c102d1
+--- /dev/null
++++ b/packages/overlays/GrayDimF2DarkUIOverlay/res/values-night/colors.xml
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (C) 2019 crDroid Android Project
++ *               2020 Mod for CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <color name="notification_primary_text_color_dark">#ffe5e5e5</color>
++    <color name="notification_secondary_text_color_dark">#b3e5e5e5</color>
++    <color name="notification_default_color_dark">#ffe5e5e5</color>
++
++    <color name="notification_material_background_color">#aa27282b</color> <!-- material_grey_900 -->
++    <color name="colorBackgroundFloating">#aa27282b</color> <!-- material_grey_900 -->
++    <color name="primary_dark_device_default_dark">#aa27282b</color> <!-- material_grey_850 -->
++    <color name="background_floating_device_default_dark">#aa27282b</color>
++    <color name="background_floating_material_dark">#aa27282b</color>
++    <color name="background_material_dark">#aa27282b</color>
++    <color name="GM2_grey_900">#aa202124</color> <!-- material_grey_900 -->
++    <color name="primary_device_default_dark">#aa27282b</color>
++
++    <color name="primary_material_dark">#ff202124</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_dark">#aa27282b</color>
++    <color name="secondary_material_settings">#ff303133</color> <!-- material_grey_800 -->
++    <color name="primary_material_settings">#ff202124</color> <!-- material_grey_900 -->
++    <color name="primary_dark_material_settings">#aa27282b</color> <!-- material_grey_850 -->
++
++    <color name="primary_dark_device_default_settings">#ff202124</color> <!-- main settings bg -->
++    <color name="tertiary_material_settings">#ff3a3a3a</color> <!-- material_grey_600 -->
++    <color name="quaternary_material_settings">#ffdadce0</color> <!-- material_grey_200 -->
++    <color name="material_grey_900">#aa27282b</color>
++    <color name="material_grey_850">#aa27282b</color>
++    <color name="material_grey_800">#aa303133</color>
++    <color name="material_grey_600">#ff3a3a3a</color>
++    <color name="material_grey_300">#ff3c4043</color>
++    <color name="material_grey_200">#ffdadce0</color>
++    <color name="material_grey_100">#ffeeeeee</color>
++    <color name="material_grey_50">#ffe8eaed</color>
++</resources>
+-- 
+2.25.1
+

@@ -1,0 +1,79 @@
+From ec7c8b3b20efacbf332364b7fb20a780b449ab1e Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 5 Oct 2020 13:10:54 -0700
+Subject: [PATCH 218/230] SystemUI: Remove QS drag handle
+
+While having a visual indication that the QS panel can be dragged is
+nice, it's not an obvious indicator and it makes the unexpanded QS header
+look cramped. It's also too bright in dark mode, which distracts the user
+from other content in the QS and notification shade.
+
+Change-Id: Ib7432c21dcfa4a108e2a835ede5dec899ec50ec6
+---
+ packages/SystemUI/res/layout/qs_panel.xml          | 14 --------------
+ .../com/android/systemui/qs/QSContainerImpl.java   |  5 -----
+ 2 files changed, 19 deletions(-)
+
+diff --git a/packages/SystemUI/res/layout/qs_panel.xml b/packages/SystemUI/res/layout/qs_panel.xml
+index f8629aecfd2..b978ff7d419 100644
+--- a/packages/SystemUI/res/layout/qs_panel.xml
++++ b/packages/SystemUI/res/layout/qs_panel.xml
+@@ -73,18 +73,4 @@
+     <include android:id="@+id/qs_customize" layout="@layout/qs_customize_panel"
+         android:visibility="gone" />
+ 
+-    <FrameLayout
+-        android:id="@+id/qs_drag_handle_view"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_gravity="center_horizontal"
+-        android:elevation="4dp"
+-        android:paddingBottom="5dp">
+-        <View
+-            android:layout_width="46dp"
+-            android:layout_height="3dp"
+-            android:background="@drawable/qs_footer_drag_handle" />
+-    </FrameLayout>
+-
+-
+ </com.android.systemui.qs.QSContainerImpl>
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java b/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
+index eba4465018a..c60403b0903 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
+@@ -61,7 +61,6 @@ public class QSContainerImpl extends FrameLayout {
+     private QuickStatusBarHeader mHeader;
+     private float mQsExpansion;
+     private QSCustomizer mQSCustomizer;
+-    private View mDragHandle;
+     private View mQSPanelContainer;
+ 
+     private View mBackground;
+@@ -86,7 +85,6 @@ public class QSContainerImpl extends FrameLayout {
+         mQSDetail = findViewById(R.id.qs_detail);
+         mHeader = findViewById(R.id.header);
+         mQSCustomizer = findViewById(R.id.qs_customize);
+-        mDragHandle = findViewById(R.id.qs_drag_handle_view);
+         mBackground = findViewById(R.id.quick_settings_background);
+         mStatusBarBackground = findViewById(R.id.quick_settings_status_bar_background);
+         mBackgroundGradient = findViewById(R.id.quick_settings_gradient_view);
+@@ -234,8 +232,6 @@ public class QSContainerImpl extends FrameLayout {
+         int height = calculateContainerHeight();
+         setBottom(getTop() + height);
+         mQSDetail.setBottom(getTop() + height);
+-        // Pin the drag handle to the bottom of the panel.
+-        mDragHandle.setTranslationY(height - mDragHandle.getHeight());
+         mBackground.setTop(mQSPanelContainer.getTop());
+         updateBackgroundBottom(height, animate);
+     }
+@@ -273,7 +269,6 @@ public class QSContainerImpl extends FrameLayout {
+ 
+     public void setExpansion(float expansion) {
+         mQsExpansion = expansion;
+-        mDragHandle.setAlpha(1.0f - expansion);
+         updateExpansion();
+     }
+ 
+-- 
+2.25.1
+

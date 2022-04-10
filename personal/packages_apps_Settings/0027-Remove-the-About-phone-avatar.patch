@@ -1,0 +1,49 @@
+From 6dd4c909b03f646433ea8d9d8f4ed3b7e096192b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 16 Nov 2020 15:39:08 -0500
+Subject: [PATCH 27/53] Remove the "About phone" avatar
+
+  from
+  https://github.com/ezio84/abc_packages_apps_Settings/commit/b86c9d087bd22bded90deca374edee7c2031e53c
+
+Change-Id: Ibc192356d4f0e7b1b45a273d4c60f1058a9e4fca
+---
+ res/xml/my_device_info.xml                                      | 2 ++
+ .../settings/deviceinfo/aboutphone/MyDeviceInfoFragment.java    | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/res/xml/my_device_info.xml b/res/xml/my_device_info.xml
+index 85b1a8f89a..32bbf8f592 100644
+--- a/res/xml/my_device_info.xml
++++ b/res/xml/my_device_info.xml
+@@ -21,12 +21,14 @@
+     android:key="my_device_info_pref_screen"
+     android:title="@string/about_settings">
+ 
++<!--
+     <com.android.settingslib.widget.LayoutPreference
+         android:key="my_device_info_header"
+         android:order="0"
+         android:layout="@layout/settings_entity_header"
+         android:selectable="false"
+         settings:isPreferenceVisible="false"/>
++-->
+ 
+     <!-- Device name -->
+     <com.android.settings.widget.ValidatedEditTextPreference
+diff --git a/src/com/android/settings/deviceinfo/aboutphone/MyDeviceInfoFragment.java b/src/com/android/settings/deviceinfo/aboutphone/MyDeviceInfoFragment.java
+index f963e9e2ce..5369d0aa5d 100644
+--- a/src/com/android/settings/deviceinfo/aboutphone/MyDeviceInfoFragment.java
++++ b/src/com/android/settings/deviceinfo/aboutphone/MyDeviceInfoFragment.java
+@@ -76,7 +76,7 @@ public class MyDeviceInfoFragment extends DashboardFragment
+     @Override
+     public void onStart() {
+         super.onStart();
+-        initHeader();
++        //initHeader();
+     }
+ 
+     @Override
+-- 
+2.25.1
+

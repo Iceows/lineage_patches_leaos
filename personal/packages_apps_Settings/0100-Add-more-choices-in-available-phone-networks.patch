@@ -1,0 +1,244 @@
+From c9b85fabe69ddf7166362bd7ca247d17179d2ef0 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Tue, 22 Feb 2022 10:39:22 +0100
+Subject: [PATCH] Add more choices in available phone networks
+
+Add more combinaison of 2G, 3G, LTE(4G) network
+---
+ res/values-fr/strings.xml                     | 10 +++
+ res/values-ru/strings.xml                     | 10 +++
+ res/values/arrays.xml                         | 30 ++++++---
+ res/values/strings.xml                        | 11 ++++
+ ...nabledNetworkModePreferenceController.java | 66 ++++++++++++++-----
+ 5 files changed, 102 insertions(+), 25 deletions(-)
+
+diff --git a/res/values-fr/strings.xml b/res/values-fr/strings.xml
+index 005aa05953..d471c58592 100644
+--- a/res/values-fr/strings.xml
++++ b/res/values-fr/strings.xml
+@@ -4760,6 +4760,16 @@
+     <string name="network_recommended" msgid="4665525658003183348">" (option recommandée)"</string>
+     <string name="network_lte" msgid="2449425437381668780">"LTE (recommandé)"</string>
+     <string name="network_4G" msgid="9018841362928321047">"4G (recommandé)"</string>
++    <string name="network_2G_3G_lte">"2G/3G/LTE auto"</string>
++    <string name="network_2G_3G_4G">"2G/3G/4G auto"</string>
++    <string name="network_3G_lte">"3G/LTE auto"</string>
++    <string name="network_3G_4G">"3G/4G auto"</string>
++    <string name="network_2G_3G">"2G/3G auto"</string>
++    <string name="network_2G_3G_preferred">"2G/3G (recommandé)"</string>
++    <string name="network_lte_only">"Seulement LTE"</string>
++    <string name="network_4G_only">"Seulement 4G"</string>
++    <string name="network_3G_only">"Seulement 3G"</string>
++    <string name="network_2G_only">"Seulement 2G"</string>
+     <string name="label_available" msgid="5305726869955838606">"Réseaux disponibles"</string>
+     <string name="load_networks_progress" msgid="4717874401621250401">"Recherche…"</string>
+     <string name="register_on_network" msgid="2169662800750709709">"Enregistrement sur <xliff:g id="NETWORK">%s</xliff:g>…"</string>
+diff --git a/res/values-ru/strings.xml b/res/values-ru/strings.xml
+index 98c5a1d9a7..da8de37be7 100644
+--- a/res/values-ru/strings.xml
++++ b/res/values-ru/strings.xml
+@@ -4936,6 +4936,16 @@
+     <string name="network_recommended" msgid="4665525658003183348">" (рекомендуется)"</string>
+     <string name="network_lte" msgid="2449425437381668780">"LTE (рекомендуется)"</string>
+     <string name="network_4G" msgid="9018841362928321047">"4G (рекомендуется)"</string>
++    <string name="network_2G_3G_lte">"2G/3G/LTE авто"</string>
++    <string name="network_2G_3G_4G">"2G/3G/4G авто"</string>
++    <string name="network_3G_lte">"3G/LTE авто"</string>
++    <string name="network_3G_4G">"3G/4G авто"</string>
++    <string name="network_2G_3G">"2G/3G авто"</string>
++    <string name="network_2G_3G_preferred">"2G/3G предпочтительно"</string>
++    <string name="network_lte_only">"Только LTE"</string>
++    <string name="network_4G_only">"Только 4G"</string>
++    <string name="network_3G_only">"Только 3G"</string>
++    <string name="network_2G_only">"Только 2G"</string>
+     <string name="label_available" msgid="5305726869955838606">"Доступные сети"</string>
+     <string name="load_networks_progress" msgid="4717874401621250401">"Поиск…"</string>
+     <string name="register_on_network" msgid="2169662800750709709">"Регистрация в сети \"<xliff:g id="NETWORK">%s</xliff:g>\"…"</string>
+diff --git a/res/values/arrays.xml b/res/values/arrays.xml
+index 617548cadc..b0054f4ef8 100644
+--- a/res/values/arrays.xml
++++ b/res/values/arrays.xml
+@@ -1273,19 +1273,31 @@
+     </string-array>
+ 
+     <string-array name="enabled_networks_choices" translatable="false">
+-        <item>@string/network_lte</item>
+-        <item>@string/network_3G</item>
+-        <item>@string/network_2G</item>
++        <item>@string/network_2G_3G_lte</item>
++        <item>@string/network_3G_lte</item>
++        <item>@string/network_2G_3G</item>
++        <item>@string/network_2G_3G_preferred</item>
++        <item>@string/network_lte_only</item>
++        <item>@string/network_3G_only</item>
++        <item>@string/network_2G_only</item>
+     </string-array>
+     <string-array name="enabled_networks_4g_choices" translatable="false">
+-        <item>@string/network_4G</item>
+-        <item>@string/network_3G</item>
+-        <item>@string/network_2G</item>
++        <item>@string/network_2G_3G_4G</item>
++        <item>@string/network_3G_4G</item>
++        <item>@string/network_2G_3G</item>
++        <item>@string/network_2G_3G_preferred</item>
++        <item>@string/network_4G_only</item>
++        <item>@string/network_3G_only</item>
++        <item>@string/network_2G_only</item>
+     </string-array>
+     <string-array name="enabled_networks_values" translatable="false">
+-        <item>"9"</item>
+-        <item>"0"</item>
+-        <item>"1"</item>
++         <item>"9"</item>
++         <item>"12"</item>
++         <item>"3"</item>
++         <item>"0"</item>
++         <item>"11"</item>
++         <item>"2"</item>
++         <item>"1"</item>
+     </string-array>
+ 
+     <string-array name="enabled_networks_except_gsm_values" translatable="false">
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 0c6fe1a541..dd651c970b 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -11632,6 +11632,17 @@
+     <!-- Text for Network world mode GSM LTE [CHAR LIMIT=NONE] -->
+     <string name="network_world_mode_gsm_lte" translatable="false">LTE / GSM / UMTS</string>
+ 
++    <!-- Text for Network mode GSM LTE [CHAR LIMIT=NONE] -->
++    <string name="network_2G_3G_lte">2G/3G/LTE auto</string>
++    <string name="network_2G_3G_4G">2G/3G/4G auto</string>
++    <string name="network_3G_lte">3G/LTE auto</string>
++    <string name="network_3G_4G">3G/4G auto</string>
++    <string name="network_2G_3G">2G/3G auto</string>
++    <string name="network_2G_3G_preferred">2G/3G preferred</string>
++    <string name="network_lte_only">LTE only</string>
++    <string name="network_4G_only">4G only</string>
++    <string name="network_3G_only">3G only</string>
++    <string name="network_2G_only">2G only</string>
+     <!-- Available networks screen title/heading [CHAR LIMIT=NONE] -->
+     <string name="label_available">Available networks</string>
+     <!-- Mobile network settings screen, toast when searching for available networks [CHAR LIMIT=NONE] -->
+diff --git a/src/com/android/settings/network/telephony/EnabledNetworkModePreferenceController.java b/src/com/android/settings/network/telephony/EnabledNetworkModePreferenceController.java
+index fd585a151d..5f87d3192b 100644
+--- a/src/com/android/settings/network/telephony/EnabledNetworkModePreferenceController.java
++++ b/src/com/android/settings/network/telephony/EnabledNetworkModePreferenceController.java
+@@ -327,11 +327,23 @@ public class EnabledNetworkModePreferenceController extends
+                         throw new IllegalArgumentException(
+                                 "ENABLED_NETWORKS_4G_CHOICES index error.");
+                     }
+-                    add5gEntry(addNrToLteNetworkType(
+-                            entryValuesInt[0]));
+-                    add4gEntry(entryValuesInt[0]);
+-                    add3gEntry(entryValuesInt[1]);
+-                    add2gEntry(entryValuesInt[2]);
++                     add5gEntry(addNrToLteNetworkType(
++                             entryValuesInt[0]));
++/*
++                     add4gEntry(entryValuesInt[0]);
++                     add3gEntry(entryValuesInt[1]);
++                     add2gEntry(entryValuesInt[2]);
++*/
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_2G_3G_4G : R.string.network_2G_3G_lte), entryValuesInt[0]);
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_3G_4G : R.string.network_3G_lte), entryValuesInt[1]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_3G), entryValuesInt[2]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_3G_preferred), entryValuesInt[3]);
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_4G_only : R.string.network_lte_only), entryValuesInt[4]);
++                    addCustomEntry(mContext.getString(R.string.network_3G_only), entryValuesInt[5]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_only), entryValuesInt[6]);
+                     break;
+                 case ENABLED_NETWORKS_CHOICES:
+                     entryValues = mContext.getResources().getStringArray(
+@@ -340,10 +352,23 @@ public class EnabledNetworkModePreferenceController extends
+                     if (entryValuesInt.length < 3) {
+                         throw new IllegalArgumentException("ENABLED_NETWORKS_CHOICES index error.");
+                     }
++
+                     add5gEntry(addNrToLteNetworkType(entryValuesInt[0]));
++/*
+                     addLteEntry(entryValuesInt[0]);
+                     add3gEntry(entryValuesInt[1]);
+                     add2gEntry(entryValuesInt[2]);
++*/
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_2G_3G_4G : R.string.network_2G_3G_lte), entryValuesInt[0]);
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_3G_4G : R.string.network_3G_lte), entryValuesInt[1]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_3G), entryValuesInt[2]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_3G_preferred), entryValuesInt[3]);
++                    addCustomEntry(mContext.getString(mShow4gForLTE ?
++                            R.string.network_4G_only : R.string.network_lte_only), entryValuesInt[4]);
++                    addCustomEntry(mContext.getString(R.string.network_3G_only), entryValuesInt[5]);
++                    addCustomEntry(mContext.getString(R.string.network_2G_only), entryValuesInt[6]);
+                     break;
+                 case PREFERRED_NETWORK_MODE_CHOICES_WORLD_MODE:
+                     entryValues = mContext.getResources().getStringArray(
+@@ -460,11 +485,17 @@ public class EnabledNetworkModePreferenceController extends
+                     setSummary(R.string.network_3G);
+                     break;
+                 case TelephonyManagerConstants.NETWORK_MODE_WCDMA_ONLY:
++                    setSelectedEntry(TelephonyManagerConstants.NETWORK_MODE_WCDMA_ONLY);
++                    setSummary(R.string.network_3G_only);
++                    break;
+                 case TelephonyManagerConstants.NETWORK_MODE_GSM_UMTS:
++                    setSelectedEntry(TelephonyManagerConstants.NETWORK_MODE_GSM_UMTS);
++                    setSummary(R.string.network_2G_3G);
++                    break;
+                 case TelephonyManagerConstants.NETWORK_MODE_WCDMA_PREF:
+                     if (!mIsGlobalCdma) {
+                         setSelectedEntry(TelephonyManagerConstants.NETWORK_MODE_WCDMA_PREF);
+-                        setSummary(R.string.network_3G);
++                        setSummary(R.string.network_2G_3G_preferred);
+                     } else {
+                         setSelectedEntry(
+                                 TelephonyManagerConstants.NETWORK_MODE_LTE_CDMA_EVDO_GSM_WCDMA);
+@@ -474,7 +505,7 @@ public class EnabledNetworkModePreferenceController extends
+                 case TelephonyManagerConstants.NETWORK_MODE_GSM_ONLY:
+                     if (!mIsGlobalCdma) {
+                         setSelectedEntry(TelephonyManagerConstants.NETWORK_MODE_GSM_ONLY);
+-                        setSummary(R.string.network_2G);
++                        setSummary(R.string.network_2G_only);
+                     } else {
+                         setSelectedEntry(
+                                 TelephonyManagerConstants.NETWORK_MODE_LTE_CDMA_EVDO_GSM_WCDMA);
+@@ -485,20 +516,23 @@ public class EnabledNetworkModePreferenceController extends
+                     if (MobileNetworkUtils.isWorldMode(mContext, mSubId)) {
+                         setSummary(
+                                 R.string.preferred_network_mode_lte_gsm_umts_summary);
+-                        break;
++                    } else {
++                        setSelectedEntry(
++                                TelephonyManagerConstants.NETWORK_MODE_LTE_GSM_WCDMA);
++                        setSummary(R.string.network_2G_3G_lte);
+                     }
++                    break;
+                 case TelephonyManagerConstants.NETWORK_MODE_LTE_ONLY:
++                    setSelectedEntry(TelephonyManagerConstants.NETWORK_MODE_LTE_ONLY);
++                    setSummary(mShow4gForLTE
++                                    ? R.string.network_4G_only : R.string.network_lte_only);
++                    break;
+                 case TelephonyManagerConstants.NETWORK_MODE_LTE_WCDMA:
+                     if (!mIsGlobalCdma) {
+                         setSelectedEntry(
+-                                TelephonyManagerConstants.NETWORK_MODE_LTE_GSM_WCDMA);
+-                        if (is5gEntryDisplayed()) {
+-                            setSummary(mShow4gForLTE
+-                                    ? R.string.network_4G_pure : R.string.network_lte_pure);
+-                        } else {
+-                            setSummary(mShow4gForLTE
+-                                    ? R.string.network_4G : R.string.network_lte);
+-                        }
++                                TelephonyManagerConstants.NETWORK_MODE_LTE_WCDMA);
++                        setSummary(mShow4gForLTE
++                                ? R.string.network_3G_4G : R.string.network_3G_lte);
+                     } else {
+                         setSelectedEntry(
+                                 TelephonyManagerConstants.NETWORK_MODE_LTE_CDMA_EVDO_GSM_WCDMA);
+-- 
+2.30.2
+

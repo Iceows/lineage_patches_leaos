@@ -1,0 +1,75 @@
+From 4a375895c52f4a0b2ca503a9ce8ca70b094faabc Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Sun, 20 Sep 2020 00:30:10 -0700
+Subject: [PATCH 205/230] GlobalScreenshot: Fix old screenshot preview
+ appearing in screenshots
+
+The screenshot code already dismisses the old screenshot preview
+immediately before taking a new one, but it fails to account for the
+fact that the change will not take effect until the next frame render,
+and takes a new screenshot immediately.
+
+To fix the problem, we can invalidate the root view just in case to make
+sure the screen will be re-rendered, and then take the screenshot after
+the new frame has been committed.
+
+Unfortunately, this adds ~2 frames of latency to screenshot capturing
+because we have to attach the screenshot callback to the beginning of
+the next frame,  but I'm not aware of any way to reduce it as we can't
+attach a post-frame commit callback from here.
+
+Change-Id: I76aaeb27747c5f025e31ccf6dbcff45d2c26d484
+---
+ .../systemui/screenshot/GlobalScreenshot.java | 29 ++++++++++++++-----
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+index 20e30ff1b41..21a14e6fbf3 100644
+--- a/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
++++ b/packages/SystemUI/src/com/android/systemui/screenshot/GlobalScreenshot.java
+@@ -69,6 +69,7 @@ import android.provider.Settings;
+ import android.util.DisplayMetrics;
+ import android.util.Log;
+ import android.util.MathUtils;
++import android.view.Choreographer;
+ import android.view.Display;
+ import android.view.KeyEvent;
+ import android.view.LayoutInflater;
+@@ -706,13 +707,27 @@ public class GlobalScreenshot implements ViewTreeObserver.OnComputeInternalInset
+             return;
+         }
+ 
+-        // copy the input Rect, since SurfaceControl.screenshot can mutate it
+-        Rect screenRect = new Rect(crop);
+-        int rot = mDisplay.getRotation();
+-        int width = crop.width();
+-        int height = crop.height();
+-        saveScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
+-                Insets.NONE, true);
++        // Dismiss the old screenshot first to prevent it from showing up in the new screenshot
++        dismissScreenshot("new screenshot requested", true);
++
++        // Force a new frame to be rendered now that the old screenshot has been cleared
++        mScreenshotLayout.getRootView().invalidate();
++        Choreographer.getInstance().postFrameCallback(time1 -> {
++            // Unfortunately, we need to introduce another frame of latency because this
++            // is a pre-draw callback
++            mScreenshotLayout.getRootView().invalidate();
++
++            // Finally, take the screenshot once we're sure that old screenshot view is gone
++            Choreographer.getInstance().postFrameCallback(time2 -> {
++                // copy the input Rect, since SurfaceControl.screenshot can mutate it
++                Rect screenRect = new Rect(crop);
++                int rot = mDisplay.getRotation();
++                int width = crop.width();
++                int height = crop.height();
++                saveScreenshot(SurfaceControl.screenshot(crop, width, height, rot), finisher, screenRect,
++                        Insets.NONE, true);
++            });
++        });
+     }
+ 
+     private void saveScreenshot(Bitmap screenshot, Consumer<Uri> finisher, Rect screenRect,
+-- 
+2.25.1
+

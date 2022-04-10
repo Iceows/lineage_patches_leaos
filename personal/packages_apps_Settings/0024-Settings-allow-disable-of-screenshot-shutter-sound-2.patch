@@ -1,0 +1,146 @@
+From 0213a014c17ca39637e2e8080943c1a6e9ace340 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 16 Nov 2020 04:47:10 -0500
+Subject: [PATCH 24/53] Settings: allow disable of screenshot shutter sound
+ [2/2]
+
+  from
+  https://github.com/StatiXOS/android_packages_apps_Settings/commit/091939e62984fc8d9c72ab46cda2d0512c169a11
+
+Change-Id: Ie6733b39f6869ecb63ed5807151c5e69234bb0d6
+---
+ res/values-fr/custom_strings.xml              |  1 +
+ res/values-ru/custom_strings.xml              |  2 +
+ res/values/custom_strings.xml                 |  2 +
+ res/xml/sound_settings.xml                    |  5 +++
+ .../ScreenshotSoundPreferenceController.java  | 38 +++++++++++++++++++
+ .../settings/notification/SoundSettings.java  |  6 ++-
+ 6 files changed, 53 insertions(+), 1 deletion(-)
+ create mode 100644 src/com/android/settings/notification/ScreenshotSoundPreferenceController.java
+
+diff --git a/res/values-fr/custom_strings.xml b/res/values-fr/custom_strings.xml
+index dd707b0c7e..eb2a68a94a 100644
+--- a/res/values-fr/custom_strings.xml
++++ b/res/values-fr/custom_strings.xml
+@@ -41,4 +41,5 @@
+     <string name="theme_customization_accent_color_title">les Dégradés de couleurs</string>
+     <string name="theme_customization_font_title">Headline /les thèmes de fonds</string>
+     <string name="theme_customization_icon_shape_title">forme des icones</string>
++    <string name="screenshot_sound_title">Son de la Capture D\'écran</string>
+ </resources>
+diff --git a/res/values-ru/custom_strings.xml b/res/values-ru/custom_strings.xml
+index 9ce964a80b..117abbbf31 100644
+--- a/res/values-ru/custom_strings.xml
++++ b/res/values-ru/custom_strings.xml
+@@ -46,4 +46,6 @@
+     <!-- Google backup restore -->
+     <string name="custom_google_sync_title">Восстановить резервную копию из Google Cloud</string>
+     <string name="custom_google_sync_summary">Запустить вручную восстановление резервной копии из Google Cloud\nПримечание: нужны com.google.android.apps.restore и вход в учётную запись</string>
++    <!-- Screenshot shutter -->
++    <string name="screenshot_shutter_sound_title">Звук снимка экрана</string>
+ </resources>
+diff --git a/res/values/custom_strings.xml b/res/values/custom_strings.xml
+index 4c1442a407..c5d29f9f0c 100644
+--- a/res/values/custom_strings.xml
++++ b/res/values/custom_strings.xml
+@@ -40,4 +40,6 @@
+     <!-- Google backup restore -->
+     <string name="custom_google_sync_title">Restore Google Cloud backup</string>
+     <string name="custom_google_sync_summary">Manually launch Google Cloud backup restore action\nNote: need com.google.android.apps.restore and logging in to the Google account</string>
++    <!-- Screenshot shutter -->
++    <string name="screenshot_shutter_sound_title">Screenshot sound</string>
+ </resources>
+diff --git a/res/xml/sound_settings.xml b/res/xml/sound_settings.xml
+index ee07dbed11..08b31db45e 100644
+--- a/res/xml/sound_settings.xml
++++ b/res/xml/sound_settings.xml
+@@ -189,6 +189,11 @@
+           android:key="dial_pad_tones"
+           android:title="@string/dial_pad_tones_title"/>
+ 
++        <!-- Screenshot sound -->
++        <SwitchPreference
++          android:key="screenshot_shutter_sound"
++          android:title="@string/screenshot_shutter_sound_title" />
++
+         <!-- Screen locking sounds -->
+         <SwitchPreference
+           android:key="screen_locking_sounds"
+diff --git a/src/com/android/settings/notification/ScreenshotSoundPreferenceController.java b/src/com/android/settings/notification/ScreenshotSoundPreferenceController.java
+new file mode 100644
+index 0000000000..0df38bc422
+--- /dev/null
++++ b/src/com/android/settings/notification/ScreenshotSoundPreferenceController.java
+@@ -0,0 +1,38 @@
++/*
++ * Copyright (C) 2017 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.notification;
++
++import static com.android.settings.notification.SettingPref.TYPE_SYSTEM;
++
++import android.content.Context;
++
++import android.provider.Settings.System;
++import com.android.settings.SettingsPreferenceFragment;
++import com.android.settingslib.core.lifecycle.Lifecycle;
++
++public class ScreenshotSoundPreferenceController extends SettingPrefController {
++
++    private static final String KEY_SCREENSHOT_SOUNDS = "screenshot_shutter_sound";
++
++    public ScreenshotSoundPreferenceController(Context context, SettingsPreferenceFragment parent,
++            Lifecycle lifecycle) {
++        super(context, parent, lifecycle);
++        mPreference = new SettingPref(
++            TYPE_SYSTEM, KEY_SCREENSHOT_SOUNDS, System.SCREENSHOT_SHUTTER_SOUND, DEFAULT_ON);
++    }
++
++}
+diff --git a/src/com/android/settings/notification/SoundSettings.java b/src/com/android/settings/notification/SoundSettings.java
+index ec2e31d447..eacd7422da 100644
+--- a/src/com/android/settings/notification/SoundSettings.java
++++ b/src/com/android/settings/notification/SoundSettings.java
+@@ -294,6 +294,8 @@ public class SoundSettings extends DashboardFragment implements OnActivityResult
+                 new BootSoundPreferenceController(context);
+         final EmergencyTonePreferenceController emergencyTonePreferenceController =
+                 new EmergencyTonePreferenceController(context, fragment, lifecycle);
++        final ScreenshotSoundPreferenceController screenshotSoundPreferenceController =
++                new ScreenshotSoundPreferenceController(context, fragment, lifecycle);
+ 
+         controllers.add(dialPadTonePreferenceController);
+         controllers.add(screenLockSoundPreferenceController);
+@@ -304,6 +306,7 @@ public class SoundSettings extends DashboardFragment implements OnActivityResult
+         controllers.add(dockAudioMediaPreferenceController);
+         controllers.add(bootSoundPreferenceController);
+         controllers.add(emergencyTonePreferenceController);
++        controllers.add(screenshotSoundPreferenceController);
+         controllers.add(new PreferenceCategoryController(context,
+                 "other_sounds_and_vibrations_category").setChildren(
+                 Arrays.asList(dialPadTonePreferenceController,
+@@ -314,7 +317,8 @@ public class SoundSettings extends DashboardFragment implements OnActivityResult
+                         vibrateOnTouchPreferenceController,
+                         dockAudioMediaPreferenceController,
+                         bootSoundPreferenceController,
+-                        emergencyTonePreferenceController)));
++                        emergencyTonePreferenceController,
++                        screenshotSoundPreferenceController)));
+ 
+         return controllers;
+     }
+-- 
+2.25.1
+

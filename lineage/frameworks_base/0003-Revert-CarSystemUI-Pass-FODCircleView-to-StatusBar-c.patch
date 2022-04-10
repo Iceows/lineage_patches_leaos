@@ -1,0 +1,78 @@
+From d76887155e2ac650c486c256c47a0b549c72c31d Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 26 Jul 2021 10:09:54 +0000
+Subject: [PATCH 03/14] Revert "CarSystemUI: Pass FODCircleView to StatusBar
+ constructor"
+
+This reverts commit 75137cdbf4d1b39bbf42c4239a51988efc79df7a.
+---
+ .../android/systemui/car/statusbar/UnusedStatusBar.java    | 7 ++-----
+ .../systemui/car/statusbar/UnusedStatusBarModule.java      | 7 ++-----
+ 2 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBar.java b/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBar.java
+index 6095928c4cf..b7b9431d69d 100644
+--- a/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBar.java
++++ b/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBar.java
+@@ -26,7 +26,6 @@ import com.android.keyguard.KeyguardUpdateMonitor;
+ import com.android.keyguard.ViewMediatorCallback;
+ import com.android.systemui.InitController;
+ import com.android.systemui.assist.AssistManager;
+-import com.android.systemui.biometrics.FODCircleViewImpl;
+ import com.android.systemui.broadcast.BroadcastDispatcher;
+ import com.android.systemui.bubbles.BubbleController;
+ import com.android.systemui.colorextraction.SysuiColorExtractor;
+@@ -185,8 +184,7 @@ public class UnusedStatusBar extends StatusBar {
+             DismissCallbackRegistry dismissCallbackRegistry,
+             Lazy<NotificationShadeDepthController> notificationShadeDepthControllerLazy,
+             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
+-            TunerService tunerService,
+-            FODCircleViewImpl fodCircleViewImpl) {
++            TunerService tunerService) {
+         super(context, notificationsController, lightBarController, autoHideController,
+                 keyguardUpdateMonitor, statusBarIconController, pulseExpansionHandler,
+                 notificationWakeUpCoordinator, keyguardBypassController, keyguardStateController,
+@@ -213,8 +211,7 @@ public class UnusedStatusBar extends StatusBar {
+                 userInfoControllerImpl, phoneStatusBarPolicy, keyguardIndicationController,
+                 dismissCallbackRegistry, notificationShadeDepthControllerLazy,
+                 statusBarTouchableRegionManager,
+-                tunerService,
+-                fodCircleViewImpl);
++                tunerService);
+     }
+ 
+     @Override
+diff --git a/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBarModule.java b/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBarModule.java
+index 28bcaf6c144..f2cef14b558 100644
+--- a/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBarModule.java
++++ b/packages/CarSystemUI/src/com/android/systemui/car/statusbar/UnusedStatusBarModule.java
+@@ -30,7 +30,6 @@ import com.android.keyguard.KeyguardUpdateMonitor;
+ import com.android.keyguard.ViewMediatorCallback;
+ import com.android.systemui.InitController;
+ import com.android.systemui.assist.AssistManager;
+-import com.android.systemui.biometrics.FODCircleViewImpl;
+ import com.android.systemui.broadcast.BroadcastDispatcher;
+ import com.android.systemui.bubbles.BubbleController;
+ import com.android.systemui.colorextraction.SysuiColorExtractor;
+@@ -205,8 +204,7 @@ public interface UnusedStatusBarModule {
+             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
+             DismissCallbackRegistry dismissCallbackRegistry,
+             StatusBarTouchableRegionManager statusBarTouchableRegionManager,
+-            TunerService tunerService,
+-            FODCircleViewImpl fodCircleViewImpl) {
++            TunerService tunerService) {
+         return new UnusedStatusBar(
+                 context,
+                 notificationsController,
+@@ -285,7 +283,6 @@ public interface UnusedStatusBarModule {
+                 dismissCallbackRegistry,
+                 notificationShadeDepthController,
+                 statusBarTouchableRegionManager,
+-                tunerService,
+-                fodCircleViewImpl);
++                tunerService);
+     }
+ }
+-- 
+2.30.2
+

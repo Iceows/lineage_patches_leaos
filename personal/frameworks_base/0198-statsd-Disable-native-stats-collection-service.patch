@@ -1,0 +1,42 @@
+From c3e3af2c3d514d10cdc8dcfcac9769cafb69db20 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 5 Apr 2021 22:32:17 -0700
+Subject: [PATCH 198/230] statsd: Disable native stats collection service
+
+When opening and closing activities in Settings, a measurably
+significant amount of CPU time is spent processing and logging stats
+events in statsd, as reported by simpleperf:
+
+0.02%     /apex/com.android.os.statsd/lib64/libstatspull.so                                                                                         @plt
+0.01%     /apex/com.android.os.statsd/bin/statsd                                                                                                    @plt
+0.01%     /apex/com.android.os.statsd/bin/statsd                                                                                                    SocketListener::runListener()
+0.01%     /apex/com.android.os.statsd/bin/statsd                                                                                                    android::os::statsd::LogEvent::parseBuffer(unsigned char*, unsigned long)
+0.01%     /apex/com.android.os.statsd/bin/statsd                                                                                                    android::os::statsd::LogEvent::parseAnnotations(unsigned char, int)
+
+Over longer device uptimes with real-world usage, statsd uses a
+substantial amount of total CPU time. We have no use for the stats
+recorded by statsd, so disable the service entirely to save CPU in
+potential hotpaths.
+
+This is the frameworks/base part of the change; changes to system/core
+are also required.
+
+Test: simpleperf record -a; verify that statsd no longer appears in
+      sample hits
+Change-Id: Ifd49c46e20ee228941d3cb470a513a791dc5fe60
+---
+ apex/statsd/statsd.rc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/apex/statsd/statsd.rc b/apex/statsd/statsd.rc
+index 605da2af0c1..b8d97f1fbb1 100644
+--- a/apex/statsd/statsd.rc
++++ b/apex/statsd/statsd.rc
+@@ -18,3 +18,4 @@ service statsd /apex/com.android.os.statsd/bin/statsd
+     user statsd
+     group statsd log
+     writepid /dev/cpuset/system-background/tasks
++    disabled
+-- 
+2.25.1
+

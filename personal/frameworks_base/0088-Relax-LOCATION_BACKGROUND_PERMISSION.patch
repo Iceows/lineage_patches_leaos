@@ -1,0 +1,26 @@
+From f93072992dcbd044ff089a00affc485b0a619aec Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 17 Dec 2020 01:48:32 -0500
+Subject: [PATCH 088/230] Relax LOCATION_BACKGROUND_PERMISSION
+
+  from
+  https://github.com/syberia-project/platform_frameworks_base/commit/43b3a83a0d7b99a7605421214827f4d2993fd064
+---
+ core/res/AndroidManifest.xml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index 86983c4d995..da7d3309edd 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -1018,7 +1018,6 @@
+     <permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
+         android:permissionGroup="android.permission-group.UNDEFINED"
+         android:label="@string/permlab_accessBackgroundLocation"
+-        android:permissionFlags="hardRestricted"
+         android:description="@string/permdesc_accessBackgroundLocation"
+         android:protectionLevel="dangerous|instant" />
+ 
+-- 
+2.25.1
+

@@ -1,0 +1,87 @@
+From 9693669448fd9a0e94ca5953f2b82eeb43a8ae2d Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 9 Feb 2021 05:39:51 -0500
+Subject: [PATCH 126/230] require unlocking to use Reboot quick tile
+
+---
+ .../android/systemui/qs/tiles/RebootTile.java | 41 +++++++++++++++++--
+ 1 file changed, 38 insertions(+), 3 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/tiles/RebootTile.java b/packages/SystemUI/src/com/android/systemui/qs/tiles/RebootTile.java
+index 662e822273b..03382003a52 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/tiles/RebootTile.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/tiles/RebootTile.java
+@@ -23,7 +23,9 @@ import android.os.PowerManager;
+ import android.service.quicksettings.Tile;
+ 
+ import com.android.systemui.R;
++import com.android.systemui.plugins.ActivityStarter;
+ import com.android.systemui.plugins.qs.QSTile.BooleanState;
++import com.android.systemui.statusbar.policy.KeyguardStateController;
+ import com.android.systemui.qs.QSHost;
+ import com.android.systemui.qs.tileimpl.QSTileImpl;
+ 
+@@ -35,9 +37,23 @@ public class RebootTile extends QSTileImpl<BooleanState> {
+ 
+     private boolean mRebootToRecovery = false;
+ 
++    private final ActivityStarter mActivityStarter;
++    private final KeyguardStateController mKeyguard;
++
+     @Inject
+-    public RebootTile(QSHost host) {
++    public RebootTile(QSHost host, ActivityStarter activityStarter,
++           KeyguardStateController keyguardStateController) {
+         super(host);
++
++        mActivityStarter = activityStarter;
++        mKeyguard = keyguardStateController;
++        final KeyguardStateController.Callback callback = new KeyguardStateController.Callback() {
++            @Override
++            public void onKeyguardShowingChanged() {
++                refreshState();
++            }
++        };
++        mKeyguard.observe(this, callback);
+     }
+ 
+     @Override
+@@ -45,14 +61,33 @@ public class RebootTile extends QSTileImpl<BooleanState> {
+         return new BooleanState();
+     }
+ 
+-    @Override
+-    public void handleClick() {
++    private void handleClickInner() {
+         mRebootToRecovery = !mRebootToRecovery;
+         refreshState();
+     }
+ 
++    @Override
++    protected void handleClick() {
++        if (mKeyguard.isMethodSecure() && mKeyguard.isShowing()) {
++            mActivityStarter.postQSRunnableDismissingKeyguard(() -> {
++                mHost.openPanels();
++                handleClickInner();
++            });
++            return;
++        }
++        handleClickInner();
++    }
++
+     @Override
+     protected void handleLongClick() {
++        if (mKeyguard.isMethodSecure() && mKeyguard.isShowing()) {
++            mActivityStarter.postQSRunnableDismissingKeyguard(() -> {
++                mHost.openPanels();
++                handleClickInner();
++            });
++            return;
++        }
++
+         mHost.collapsePanels();
+         Handler handler = new Handler();
+         handler.postDelayed(new Runnable() {
+-- 
+2.25.1
+

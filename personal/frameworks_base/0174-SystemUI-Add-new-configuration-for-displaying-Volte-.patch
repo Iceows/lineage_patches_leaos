@@ -1,0 +1,559 @@
+From 9c1752c8d065b07763aa478014cdd0715732830c Mon Sep 17 00:00:00 2001
+From: Weijie Wang <weijiew@codeaurora.org>
+Date: Fri, 29 Jun 2018 17:54:25 +0800
+Subject: [PATCH 174/230] SystemUI: Add new configuration for displaying Volte
+ icon
+
+Add new configuration for displaying Volte icon
+Delete some unused code
+
+Change-Id: Idd583ed807b2daad794598c17496bbc99b81a00d
+CRs-Fixed: 2284782
+---
+ packages/SystemUI/Android.bp                  |  9 +++
+ packages/SystemUI/res/drawable/ic_volte.xml   | 49 ++++++++++++
+ .../res/drawable/ic_volte_no_voice.xml        | 50 ++++++++++++
+ .../layout/status_bar_mobile_signal_group.xml |  7 +-
+ packages/SystemUI/res/values/config.xml       |  3 +
+ .../qs/carrier/QSCarrierGroupController.java  |  2 +-
+ .../systemui/qs/tiles/CellularTile.java       |  2 +-
+ .../statusbar/StatusBarMobileView.java        | 17 +++++
+ .../phone/StatusBarSignalPolicy.java          |  9 ++-
+ .../statusbar/policy/CallbackHandler.java     |  4 +-
+ .../policy/MobileSignalController.java        | 76 ++++++++++++++++++-
+ .../statusbar/policy/NetworkController.java   |  2 +-
+ packages/SystemUI/tests/Android.mk            |  1 +
+ .../statusbar/policy/CallbackHandlerTest.java |  2 +-
+ 14 files changed, 223 insertions(+), 10 deletions(-)
+ create mode 100644 packages/SystemUI/res/drawable/ic_volte.xml
+ create mode 100644 packages/SystemUI/res/drawable/ic_volte_no_voice.xml
+
+diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
+index 84870f83ad2..589605493a0 100644
+--- a/packages/SystemUI/Android.bp
++++ b/packages/SystemUI/Android.bp
+@@ -76,6 +76,10 @@ android_library {
+     manifest: "AndroidManifest.xml",
+     additional_manifests: ["LineageManifest.xml"],
+ 
++    libs: [
++        "ims-common",
++    ],
++
+     kotlincflags: ["-Xjvm-default=enable"],
+ 
+     plugins: ["dagger2-compiler-2.19"],
+@@ -150,6 +154,7 @@ android_library {
+     libs: [
+         "android.test.runner",
+         "android.test.base",
++        "ims-common",
+     ],
+     kotlincflags: ["-Xjvm-default=enable"],
+     aaptflags: [
+@@ -175,6 +180,10 @@ android_app {
+         proguard_flags_files: ["proguard.flags"],
+     },
+ 
++    libs: [
++        "ims-common",
++    ],
++
+     kotlincflags: ["-Xjvm-default=enable"],
+ 
+     dxflags: ["--multi-dex"],
+diff --git a/packages/SystemUI/res/drawable/ic_volte.xml b/packages/SystemUI/res/drawable/ic_volte.xml
+new file mode 100644
+index 00000000000..511042f3436
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/ic_volte.xml
+@@ -0,0 +1,49 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--Copyright (c) 2018, The Linux Foundation. All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are
++ * met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above
++ *    copyright notice, this list of conditions and the following
++ *    disclaimer in the documentation and/or other materials provided
++ *    with the distribution.
++ *  * Neither the name of The Linux Foundation nor the names of its
++ *    contributors may be used to endorse or promote products derived
++ *    from this software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
++ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
++ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
++ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
++ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++-->
++
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="14dp"
++    android:height="17dp"
++    android:viewportWidth="14"
++    android:viewportHeight="17">
++
++    <path
++        android:pathData="M 1.2 4 H 13.7 V 13.2 H 1.2 V 4 Z" />
++    <path
++        android:fillColor="#FFFFFF"
++        android:pathData="M1.9,12.6V4h0.8v3.5h3.2V4h0.8v8.6H5.9v-4H2.7v4H1.9z" />
++    <path
++        android:fillColor="#FFFFFF"
++        
++android:pathData="M8,12.6V4h2.1c0.5,0,0.8,0,1.1,0.1c0.4,0.1,0.7,0.3,0.9,0.6c0.3,0.4,0.6,0.9,0.7,1.5s0.2,1.3,0.2,2c0,0.7-0.1,1.2-0.2,1.7c-0.1,0.5-0.2,0.9-0.4,1.3S12.2,11.8,12,12s-0.4,0.3-0.7,0.4s-0.6,0.1-1,0.1H8zM8.8,11.6h1.3c0.4,0,0.7-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.5-0.4c0.2-0.3,0.3-0.6,0.4-1.1c0.1-0.5,0.2-1,0.2-1.7c0-0.9-0.1-1.6-0.3-2.1c-0.2-0.5-0.5-0.8-0.8-1C11,5.1,10.6,5,10.1,5H8.8V11.6z" 
++/>
++    <path
++        android:fillColor="#000000"
++        android:pathData="M 2 9 L 1 9 L 1 9 L 2 9 Z" />
++</vector>
+diff --git a/packages/SystemUI/res/drawable/ic_volte_no_voice.xml b/packages/SystemUI/res/drawable/ic_volte_no_voice.xml
+new file mode 100644
+index 00000000000..490b624927f
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/ic_volte_no_voice.xml
+@@ -0,0 +1,50 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--Copyright (c) 2018, The Linux Foundation. All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are
++ * met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above
++ *    copyright notice, this list of conditions and the following
++ *    disclaimer in the documentation and/or other materials provided
++ *    with the distribution.
++ *  * Neither the name of The Linux Foundation nor the names of its
++ *    contributors may be used to endorse or promote products derived
++ *    from this software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
++ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
++ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
++ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
++ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++-->
++
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="14dp"
++    android:height="17dp"
++    android:viewportWidth="14"
++    android:viewportHeight="17">
++
++    <path
++        android:pathData="M 1.2 4 H 13.7 V 13.2 H 1.2 V 4 Z" />
++    <path
++        android:fillColor="#FFFFFF"
++        android:pathData="M1.9,12.6V4h0.8v3.5h3.2V4h0.8v8.6H5.9v-4H2.7v4H1.9z" />
++    <path
++        android:fillColor="#FFFFFF"
++        android:pathData="M8,12.6V4h2.1c0.5,0,0.8,0,1.1,0.1c0.4,0.1,0.7,0.3,0.9,0.6c0.3,0.4,0.6,0.9,0.7,1.5s0.2,1.3,0.2,2c0,0.7-0.1,1.2-0.2,1.7c-0.1,0.5-0.2,0.9-0.4,1.3S12.2,11.8,12,12s-0.4,0.3-0.7,0.4s-0.6,0.1-1,0.1H8zM8.8,11.6h1.3c0.4,0,0.7-0.1,0.9-0.2c0.2-0.1,0.4-0.3,0.5-0.4c0.2-0.3,0.3-0.6,0.4-1.1c0.1-0.5,0.2-1,0.2-1.7c0-0.9-0.1-1.6-0.3-2.1c-0.2-0.5-0.5-0.8-0.8-1C11,5.1,10.6,5,10.1,5H8.8V11.6z" />
++    <path
++        android:fillColor="#000000"
++        android:pathData="M 2 9 L 1 9 L 1 9 L 2 9 Z" />
++    <path
++        android:fillColor="#FFFFFF"
++        android:pathData="M 0.5 9 H 13.5 V 10 H 0.5 V 9 Z" />
++</vector>
+\ No newline at end of file
+diff --git a/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml b/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
+index c746217dd06..d6337f5e0f3 100644
+--- a/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
++++ b/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
+@@ -30,7 +30,12 @@
+         android:layout_height="match_parent"
+         android:gravity="center_vertical"
+         android:orientation="horizontal" >
+-
++        <ImageView
++            android:id="@+id/mobile_volte"
++            android:layout_height="wrap_content"
++            android:layout_width="wrap_content"
++            android:visibility="gone"
++            android:paddingEnd="2dp"/>
+         <FrameLayout
+             android:id="@+id/inout_container"
+             android:layout_height="17dp"
+diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xml
+index 3e83da11369..054dc5915ac 100644
+--- a/packages/SystemUI/res/values/config.xml
++++ b/packages/SystemUI/res/values/config.xml
+@@ -526,6 +526,9 @@
+ 
+     <!-- Preferred refresh rate at keyguard, if supported by the display -->
+     <integer name="config_keyguardRefreshRate">-1</integer>
++    
++    <!-- Whether to show VoLTE icon in the status bar -->
++    <bool name="config_display_volte">true</bool>
+ 
+     <!-- Whether or not to add a "people" notifications section -->
+     <bool name="config_usePeopleFiltering">false</bool>
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/carrier/QSCarrierGroupController.java b/packages/SystemUI/src/com/android/systemui/qs/carrier/QSCarrierGroupController.java
+index ebdcc0006dc..b448b3ce9b0 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/carrier/QSCarrierGroupController.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/carrier/QSCarrierGroupController.java
+@@ -68,7 +68,7 @@ public class QSCarrierGroupController {
+                 @Override
+                 public void setMobileDataIndicators(NetworkController.IconState statusIcon,
+                         NetworkController.IconState qsIcon, int statusType, int qsType,
+-                        boolean activityIn, boolean activityOut,
++                        boolean activityIn, boolean activityOut, int volteIcon,
+                         CharSequence typeContentDescription,
+                         CharSequence typeContentDescriptionHtml, CharSequence description,
+                         boolean isWide, int subId, boolean roaming) {
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java b/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
+index 8d87d51276d..5305babb913 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/tiles/CellularTile.java
+@@ -290,7 +290,7 @@ public class CellularTile extends QSTileImpl<SignalState> {
+ 
+         @Override
+         public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+-                int qsType, boolean activityIn, boolean activityOut,
++                int qsType, boolean activityIn, boolean activityOut, int stackedVoiceIcon,
+                 CharSequence typeContentDescription,
+                 CharSequence typeContentDescriptionHtml, CharSequence description,
+                 boolean isWide, int subId, boolean roaming) {
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java b/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
+index 1f97db8c6c3..e00fb345a04 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
+@@ -60,6 +60,7 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+     private View mMobileRoamingSpace;
+     private int mVisibleState = -1;
+     private DualToneHandler mDualToneHandler;
++    private ImageView mVolte;
+ 
+     public static StatusBarMobileView fromContext(Context context, String slot) {
+         LayoutInflater inflater = LayoutInflater.from(context);
+@@ -110,6 +111,7 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         mIn = findViewById(R.id.mobile_in);
+         mOut = findViewById(R.id.mobile_out);
+         mInoutContainer = findViewById(R.id.inout_container);
++        mVolte = findViewById(R.id.mobile_volte);
+ 
+         mMobileDrawable = new SignalDrawable(getContext());
+         mMobile.setImageDrawable(mMobileDrawable);
+@@ -185,6 +187,12 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         mOut.setVisibility(mState.activityOut ? View.VISIBLE : View.GONE);
+         mInoutContainer.setVisibility((mState.activityIn || mState.activityOut)
+                 ? View.VISIBLE : View.GONE);
++        if (mState.volteId > 0 ) {
++            mVolte.setImageResource(mState.volteId);
++            mVolte.setVisibility(View.VISIBLE);
++        }else {
++            mVolte.setVisibility(View.GONE);
++        }
+     }
+ 
+     private boolean updateState(MobileIconState state) {
+@@ -216,6 +224,15 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         mInoutContainer.setVisibility((state.activityIn || state.activityOut)
+                 ? View.VISIBLE : View.GONE);
+ 
++        if (mState.volteId != state.volteId) {
++            if (state.volteId != 0) {
++                mVolte.setImageResource(state.volteId);
++                mVolte.setVisibility(View.VISIBLE);
++            } else {
++                mVolte.setVisibility(View.GONE);
++            }
++        }
++
+         needsLayout |= state.roaming != mState.roaming
+                 || state.activityIn != mState.activityIn
+                 || state.activityOut != mState.activityOut;
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java
+index 34e373ba88c..dcf5d9ff333 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarSignalPolicy.java
+@@ -189,7 +189,7 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+ 
+     @Override
+     public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+-            int qsType, boolean activityIn, boolean activityOut,
++            int qsType, boolean activityIn, boolean activityOut, int stackedVoiceId,
+             CharSequence typeContentDescription,
+             CharSequence typeContentDescriptionHtml, CharSequence description,
+             boolean isWide, int subId, boolean roaming) {
+@@ -209,6 +209,7 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+         state.roaming = roaming;
+         state.activityIn = activityIn && mActivityEnabled;
+         state.activityOut = activityOut && mActivityEnabled;
++        state.volteId = stackedVoiceId;
+ 
+         // Always send a copy to maintain value type semantics
+         mIconController.setMobileIcons(mSlotMobile, MobileIconState.copyStates(mMobileStates));
+@@ -402,6 +403,7 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+         public boolean roaming;
+         public boolean needsLeadingPadding;
+         public CharSequence typeContentDescription;
++        public int volteId;
+ 
+         private MobileIconState(int subId) {
+             super();
+@@ -422,6 +424,7 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+                     typeId == that.typeId &&
+                     roaming == that.roaming &&
+                     needsLeadingPadding == that.needsLeadingPadding &&
++                    volteId == that.volteId &&
+                     Objects.equals(typeContentDescription, that.typeContentDescription);
+         }
+ 
+@@ -447,6 +450,7 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+             other.roaming = roaming;
+             other.needsLeadingPadding = needsLeadingPadding;
+             other.typeContentDescription = typeContentDescription;
++            other.volteId = volteId;
+         }
+ 
+         private static List<MobileIconState> copyStates(List<MobileIconState> inStates) {
+@@ -462,7 +466,8 @@ public class StatusBarSignalPolicy implements NetworkControllerImpl.SignalCallba
+ 
+         @Override public String toString() {
+             return "MobileIconState(subId=" + subId + ", strengthId=" + strengthId + ", roaming="
+-                    + roaming + ", typeId=" + typeId + ", visible=" + visible + ")";
++                    + roaming + ", typeId=" + typeId + ", volteId=" + volteId
++                    + ", visible=" + visible + ")";
+         }
+     }
+ }
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/CallbackHandler.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/CallbackHandler.java
+index 97d348bb6a2..00c4428acae 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/CallbackHandler.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/CallbackHandler.java
+@@ -122,13 +122,13 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
+     @Override
+     public void setMobileDataIndicators(final IconState statusIcon, final IconState qsIcon,
+             final int statusType, final int qsType, final boolean activityIn,
+-            final boolean activityOut, final CharSequence typeContentDescription,
++            final boolean activityOut, final int stackedVoiceIcon, final CharSequence typeContentDescription,
+             CharSequence typeContentDescriptionHtml, final CharSequence description,
+             final boolean isWide, final int subId, boolean roaming) {
+         post(() -> {
+             for (SignalCallback signalCluster : mSignalCallbacks) {
+                 signalCluster.setMobileDataIndicators(statusIcon, qsIcon, statusType, qsType,
+-                        activityIn, activityOut, typeContentDescription,
++                        activityIn, activityOut, stackedVoiceIcon, typeContentDescription,
+                         typeContentDescriptionHtml, description, isWide, subId, roaming);
+             }
+         });
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index 0487c6ef497..d504a194722 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -15,8 +15,11 @@
+  */
+ package com.android.systemui.statusbar.policy;
+ 
++import android.content.BroadcastReceiver;
+ import android.content.Context;
+ import android.content.Intent;
++import android.content.IntentFilter;
++import android.content.res.Resources;
+ import android.database.ContentObserver;
+ import android.net.NetworkCapabilities;
+ import android.os.Handler;
+@@ -26,6 +29,8 @@ import android.telephony.Annotation;
+ import android.telephony.CdmaEriInformation;
+ import android.telephony.CellSignalStrength;
+ import android.telephony.CellSignalStrengthCdma;
++import android.telephony.ims.ImsReasonInfo;
++import android.telephony.ims.stub.ImsRegistrationImplBase;
+ import android.telephony.PhoneStateListener;
+ import android.telephony.ServiceState;
+ import android.telephony.SignalStrength;
+@@ -37,6 +42,8 @@ import android.text.Html;
+ import android.text.TextUtils;
+ import android.util.Log;
+ 
++import com.android.ims.ImsException;
++import com.android.ims.ImsManager;
+ import com.android.internal.annotations.VisibleForTesting;
+ import com.android.settingslib.Utils;
+ import com.android.settingslib.graph.SignalDrawable;
+@@ -85,6 +92,11 @@ public class MobileSignalController extends SignalController<
+     @VisibleForTesting
+     boolean mInflateSignalStrengths = false;
+ 
++    private ImsManager mImsManager;
++    private boolean mImsResitered;
++    private final boolean mShowVolteIcon;
++    private int mCallState = TelephonyManager.CALL_STATE_IDLE;
++
+     // TODO: Reduce number of vars passed in, if we have the NetworkController, probably don't
+     // need listener lists anymore.
+     public MobileSignalController(Context context, Config config, boolean hasMobileData,
+@@ -105,6 +117,8 @@ public class MobileSignalController extends SignalController<
+         mNetworkNameDefault = getTextIfExists(
+                 com.android.internal.R.string.lockscreen_carrier_default).toString();
+ 
++        mShowVolteIcon = context.getResources().getBoolean(R.bool.config_display_volte);
++
+         mapIconSets();
+ 
+         String networkName = info.getCarrierName() != null ? info.getCarrierName().toString()
+@@ -115,6 +129,10 @@ public class MobileSignalController extends SignalController<
+         mLastState.iconGroup = mCurrentState.iconGroup = mDefaultIcons;
+         // Get initial data sim state.
+         updateDataSim();
++
++        int phoneId = SubscriptionManager.getPhoneId(mSubscriptionInfo.getSubscriptionId());
++        mImsManager = ImsManager.getInstance(mContext, phoneId);
++
+         mObserver = new ContentObserver(new Handler(receiverLooper)) {
+             @Override
+             public void onChange(boolean selfChange) {
+@@ -172,6 +190,13 @@ public class MobileSignalController extends SignalController<
+         mContext.getContentResolver().registerContentObserver(Global.getUriFor(
+                 Global.MOBILE_DATA + mSubscriptionInfo.getSubscriptionId()),
+                 true, mObserver);
++        try {
++            mImsManager.addRegistrationCallback(mImsRegistrationCallback);
++        }catch(ImsException e){
++            Log.d(mTag, "exception:" + e);
++        }
++        mContext.registerReceiver(mVolteSwitchObserver,
++                new IntentFilter("org.codeaurora.intent.action.ACTION_ENHANCE_4G_SWITCH"));
+     }
+ 
+     /**
+@@ -180,6 +205,7 @@ public class MobileSignalController extends SignalController<
+     public void unregisterListener() {
+         mPhone.listen(mPhoneStateListener, 0);
+         mContext.getContentResolver().unregisterContentObserver(mObserver);
++        mContext.unregisterReceiver(mVolteSwitchObserver);
+     }
+ 
+     /**
+@@ -357,6 +383,20 @@ public class MobileSignalController extends SignalController<
+         return getCurrentIconId();
+     }
+ 
++    private boolean isEnhanced4gLteModeSettingEnabled() {
++        return mImsManager.isEnhanced4gLteModeSettingEnabledByUser()
++                && mImsManager.isNonTtyOrTtyOnVolteEnabled();
++    }
++
++    private int getVolteResId() {
++        int resId = 0;
++
++        if ( mImsResitered ) {
++            resId = R.drawable.ic_volte;
++        }
++        return resId;
++    }
++
+     @Override
+     public void notifyListeners(SignalCallback callback) {
+         MobileIconGroup icons = getIcons();
+@@ -399,8 +439,9 @@ public class MobileSignalController extends SignalController<
+                 && mCurrentState.activityOut;
+         showDataIcon &= mCurrentState.isDefault || dataDisabled;
+         int typeIcon = (showDataIcon || mConfig.alwaysShowDataRatIcon) ? icons.mDataType : 0;
++        int volteIcon = mShowVolteIcon && isEnhanced4gLteModeSettingEnabled() ? getVolteResId() : 0;
+         callback.setMobileDataIndicators(statusIcon, qsIcon, typeIcon, qsTypeIcon,
+-                activityIn, activityOut, dataContentDescription, dataContentDescriptionHtml,
++                activityIn, activityOut, volteIcon, dataContentDescription, dataContentDescriptionHtml,
+                 description, icons.mIsWide, mSubscriptionInfo.getSubscriptionId(),
+                 mCurrentState.roaming);
+     }
+@@ -694,6 +735,39 @@ public class MobileSignalController extends SignalController<
+         }
+     }
+ 
++    private final ImsRegistrationImplBase.Callback mImsRegistrationCallback =
++            new ImsRegistrationImplBase.Callback() {
++                @Override
++                public void onRegistered(
++                        @ImsRegistrationImplBase.ImsRegistrationTech int imsRadioTech) {
++                    Log.d(mTag, "onRegistered imsRadioTech=" + imsRadioTech);
++                    mImsResitered = true;
++                    notifyListeners();
++                }
++
++                @Override
++                public void onRegistering(
++                        @ImsRegistrationImplBase.ImsRegistrationTech int imsRadioTech) {
++                    Log.d(mTag, "onRegistering imsRadioTech=" + imsRadioTech);
++                    mImsResitered = false;
++                    notifyListeners();
++                }
++
++                @Override
++                public void onDeregistered(ImsReasonInfo imsReasonInfo) {
++                    Log.d(mTag, "onDeregistered imsReasonInfo=" + imsReasonInfo);
++                    mImsResitered = false;
++                    notifyListeners();
++                }
++            };
++
++    private final BroadcastReceiver mVolteSwitchObserver = new BroadcastReceiver() {
++        public void onReceive(Context context, Intent intent) {
++            Log.d(mTag, "action=" + intent.getAction());
++            notifyListeners();
++        }
++    };
++
+     static class MobileIconGroup extends SignalController.IconGroup {
+         final int mDataContentDescription; // mContentDescriptionDataType
+         int mDataType;
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkController.java
+index 1dbb228f58b..7090b285b01 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/NetworkController.java
+@@ -70,7 +70,7 @@ public interface NetworkController extends CallbackController<SignalCallback>, D
+          * @param roaming indicates roaming
+          */
+         default void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+-                int qsType, boolean activityIn, boolean activityOut,
++                int qsType, boolean activityIn, boolean activityOut, int stackedVoiceId,
+                 CharSequence typeContentDescription,
+                 CharSequence typeContentDescriptionHtml, CharSequence description,
+                 boolean isWide, int subId, boolean roaming) {
+diff --git a/packages/SystemUI/tests/Android.mk b/packages/SystemUI/tests/Android.mk
+index 38da21e016e..57286c62d4b 100644
+--- a/packages/SystemUI/tests/Android.mk
++++ b/packages/SystemUI/tests/Android.mk
+@@ -39,6 +39,7 @@ LOCAL_JAVA_LIBRARIES := \
+     android.test.runner \
+     telephony-common \
+     android.test.base \
++    ims-common
+ 
+ LOCAL_AAPT_FLAGS := --extra-packages com.android.systemui
+ 
+diff --git a/packages/SystemUI/tests/src/com/android/systemui/statusbar/policy/CallbackHandlerTest.java b/packages/SystemUI/tests/src/com/android/systemui/statusbar/policy/CallbackHandlerTest.java
+index 18e7840f120..409ce190323 100644
+--- a/packages/SystemUI/tests/src/com/android/systemui/statusbar/policy/CallbackHandlerTest.java
++++ b/packages/SystemUI/tests/src/com/android/systemui/statusbar/policy/CallbackHandlerTest.java
+@@ -123,7 +123,7 @@ public class CallbackHandlerTest extends SysuiTestCase {
+         boolean wide = true;
+         int subId = 5;
+         boolean roaming = true;
+-        mHandler.setMobileDataIndicators(status, qs, type, qsType, in, out, typeDescription,
++        mHandler.setMobileDataIndicators(status, qs, type, qsType, in, out, 0, typeDescription,
+                 typeDescriptionHtml, description, wide, subId, roaming);
+         waitForCallbacks();
+ 
+-- 
+2.25.1
+

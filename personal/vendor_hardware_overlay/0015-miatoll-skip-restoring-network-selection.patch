@@ -1,0 +1,59 @@
+From 09796db90f6e4b558ccb2e7b533e5c9b4e02caae Mon Sep 17 00:00:00 2001
+From: Cosmin Tanislav <demonsingur@gmail.com>
+Date: Thu, 12 Aug 2021 12:13:11 -0400
+Subject: [PATCH 15/21] miatoll : skip restoring network selection
+
+---
+ Xiaomi/RedmiNote9Pro/res/values/config.xml    | 4 ++++
+ Xiaomi/RedmiNote9ProMax/res/values/config.xml | 4 ++++
+ Xiaomi/RedmiNote9S/res/values/config.xml      | 4 ++++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/Xiaomi/RedmiNote9Pro/res/values/config.xml b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+index 4ef790b..4faae64 100644
+--- a/Xiaomi/RedmiNote9Pro/res/values/config.xml
++++ b/Xiaomi/RedmiNote9Pro/res/values/config.xml
+@@ -427,6 +427,10 @@
+         <item>ethernet,9,9,4,-1,true</item>
+     </string-array>
+ 
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++    
+     <string-array name="radioAttributes">
+         <item>1,1</item>
+         <item>0,1</item>
+diff --git a/Xiaomi/RedmiNote9ProMax/res/values/config.xml b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+index 4ef790b..4faae64 100644
+--- a/Xiaomi/RedmiNote9ProMax/res/values/config.xml
++++ b/Xiaomi/RedmiNote9ProMax/res/values/config.xml
+@@ -427,6 +427,10 @@
+         <item>ethernet,9,9,4,-1,true</item>
+     </string-array>
+ 
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++    
+     <string-array name="radioAttributes">
+         <item>1,1</item>
+         <item>0,1</item>
+diff --git a/Xiaomi/RedmiNote9S/res/values/config.xml b/Xiaomi/RedmiNote9S/res/values/config.xml
+index 4ef790b..4faae64 100644
+--- a/Xiaomi/RedmiNote9S/res/values/config.xml
++++ b/Xiaomi/RedmiNote9S/res/values/config.xml
+@@ -427,6 +427,10 @@
+         <item>ethernet,9,9,4,-1,true</item>
+     </string-array>
+ 
++    <!-- Boolean indicating if restoring network selection should be skipped -->
++    <!-- The restoring is handled by modem if it is true-->
++    <bool name="skip_restoring_network_selection">true</bool>
++    
+     <string-array name="radioAttributes">
+         <item>1,1</item>
+         <item>0,1</item>
+-- 
+2.25.1
+

@@ -1,0 +1,114 @@
+From f6569cfe86c7ab90ac1a76bbeda3036fbc177c98 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Mon, 5 Oct 2020 13:24:11 -0700
+Subject: [PATCH 219/230] SystemUI: Remove black QS status bar background
+
+Now that we have high-radius blur behind the notification shade, the dark
+scrim provides enough contrast for us to remove the ugly black status
+bar background. It's especially ugly at larger logical display sizes,
+where the QS panel doesn't span the entire width of the display.
+
+Change-Id: I22774e25f52ab14d103a663367f834aea36bd8cb
+---
+ packages/SystemUI/res/layout/qs_panel.xml     | 19 -------------------
+ .../android/systemui/qs/QSContainerImpl.java  | 19 +------------------
+ 2 files changed, 1 insertion(+), 37 deletions(-)
+
+diff --git a/packages/SystemUI/res/layout/qs_panel.xml b/packages/SystemUI/res/layout/qs_panel.xml
+index b978ff7d419..fb7cbcb5886 100644
+--- a/packages/SystemUI/res/layout/qs_panel.xml
++++ b/packages/SystemUI/res/layout/qs_panel.xml
+@@ -29,25 +29,6 @@
+         android:elevation="4dp"
+         android:background="@drawable/qs_background_primary" />
+ 
+-    <!-- Black part behind the status bar -->
+-    <View
+-        android:id="@+id/quick_settings_status_bar_background"
+-        android:layout_width="match_parent"
+-        android:layout_height="@*android:dimen/quick_qs_offset_height"
+-        android:clipToPadding="false"
+-        android:clipChildren="false"
+-        android:background="#ff000000" />
+-
+-    <!-- Gradient view behind QS -->
+-    <View
+-        android:id="@+id/quick_settings_gradient_view"
+-        android:layout_width="match_parent"
+-        android:layout_height="126dp"
+-        android:layout_marginTop="@*android:dimen/quick_qs_offset_height"
+-        android:clipToPadding="false"
+-        android:clipChildren="false"
+-        android:background="@drawable/qs_bg_gradient" />
+-
+     <com.android.systemui.qs.NonInterceptingScrollView
+         android:id="@+id/expanded_qs_scroll_view"
+         android:layout_width="match_parent"
+diff --git a/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java b/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
+index c60403b0903..993d33384e1 100644
+--- a/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/qs/QSContainerImpl.java
+@@ -64,8 +64,6 @@ public class QSContainerImpl extends FrameLayout {
+     private View mQSPanelContainer;
+ 
+     private View mBackground;
+-    private View mBackgroundGradient;
+-    private View mStatusBarBackground;
+ 
+     private int mSideMargins;
+     private boolean mQsDisabled;
+@@ -86,8 +84,6 @@ public class QSContainerImpl extends FrameLayout {
+         mHeader = findViewById(R.id.header);
+         mQSCustomizer = findViewById(R.id.qs_customize);
+         mBackground = findViewById(R.id.quick_settings_background);
+-        mStatusBarBackground = findViewById(R.id.quick_settings_status_bar_background);
+-        mBackgroundGradient = findViewById(R.id.quick_settings_gradient_view);
+         updateResources();
+         mHeader.getHeaderQsPanel().setMediaVisibilityChangedListener((visible) -> {
+             if (mHeader.getHeaderQsPanel().isShown()) {
+@@ -121,7 +117,6 @@ public class QSContainerImpl extends FrameLayout {
+     @Override
+     protected void onConfigurationChanged(Configuration newConfig) {
+         super.onConfigurationChanged(newConfig);
+-        setBackgroundGradientVisibility(newConfig);
+         updateResources();
+         mSizePoint.set(0, 0); // Will be retrieved on next measure pass.
+     }
+@@ -191,7 +186,6 @@ public class QSContainerImpl extends FrameLayout {
+         final boolean disabled = (state2 & DISABLE2_QUICK_SETTINGS) != 0;
+         if (disabled == mQsDisabled) return;
+         mQsDisabled = disabled;
+-        setBackgroundGradientVisibility(getResources().getConfiguration());
+         mBackground.setVisibility(mQsDisabled ? View.GONE : View.VISIBLE);
+     }
+ 
+@@ -257,16 +251,6 @@ public class QSContainerImpl extends FrameLayout {
+                 + mHeader.getHeight();
+     }
+ 
+-    private void setBackgroundGradientVisibility(Configuration newConfig) {
+-        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
+-            mBackgroundGradient.setVisibility(View.INVISIBLE);
+-            mStatusBarBackground.setVisibility(View.INVISIBLE);
+-        } else {
+-            mBackgroundGradient.setVisibility(mQsDisabled ? View.INVISIBLE : View.VISIBLE);
+-            mStatusBarBackground.setVisibility(View.VISIBLE);
+-        }
+-    }
+-
+     public void setExpansion(float expansion) {
+         mQsExpansion = expansion;
+         updateExpansion();
+@@ -275,8 +259,7 @@ public class QSContainerImpl extends FrameLayout {
+     private void updatePaddingsAndMargins() {
+         for (int i = 0; i < getChildCount(); i++) {
+             View view = getChildAt(i);
+-            if (view == mStatusBarBackground || view == mBackgroundGradient
+-                    || view == mQSCustomizer) {
++            if (view == mQSCustomizer) {
+                 // Some views are always full width
+                 continue;
+             }
+-- 
+2.25.1
+

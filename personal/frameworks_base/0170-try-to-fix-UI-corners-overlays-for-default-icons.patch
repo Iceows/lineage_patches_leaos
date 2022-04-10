@@ -1,0 +1,452 @@
+From 016f502a86ba6a79f691a906aab6d0c357f0ebb3 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 10 Sep 2021 20:55:16 +0000
+Subject: [PATCH 170/230] try to fix UI corners overlays for default icons
+
+Change-Id: I744da0e1b3a48f51718e3f667a5c2f23b1d1b916
+---
+ .../autofill_dataset_picker_background.xml    |  2 +-
+ .../res/drawable/bottomsheet_background.xml   |  4 +-
+ .../res/res/values/themes_device_defaults.xml | 84 +++++++++----------
+ core/res/res/values/themes_leanback.xml       |  2 +-
+ packages/SystemUI/res/values/dimens.xml       |  2 +-
+ 5 files changed, 47 insertions(+), 47 deletions(-)
+
+diff --git a/core/res/res/drawable/autofill_dataset_picker_background.xml b/core/res/res/drawable/autofill_dataset_picker_background.xml
+index d5749703761..32ebd6bb5b7 100644
+--- a/core/res/res/drawable/autofill_dataset_picker_background.xml
++++ b/core/res/res/drawable/autofill_dataset_picker_background.xml
+@@ -16,7 +16,7 @@
+ 
+ <inset xmlns:android="http://schemas.android.com/apk/res/android">
+     <shape android:shape="rectangle">
+-        <corners android:radius="@dimen/config_bottomDialogCornerRadius" />
++        <corners android:radius="@*android:dimen/rounded_corners_ui_core" />
+         <solid android:color="?attr/colorBackground" />
+     </shape>
+ </inset>
+diff --git a/core/res/res/drawable/bottomsheet_background.xml b/core/res/res/drawable/bottomsheet_background.xml
+index 3a8ad71187a..d87a788db69 100644
+--- a/core/res/res/drawable/bottomsheet_background.xml
++++ b/core/res/res/drawable/bottomsheet_background.xml
+@@ -16,7 +16,7 @@
+ 
+ <shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
+     <corners
+-        android:topLeftRadius="@dimen/config_bottomDialogCornerRadius"
+-        android:topRightRadius="@dimen/config_bottomDialogCornerRadius"/>
++        android:topLeftRadius="@*android:dimen/rounded_corners_ui_core"
++        android:topRightRadius="@*android:dimen/rounded_corners_ui_core"/>
+     <solid android:color="?attr/colorBackgroundFloating" />
+ </shape>
+diff --git a/core/res/res/values/themes_device_defaults.xml b/core/res/res/values/themes_device_defaults.xml
+index c6dccf2885d..a5d20a8fd66 100644
+--- a/core/res/res/values/themes_device_defaults.xml
++++ b/core/res/res/values/themes_device_defaults.xml
+@@ -93,7 +93,7 @@ easier.
+ 
+         <!-- Dialog attributes -->
+         <item name="dialogTheme">@style/Theme.DeviceDefault.Dialog</item>
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <!-- AlertDialog attributes -->
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+@@ -230,7 +230,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -258,7 +258,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -288,7 +288,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -317,7 +317,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -361,7 +361,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Progress bar attributes -->
+@@ -382,7 +382,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -409,7 +409,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -437,7 +437,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -481,7 +481,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -510,7 +510,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -537,7 +537,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -566,7 +566,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -594,7 +594,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -622,7 +622,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -650,7 +650,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -678,7 +678,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -700,7 +700,7 @@ easier.
+         <item name="windowTitleStyle">@style/DialogWindowTitle.DeviceDefault</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Color palette -->
+@@ -740,7 +740,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -766,7 +766,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -825,7 +825,7 @@ easier.
+ 
+         <!-- Dialog attributes -->
+         <item name="dialogTheme">@style/Theme.DeviceDefault.Light.Dialog</item>
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <!-- AlertDialog attributes -->
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+@@ -958,7 +958,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -985,7 +985,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1013,7 +1013,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1043,7 +1043,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1072,7 +1072,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1098,7 +1098,7 @@ easier.
+         <item name="windowAnimationStyle">@style/Animation.DeviceDefault.Dialog</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Button styles -->
+@@ -1138,7 +1138,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1168,7 +1168,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1199,7 +1199,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1258,7 +1258,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1290,7 +1290,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1320,7 +1320,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1349,7 +1349,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1377,7 +1377,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1406,7 +1406,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1432,7 +1432,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1481,7 +1481,7 @@ easier.
+         <item name="windowLightNavigationBar">true</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <!-- Button styles -->
+         <item name="buttonCornerRadius">@dimen/config_buttonCornerRadius</item>
+@@ -1551,7 +1551,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_dark</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1586,7 +1586,7 @@ easier.
+         <item name="windowAnimationStyle">@style/Animation.DeviceDefault.Dialog</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+ 
+         <!-- Text styles -->
+         <item name="textAppearanceButton">@style/TextAppearance.DeviceDefault.Widget.Button</item>
+@@ -1615,7 +1615,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+@@ -1645,7 +1645,7 @@ easier.
+         <item name="colorError">@color/error_color_device_default_light</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Light.Dialog.Alert</item>
+ 
+         <!-- Text styles -->
+diff --git a/core/res/res/values/themes_leanback.xml b/core/res/res/values/themes_leanback.xml
+index 9dca9128e36..efb4945822d 100644
+--- a/core/res/res/values/themes_leanback.xml
++++ b/core/res/res/values/themes_leanback.xml
+@@ -109,7 +109,7 @@
+         <item name="listPreferredItemPaddingEnd">?attr/dialogPreferredPadding</item>
+ 
+         <!-- Dialog attributes -->
+-        <item name="dialogCornerRadius">@dimen/config_dialogCornerRadius</item>
++        <item name="dialogCornerRadius">@*android:dimen/rounded_corners_ui_core</item>
+         <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
+ 
+         <!-- Button styles -->
+diff --git a/packages/SystemUI/res/values/dimens.xml b/packages/SystemUI/res/values/dimens.xml
+index a3b66d7b5ff..cc26efa5e3e 100644
+--- a/packages/SystemUI/res/values/dimens.xml
++++ b/packages/SystemUI/res/values/dimens.xml
+@@ -1358,7 +1358,7 @@
+     <!-- Home Controls activity view detail panel-->
+     <dimen name="controls_activity_view_top_offset">100dp</dimen>
+     <dimen name="controls_activity_view_text_size">17sp</dimen>
+-    <dimen name="controls_activity_view_corner_radius">@*android:dimen/config_bottomDialogCornerRadius</dimen>
++    <dimen name="controls_activity_view_corner_radius">@*android:dimen/rounded_corners_ui_core</dimen>
+ 
+     <!-- Home Controls management screens -->
+     <dimen name="controls_management_top_padding">48dp</dimen>
+-- 
+2.25.1
+

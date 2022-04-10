@@ -1,0 +1,46 @@
+From 1a33cbced585695410a0abb26d37f94b848c4c54 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Thu, 29 Oct 2020 20:36:31 -0700
+Subject: [PATCH 220/230] graphics: Adjust ripple animation for immediate
+ feedback
+
+Lack of immediate feedback when interacting with UI elements that use
+ripple animations makes the phone feel much slower and more clunky than
+it really is. Immediate touch feedback is part of why iOS feels more
+responsive in many areas.
+
+There is now a 225 ms hold time and 225 ms fading exit time to remain
+timing-compatible with the original Material ripple, since many
+other animations are time-synced to it.
+
+Change-Id: I6585cced2b3f0a6dbf89a4dd8ff6a3326321a166
+---
+ .../android/graphics/drawable/RippleForeground.java    | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/graphics/java/android/graphics/drawable/RippleForeground.java b/graphics/java/android/graphics/drawable/RippleForeground.java
+index 0f376957c8f..10c66ae8f74 100644
+--- a/graphics/java/android/graphics/drawable/RippleForeground.java
++++ b/graphics/java/android/graphics/drawable/RippleForeground.java
+@@ -44,13 +44,13 @@ class RippleForeground extends RippleComponent {
+             new PathInterpolator(0.4f, 0f, 0.2f, 1f);
+ 
+     // Time it takes for the ripple to expand
+-    private static final int RIPPLE_ENTER_DURATION = 225;
++    private static final int RIPPLE_ENTER_DURATION = 0;
+     // Time it takes for the ripple to slide from the touch to the center point
+-    private static final int RIPPLE_ORIGIN_DURATION = 225;
++    private static final int RIPPLE_ORIGIN_DURATION = 0;
+ 
+-    private static final int OPACITY_ENTER_DURATION = 75;
+-    private static final int OPACITY_EXIT_DURATION = 150;
+-    private static final int OPACITY_HOLD_DURATION = OPACITY_ENTER_DURATION + 150;
++    private static final int OPACITY_ENTER_DURATION = 0;
++    private static final int OPACITY_EXIT_DURATION = 225;
++    private static final int OPACITY_HOLD_DURATION = OPACITY_ENTER_DURATION + 225;
+ 
+     // Parent-relative values for starting position.
+     private float mStartingX;
+-- 
+2.25.1
+

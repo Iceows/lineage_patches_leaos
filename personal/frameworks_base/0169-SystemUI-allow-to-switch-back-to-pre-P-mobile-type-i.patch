@@ -1,0 +1,779 @@
+From b11b902b826d4668de8b36506e22dcc907eec9f0 Mon Sep 17 00:00:00 2001
+From: Vachounet <vachounet@live.fr>
+Date: Thu, 17 Jun 2021 19:11:55 +0200
+Subject: [PATCH 169/230] SystemUI: allow to switch back to pre P mobile type
+ icon style [1/2]
+
+*TO-DO Update icon for 5G
+
+Change-Id: I1c48af826c18e00960ae98d2dc684cf1f1d735e1
+
+SystemUI: fix visibility of mobile type icon
+
+Change-Id: I026ebde860b49c8198aac5978cd36f3c7b69f85a
+Signed-off-by: mydongistiny <jaysonedson@gmail.com>
+
+base: SystemUI: fix height of old data type icons
+
+Change-Id: I6a365f0818cae6dddc01470363a477b046d029c7
+
+base: Fix old mobile signal icons
+
+* SystemUI: Fixed size of old mobile signal icon
+* SystemUI: Fixed padding of mobile data icon
+* SystemUI: Fixed padding of mobile data icon when mobile data icon is not wide type icon
+  - Fixed padding when mobile data icon is not shown
+
+statusbar: adjust update logic for old mobile type
+
+Change-Id: I0141047ca757076192fde68f5a336cc5ce93d9a6
+Signed-off-by: Josh Fox (XlxFoXxlX) <joshfox87@gmail.com>
+Signed-off-by: Saikiran <bjsaikiran@gmail.com>
+---
+ core/java/android/provider/Settings.java      |  6 ++
+ .../settings/backup/SystemSettings.java       |  1 +
+ .../validators/SystemSettingsValidators.java  |  1 +
+ .../stat_sys_data_fully_connected_1x.xml      | 27 +++++++++
+ .../stat_sys_data_fully_connected_3g.xml      | 27 +++++++++
+ .../stat_sys_data_fully_connected_4g.xml      | 27 +++++++++
+ .../stat_sys_data_fully_connected_4g_plus.xml | 30 ++++++++++
+ .../stat_sys_data_fully_connected_e.xml       | 24 ++++++++
+ .../stat_sys_data_fully_connected_g.xml       | 24 ++++++++
+ .../stat_sys_data_fully_connected_h.xml       | 24 ++++++++
+ .../stat_sys_data_fully_connected_hp.xml      | 27 +++++++++
+ .../stat_sys_data_fully_connected_lte.xml     | 30 ++++++++++
+ ...stat_sys_data_fully_connected_lte_plus.xml | 33 +++++++++++
+ .../res/drawable/stat_sys_roaming.xml         |  4 +-
+ .../layout/status_bar_mobile_signal_group.xml |  6 ++
+ .../statusbar/StatusBarMobileView.java        | 20 ++++++-
+ .../systemui/statusbar/phone/StatusBar.java   | 41 +++++++++++++
+ .../policy/MobileSignalController.java        |  2 +-
+ .../statusbar/policy/TelephonyIcons.java      | 59 ++++++++++++-------
+ 19 files changed, 387 insertions(+), 26 deletions(-)
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_1x.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_3g.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g_plus.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_e.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_g.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_h.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_hp.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte.xml
+ create mode 100644 packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte_plus.xml
+
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index f278b5497f6..d6b4d4a93d2 100755
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -4818,6 +4818,11 @@ public final class Settings {
+          */
+         public static final String NOTIFICATION_HEADERS = "notification_headers";
+ 
++        /**
++         * @hide
++         */
++        public static final String USE_OLD_MOBILETYPE = "use_old_mobiletype";
++
+         /**
+          * IMPORTANT: If you add a new public settings you also have to add it to
+          * PUBLIC_SETTINGS below. If the new setting is hidden you have to add
+@@ -4944,6 +4949,7 @@ public final class Settings {
+             PRIVATE_SETTINGS.add(EGG_MODE);
+             PRIVATE_SETTINGS.add(SHOW_BATTERY_PERCENT);
+             PRIVATE_SETTINGS.add(DISPLAY_COLOR_MODE);
++            PRIVATE_SETTINGS.add(USE_OLD_MOBILETYPE);
+         }
+ 
+         /**
+diff --git a/packages/SettingsProvider/src/android/provider/settings/backup/SystemSettings.java b/packages/SettingsProvider/src/android/provider/settings/backup/SystemSettings.java
+index 4c99188a054..965384e6ece 100644
+--- a/packages/SettingsProvider/src/android/provider/settings/backup/SystemSettings.java
++++ b/packages/SettingsProvider/src/android/provider/settings/backup/SystemSettings.java
+@@ -85,5 +85,6 @@ public class SystemSettings {
+         Settings.System.ALARM_ALERT,
+         Settings.System.NOTIFICATION_LIGHT_PULSE,
+         Settings.System.NOTIFICATION_HEADERS,
++        Settings.System.USE_OLD_MOBILETYPE,
+     };
+ }
+diff --git a/packages/SettingsProvider/src/android/provider/settings/validators/SystemSettingsValidators.java b/packages/SettingsProvider/src/android/provider/settings/validators/SystemSettingsValidators.java
+index ec5feddb876..3ad4dfdfe57 100644
+--- a/packages/SettingsProvider/src/android/provider/settings/validators/SystemSettingsValidators.java
++++ b/packages/SettingsProvider/src/android/provider/settings/validators/SystemSettingsValidators.java
+@@ -210,5 +210,6 @@ public class SystemSettingsValidators {
+         VALIDATORS.put(System.NOTIFICATION_LIGHT_PULSE, BOOLEAN_VALIDATOR);
+         VALIDATORS.put(System.ACCELEROMETER_ROTATION_ANGLES, NON_NEGATIVE_INTEGER_VALIDATOR);
+         VALIDATORS.put(System.NOTIFICATION_HEADERS, BOOLEAN_VALIDATOR);
++        VALIDATORS.put(System.USE_OLD_MOBILETYPE, BOOLEAN_VALIDATOR);
+     }
+ }
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_1x.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_1x.xml
+new file mode 100644
+index 00000000000..0e17c26d125
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_1x.xml
+@@ -0,0 +1,27 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="7.5dp"
++        android:height="15dp"
++        android:viewportWidth="12.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M3.500000,11.000000L1.800000,11.000000L1.800000,4.400000L0.200000,5.100000L0.200000,3.700000l3.100000,-1.300000l0.200000,0.000000L3.500000,11.000000z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M8.600000,5.500000l1.200000,-3.000000l1.900000,0.000000L9.700000,6.700000l2.200000,4.300000L9.900000,11.000000L8.700000,7.900000L7.400000,11.000000L5.500000,11.000000l2.100000,-4.300000L5.600000,2.500000l1.900000,0.000000L8.600000,5.500000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_3g.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_3g.xml
+new file mode 100644
+index 00000000000..b819c45154c
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_3g.xml
+@@ -0,0 +1,27 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="8.125dp"
++        android:height="15dp"
++        android:viewportWidth="13.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M2.000000,6.000000l0.800000,0.000000c0.300000,0.000000 0.500000,-0.100000 0.700000,-0.300000s0.200000,-0.500000 0.200000,-0.900000c0.000000,-0.300000 -0.100000,-0.600000 -0.200000,-0.800000S3.200000,3.700000 2.900000,3.700000C2.700000,3.700000 2.500000,3.800000 2.300000,4.000000S2.100000,4.400000 2.100000,4.700000L0.500000,4.700000C0.500000,4.000000 0.700000,3.400000 1.100000,3.000000s1.000000,-0.600000 1.700000,-0.600000c0.800000,0.000000 1.400000,0.200000 1.900000,0.600000s0.700000,1.000000 0.700000,1.800000c0.000000,0.400000 -0.100000,0.700000 -0.300000,1.100000S4.600000,6.500000 4.300000,6.600000C4.700000,6.800000 5.000000,7.100000 5.200000,7.400000s0.300000,0.700000 0.300000,1.200000c0.000000,0.800000 -0.200000,1.400000 -0.700000,1.800000s-1.100000,0.700000 -1.900000,0.700000c-0.700000,0.000000 -1.300000,-0.200000 -1.800000,-0.600000s-0.700000,-1.000000 -0.700000,-1.800000L2.000000,8.700000C2.000000,9.000000 2.100000,9.300000 2.300000,9.500000s0.400000,0.300000 0.600000,0.300000c0.300000,0.000000 0.500000,-0.100000 0.700000,-0.300000S3.900000,9.000000 3.900000,8.600000c0.000000,-0.500000 -0.100000,-0.800000 -0.300000,-1.000000S3.200000,7.300000 2.800000,7.300000L2.000000,7.300000L2.000000,6.000000z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M12.500000,9.900000c-0.200000,0.400000 -0.600000,0.700000 -1.000000,0.900000s-1.000000,0.400000 -1.800000,0.400000c-0.900000,0.000000 -1.700000,-0.300000 -2.200000,-0.800000S6.700000,9.000000 6.700000,7.900000L6.700000,5.600000c0.000000,-1.100000 0.300000,-1.900000 0.800000,-2.400000s1.200000,-0.800000 2.100000,-0.800000c1.000000,0.000000 1.700000,0.200000 2.100000,0.700000s0.700000,1.200000 0.700000,2.100000l-1.600000,0.000000c0.000000,-0.500000 -0.100000,-0.900000 -0.200000,-1.100000s-0.500000,-0.300000 -0.900000,-0.300000c-0.400000,0.000000 -0.700000,0.200000 -0.900000,0.500000S8.400000,5.000000 8.400000,5.600000l0.000000,2.300000c0.000000,0.700000 0.100000,1.100000 0.300000,1.400000s0.600000,0.500000 1.000000,0.500000c0.300000,0.000000 0.600000,0.000000 0.700000,-0.100000s0.300000,-0.200000 0.400000,-0.300000L10.799999,7.800000L9.600000,7.800000L9.600000,6.600000l2.900000,0.000000L12.500000,9.900000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g.xml
+new file mode 100644
+index 00000000000..90bf3fdcd12
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g.xml
+@@ -0,0 +1,27 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="7.5dp"
++        android:height="15dp"
++        android:viewportWidth="12.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M4.600000,7.800000l0.700000,0.000000l0.000000,1.300000L4.600000,9.100000L4.600000,11.000000L3.000000,11.000000L3.000000,9.200000L0.100000,9.200000L0.000000,8.100000L3.000000,2.500000l1.700000,0.000000L4.700000,7.800000zM1.600000,7.800000L3.000000,7.800000l0.000000,-3.000000L2.900000,5.000000L1.600000,7.800000z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M11.900000,9.900000c-0.200000,0.400000 -0.600000,0.700000 -1.000000,0.900000s-1.000000,0.400000 -1.800000,0.400000c-0.900000,0.000000 -1.700000,-0.300000 -2.200000,-0.800000S6.100000,9.000000 6.100000,7.900000L6.100000,5.600000c0.000000,-1.100000 0.300000,-1.900000 0.800000,-2.400000S8.100000,2.400000 9.000000,2.400000c1.000000,0.000000 1.700000,0.200000 2.100000,0.700000s0.700000,1.200000 0.700000,2.100000l-1.600000,0.000000c0.000000,-0.500000 -0.100000,-0.900000 -0.200000,-1.100000S9.500000,3.700000 9.000000,3.700000c-0.400000,0.000000 -0.700000,0.200000 -0.900000,0.500000S7.700000,5.000000 7.700000,5.600000l0.000000,2.300000c0.000000,0.700000 0.100000,1.100000 0.300000,1.400000s0.600000,0.500000 1.000000,0.500000c0.300000,0.000000 0.600000,0.000000 0.700000,-0.100000s0.300000,-0.200000 0.400000,-0.300000L10.099999,7.800000L9.000000,7.800000L9.000000,6.600000l2.900000,0.000000L11.900000,9.900000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g_plus.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g_plus.xml
+new file mode 100644
+index 00000000000..fdf20d54c41
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_4g_plus.xml
+@@ -0,0 +1,30 @@
++<!--
++    Copyright (C) 2016 The Android Open Source Project
++
++    Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="11.25dp"
++        android:height="15.0dp"
++        android:viewportWidth="18.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M4.6,7.8l0.7,0.0l0.0,1.3L4.6,9.1L4.6,11.0L3.0,11.0L3.0,9.2L0.1,9.2L0.0,8.2l3.0,-5.7l1.7,0.0L4.6,7.8L4.6,7.8zM1.7,7.8L3.0,7.8l0.0,-3.0L2.9,5.0L1.7,7.8z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M11.9,9.9c-0.2,0.4 -0.6,0.7 -1.0,0.9s-1.0,0.4 -1.8,0.4c-0.9,0.0 -1.7,-0.3 -2.2,-0.8S6.1,9.0 6.1,7.9L6.1,5.6c0.0,-1.1 0.3,-1.9 0.8,-2.4S8.2,2.4 9.0,2.4c1.0,0.0 1.7,0.2 2.1,0.7s0.7,1.2 0.7,2.1l-1.6,0.0c0.0,-0.5 -0.1,-0.9 -0.2,-1.1S9.5,3.7 9.0,3.7c-0.4,0.0 -0.7,0.2 -0.9,0.5S7.8,5.0 7.8,5.6l0.0,2.3c0.0,0.7 0.1,1.1 0.3,1.4c0.2,0.3 0.6,0.5 1.0,0.5c0.3,0.0 0.6,0.0 0.7,-0.1s0.3,-0.2 0.4,-0.3L10.2,7.8L9.0,7.8L9.0,6.6l2.9,0.0L11.9,9.9z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M17.7,4.4l-1.900001,0.0 0.0,-1.9 -1.2,0.0 0.0,1.9 -1.900001,0.0 0.0,1.2 1.900001,0.0 0.0,1.9 1.2,0.0 0.0,-1.9 1.900001,0.0z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_e.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_e.xml
+new file mode 100644
+index 00000000000..2a92f56a0eb
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_e.xml
+@@ -0,0 +1,24 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="3.125dp"
++        android:height="15dp"
++        android:viewportWidth="5.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M4.400000,7.300000L1.700000,7.300000l0.000000,2.400000l3.300000,0.000000L5.000000,11.000000L0.000000,11.000000L0.000000,2.500000l4.900000,0.000000l0.000000,1.300000L1.700000,3.800000l0.000000,2.100000l2.800000,0.000000L4.500000,7.300000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_g.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_g.xml
+new file mode 100644
+index 00000000000..146e85a3778
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_g.xml
+@@ -0,0 +1,24 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="4.375dp"
++        android:height="15dp"
++        android:viewportWidth="7.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M6.500000,9.900000c-0.200000,0.400000 -0.600000,0.700000 -1.000000,0.900000s-1.000000,0.400000 -1.800000,0.400000c-0.900000,0.000000 -1.700000,-0.300000 -2.200000,-0.800000S0.700000,9.000000 0.700000,7.900000L0.700000,5.600000c0.000000,-1.100000 0.300000,-1.900000 0.800000,-2.400000s1.200000,-0.800000 2.100000,-0.800000c1.000000,0.000000 1.700000,0.200000 2.100000,0.700000s0.700000,1.200000 0.700000,2.100000L4.700000,5.200000c0.000000,-0.500000 -0.100000,-0.900000 -0.200000,-1.100000S4.000000,3.700000 3.600000,3.700000c-0.400000,0.000000 -0.700000,0.200000 -0.900000,0.500000S2.300000,5.000000 2.300000,5.600000l0.000000,2.300000c0.000000,0.700000 0.100000,1.100000 0.300000,1.400000s0.600000,0.500000 1.000000,0.500000c0.300000,0.000000 0.600000,0.000000 0.700000,-0.100000s0.300000,-0.200000 0.400000,-0.300000L4.700000,7.800000L3.500000,7.800000L3.500000,6.600000l2.900000,0.000000L6.400000,9.900000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_h.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_h.xml
+new file mode 100644
+index 00000000000..53f5f159988
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_h.xml
+@@ -0,0 +1,24 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="3.75dp"
++        android:height="15dp"
++        android:viewportWidth="6.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M6.000000,11.000000L4.400000,11.000000L4.400000,7.500000L1.700000,7.500000L1.700000,11.000000L0.000000,11.000000L0.000000,2.500000l1.700000,0.000000l0.000000,3.700000l2.700000,0.000000L4.400000,2.500000L6.000000,2.500000L6.000000,11.000000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_hp.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_hp.xml
+new file mode 100644
+index 00000000000..e212c55a1c4
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_hp.xml
+@@ -0,0 +1,27 @@
++<!--
++    Copyright (C) 2014 The CyanogenMod Project
++
++    Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="7.459dp"
++        android:height="15dp"
++        android:viewportWidth="8.454"
++        android:viewportHeight="17.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M4.25,7.792H3.117V5.313H1.204v2.479H0V1.771h1.204v2.621h1.912V1.771H4.25V7.792Z" />
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M8.454,2.975H7.25V1.771H6.117v1.204H4.912v1.133h1.205v1.205H7.25V4.108h1.204V2.975Z" />
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte.xml
+new file mode 100644
+index 00000000000..58ac4696f73
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte.xml
+@@ -0,0 +1,30 @@
++<!--
++Copyright (C) 2014 The Android Open Source Project
++
++   Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="8.125dp"
++        android:height="15dp"
++        android:viewportWidth="13.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M2.000000,9.700000l2.000000,0.000000L4.000000,11.000000L0.300000,11.000000L0.300000,2.500000L2.000000,2.500000L2.000000,9.700000z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M8.300000,3.800000L7.000000,3.800000L7.000000,11.000000L5.300000,11.000000L5.300000,3.800000L4.000000,3.800000L4.000000,2.500000l4.300000,0.000000L8.300000,3.800000z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M12.400000,7.300000l-1.700000,0.000000l0.000000,2.400000l2.100000,0.000000L12.799999,11.000000L9.000000,11.000000L9.000000,2.500000l3.700000,0.000000l0.000000,1.300000l-2.100000,0.000000l0.000000,2.100000l1.700000,0.000000L12.300000,7.300000z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte_plus.xml b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte_plus.xml
+new file mode 100644
+index 00000000000..24804e7dde7
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/stat_sys_data_fully_connected_lte_plus.xml
+@@ -0,0 +1,33 @@
++<!--
++    Copyright (C) 2016 The Android Open Source Project
++
++    Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++         http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++        android:width="11.875dp"
++        android:height="15.0dp"
++        android:viewportWidth="19.0"
++        android:viewportHeight="26.0">
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M2.0,9.7l2.0,0.0L4.0,11.0L0.4,11.0L0.4,2.5L2.0,2.5L2.0,9.7z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M8.3,3.8L7.0,3.8L7.0,11.0L5.4,11.0L5.4,3.8L4.0,3.8L4.0,2.5l4.3,0.0L8.3,3.8z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M12.4,7.3l-1.7,0.0l0.0,2.4l2.1,0.0L12.799999,11.0L9.0,11.0L9.0,2.5l3.7,0.0l0.0,1.3l-2.1,0.0l0.0,2.1l1.7,0.0L12.4,7.3L12.4,7.3z"/>
++    <path
++        android:fillColor="#FFFFFFFF"
++        android:pathData="M18.4,4.4l-1.9,0.0 0.0,-1.9 -1.2,0.0 0.0,1.9 -1.900001,0.0 0.0,1.2 1.900001,0.0 0.0,1.9 1.2,0.0 0.0,-1.9 1.9,0.0z"/>
++</vector>
+diff --git a/packages/SystemUI/res/drawable/stat_sys_roaming.xml b/packages/SystemUI/res/drawable/stat_sys_roaming.xml
+index 0dd9f5a39f9..d7151c67176 100644
+--- a/packages/SystemUI/res/drawable/stat_sys_roaming.xml
++++ b/packages/SystemUI/res/drawable/stat_sys_roaming.xml
+@@ -14,8 +14,8 @@
+      limitations under the License.
+ -->
+ <vector xmlns:android="http://schemas.android.com/apk/res/android"
+-        android:width="@dimen/signal_icon_size"
+-        android:height="@dimen/signal_icon_size"
++        android:width="14dp"
++        android:height="14dp"
+         android:viewportWidth="17"
+         android:viewportHeight="17">
+ 
+diff --git a/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml b/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
+index acdeaf955cb..c746217dd06 100644
+--- a/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
++++ b/packages/SystemUI/res/layout/status_bar_mobile_signal_group.xml
+@@ -77,6 +77,12 @@
+                 android:layout_width="wrap_content"
+                 systemui:hasOverlappingRendering="false"
+             />
++            <ImageView
++                android:id="@+id/mobile_type_old"
++                android:layout_gravity="top|left"
++                android:layout_height="wrap_content"
++                android:layout_width="wrap_content"
++                android:visibility="gone" />
+             <ImageView
+                 android:id="@+id/mobile_roaming"
+                 android:layout_width="wrap_content"
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java b/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
+index 239addd4ee1..1f97db8c6c3 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/StatusBarMobileView.java
+@@ -39,6 +39,7 @@ import com.android.settingslib.graph.SignalDrawable;
+ import com.android.systemui.DualToneHandler;
+ import com.android.systemui.R;
+ import com.android.systemui.plugins.DarkIconDispatcher.DarkReceiver;
++import com.android.systemui.statusbar.phone.StatusBar;
+ import com.android.systemui.statusbar.phone.StatusBarSignalPolicy.MobileIconState;
+ 
+ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+@@ -103,7 +104,7 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         mDualToneHandler = new DualToneHandler(getContext());
+         mMobileGroup = findViewById(R.id.mobile_group);
+         mMobile = findViewById(R.id.mobile_signal);
+-        mMobileType = findViewById(R.id.mobile_type);
++        mMobileType = findViewById(StatusBar.USE_OLD_MOBILETYPE ? R.id.mobile_type_old : R.id.mobile_type);
+         mMobileRoaming = findViewById(R.id.mobile_roaming);
+         mMobileRoamingSpace = findViewById(R.id.mobile_roaming_space);
+         mIn = findViewById(R.id.mobile_in);
+@@ -116,6 +117,21 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         initDotView();
+     }
+ 
++    private void updateMobileTypeView(boolean useOldStyle) {
++        int visOld = mMobileType.getVisibility();
++        mMobileType.setVisibility(View.GONE);
++        mMobileType = findViewById(useOldStyle ? R.id.mobile_type_old : R.id.mobile_type);
++        mMobileType.setVisibility(visOld);
++        int wideTypeIconStartPadding = mContext.getResources().getDimensionPixelSize(R.dimen.wide_type_icon_start_padding);
++        mMobile.setPaddingRelative(
++          useOldStyle &&
++          mState.typeId != 0 &&
++          mState.typeId != R.drawable.stat_sys_data_fully_connected_g &&
++          mState.typeId != R.drawable.stat_sys_data_fully_connected_e &&
++          mState.typeId != R.drawable.stat_sys_data_fully_connected_h
++            ? wideTypeIconStartPadding : 0, 0, 0, 0);
++    }
++
+     private void initDotView() {
+         mDotView = new StatusBarIconView(mContext, mSlot, null);
+         mDotView.setVisibleState(STATE_DOT);
+@@ -143,9 +159,11 @@ public class StatusBarMobileView extends FrameLayout implements DarkReceiver,
+         if (requestLayout) {
+             requestLayout();
+         }
++        updateMobileTypeView(StatusBar.USE_OLD_MOBILETYPE);
+     }
+ 
+     private void initViewState() {
++        updateMobileTypeView(StatusBar.USE_OLD_MOBILETYPE);
+         setContentDescription(mState.contentDescription);
+         if (!mState.visible) {
+             mMobileGroup.setVisibility(View.GONE);
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
+index 9ceed56d762..5191ce2d363 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBar.java
+@@ -69,6 +69,8 @@ import android.content.ComponentName;
+ import android.content.Context;
+ import android.content.Intent;
+ import android.content.IntentFilter;
++import android.content.ContentResolver;
++import android.database.ContentObserver;
+ import android.content.pm.IPackageManager;
+ import android.content.pm.PackageManager;
+ import android.content.pm.PackageManager.NameNotFoundException;
+@@ -228,6 +230,7 @@ import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
+ import com.android.systemui.statusbar.policy.NetworkController;
+ import com.android.systemui.statusbar.policy.OnHeadsUpChangedListener;
+ import com.android.systemui.statusbar.policy.RemoteInputQuickSettingsDisabler;
++import com.android.systemui.statusbar.policy.TelephonyIcons;
+ import com.android.systemui.statusbar.policy.UserInfoControllerImpl;
+ import com.android.systemui.statusbar.policy.UserSwitcherController;
+ import com.android.systemui.tuner.TunerService;
+@@ -332,6 +335,7 @@ public class StatusBar extends SystemUI implements DemoMode,
+     public static final boolean ENABLE_LOCKSCREEN_WALLPAPER = true;
+ 
+     private static final UiEventLogger sUiEventLogger = new UiEventLoggerImpl();
++    public static boolean USE_OLD_MOBILETYPE = false;
+ 
+     static {
+         boolean onlyCoreApps;
+@@ -932,6 +936,9 @@ public class StatusBar extends SystemUI implements DemoMode,
+ 
+         createAndAddWindows(result);
+ 
++        mHornSettingsObserver.observe();
++        mHornSettingsObserver.update();
++
+         if (mWallpaperSupported) {
+             // Make sure we always have the most current wallpaper info.
+             IntentFilter wallpaperChangedFilter = new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED);
+@@ -4054,6 +4061,40 @@ public class StatusBar extends SystemUI implements DemoMode,
+         }
+     };
+ 
++    private HornSettingsObserver mHornSettingsObserver = new HornSettingsObserver(mHandler);
++    private class HornSettingsObserver extends ContentObserver {
++        HornSettingsObserver(Handler handler) {
++            super(handler);
++        }
++
++        void observe() {
++            ContentResolver resolver = mContext.getContentResolver();
++            resolver.registerContentObserver(Settings.System.getUriFor(
++                    Settings.System.USE_OLD_MOBILETYPE),
++                    false, this, UserHandle.USER_ALL);
++        }
++
++        @Override
++        public void onChange(boolean selfChange, Uri uri) {
++            if (uri.equals(Settings.System.getUriFor(
++                    Settings.System.USE_OLD_MOBILETYPE))) {
++                setOldMobileType();
++          }
++       update();
++        }
++
++        public void update() {
++            setOldMobileType();
++        }
++    }
++
++    private void setOldMobileType() {
++        USE_OLD_MOBILETYPE = Settings.System.getIntForUser(mContext.getContentResolver(),
++                Settings.System.USE_OLD_MOBILETYPE, 0,
++                UserHandle.USER_CURRENT) != 0;
++        TelephonyIcons.updateIcons(USE_OLD_MOBILETYPE);
++    }
++
+     public int getWakefulnessState() {
+         return mWakefulnessLifecycle.getWakefulness();
+     }
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index eb2d9bce6c4..0487c6ef497 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -696,7 +696,7 @@ public class MobileSignalController extends SignalController<
+ 
+     static class MobileIconGroup extends SignalController.IconGroup {
+         final int mDataContentDescription; // mContentDescriptionDataType
+-        final int mDataType;
++        int mDataType;
+         final boolean mIsWide;
+         final int mQsDataType;
+ 
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/TelephonyIcons.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/TelephonyIcons.java
+index d9591cf5f5e..59c94089b74 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/TelephonyIcons.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/TelephonyIcons.java
+@@ -17,26 +17,27 @@
+ package com.android.systemui.statusbar.policy;
+ 
+ import com.android.systemui.R;
++import com.android.systemui.statusbar.policy.MobileSignalController;
+ import com.android.systemui.statusbar.policy.MobileSignalController.MobileIconGroup;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+-class TelephonyIcons {
++public class TelephonyIcons {
+     //***** Data connection icons
+     static final int FLIGHT_MODE_ICON = R.drawable.stat_sys_airplane_mode;
+ 
+-    static final int ICON_LTE = R.drawable.ic_lte_mobiledata;
+-    static final int ICON_LTE_PLUS = R.drawable.ic_lte_plus_mobiledata;
+-    static final int ICON_G = R.drawable.ic_g_mobiledata;
+-    static final int ICON_E = R.drawable.ic_e_mobiledata;
+-    static final int ICON_H = R.drawable.ic_h_mobiledata;
+-    static final int ICON_H_PLUS = R.drawable.ic_h_plus_mobiledata;
+-    static final int ICON_3G = R.drawable.ic_3g_mobiledata;
+-    static final int ICON_4G = R.drawable.ic_4g_mobiledata;
+-    static final int ICON_4G_PLUS = R.drawable.ic_4g_plus_mobiledata;
++    static int ICON_LTE = R.drawable.ic_lte_mobiledata;
++    static int ICON_LTE_PLUS = R.drawable.ic_lte_plus_mobiledata;
++    static int ICON_G = R.drawable.ic_g_mobiledata;
++    static int ICON_E = R.drawable.ic_e_mobiledata;
++    static int ICON_H = R.drawable.ic_h_mobiledata;
++    static int ICON_H_PLUS = R.drawable.ic_h_plus_mobiledata;
++    static int ICON_3G = R.drawable.ic_3g_mobiledata;
++    static int ICON_4G = R.drawable.ic_4g_mobiledata;
++    static int ICON_4G_PLUS = R.drawable.ic_4g_plus_mobiledata;
+     static final int ICON_5G_E = R.drawable.ic_5g_e_mobiledata;
+-    static final int ICON_1X = R.drawable.ic_1x_mobiledata;
++    static int ICON_1X = R.drawable.ic_1x_mobiledata;
+     static final int ICON_5G = R.drawable.ic_5g_mobiledata;
+     static final int ICON_5G_PLUS = R.drawable.ic_5g_plus_mobiledata;
+ 
+@@ -53,7 +54,7 @@ class TelephonyIcons {
+             0,
+             false);
+ 
+-    static final MobileIconGroup THREE_G = new MobileIconGroup(
++    static MobileIconGroup THREE_G = new MobileIconGroup(
+             "3G",
+             null,
+             null,
+@@ -88,7 +89,7 @@ class TelephonyIcons {
+             AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
+             0, 0, false);
+ 
+-    static final MobileIconGroup E = new MobileIconGroup(
++    static MobileIconGroup E = new MobileIconGroup(
+             "E",
+             null,
+             null,
+@@ -101,7 +102,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_E,
+             false);
+ 
+-    static final MobileIconGroup ONE_X = new MobileIconGroup(
++    static MobileIconGroup ONE_X = new MobileIconGroup(
+             "1X",
+             null,
+             null,
+@@ -114,7 +115,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_1X,
+             true);
+ 
+-    static final MobileIconGroup G = new MobileIconGroup(
++    static MobileIconGroup G = new MobileIconGroup(
+             "G",
+             null,
+             null,
+@@ -127,7 +128,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_G,
+             false);
+ 
+-    static final MobileIconGroup H = new MobileIconGroup(
++    static MobileIconGroup H = new MobileIconGroup(
+             "H",
+             null,
+             null,
+@@ -140,7 +141,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_H,
+             false);
+ 
+-    static final MobileIconGroup H_PLUS = new MobileIconGroup(
++    static MobileIconGroup H_PLUS = new MobileIconGroup(
+             "H+",
+             null,
+             null,
+@@ -153,7 +154,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_H_PLUS,
+             false);
+ 
+-    static final MobileIconGroup FOUR_G = new MobileIconGroup(
++    static MobileIconGroup FOUR_G = new MobileIconGroup(
+             "4G",
+             null,
+             null,
+@@ -166,7 +167,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_4G,
+             true);
+ 
+-    static final MobileIconGroup FOUR_G_PLUS = new MobileIconGroup(
++    static MobileIconGroup FOUR_G_PLUS = new MobileIconGroup(
+             "4G+",
+             null,
+             null,
+@@ -179,7 +180,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_4G_PLUS,
+             true);
+ 
+-    static final MobileIconGroup LTE = new MobileIconGroup(
++    static MobileIconGroup LTE = new MobileIconGroup(
+             "LTE",
+             null,
+             null,
+@@ -192,7 +193,7 @@ class TelephonyIcons {
+             TelephonyIcons.ICON_LTE,
+             true);
+ 
+-    static final MobileIconGroup LTE_PLUS = new MobileIconGroup(
++    static MobileIconGroup LTE_PLUS = new MobileIconGroup(
+             "LTE+",
+             null,
+             null,
+@@ -298,5 +299,19 @@ class TelephonyIcons {
+         ICON_NAME_TO_ICON.put("datadisable", DATA_DISABLED);
+         ICON_NAME_TO_ICON.put("notdefaultdata", NOT_DEFAULT_DATA);
+     }
+-}
+ 
++    public static void updateIcons(boolean useOldStyle) {
++        TelephonyIcons.ICON_LTE = LTE.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_lte : R.drawable.ic_lte_mobiledata;
++        TelephonyIcons.ICON_LTE_PLUS = LTE_PLUS.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_lte_plus : R.drawable.ic_lte_plus_mobiledata;
++        TelephonyIcons.ICON_G = G.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_g : R.drawable.ic_g_mobiledata;
++        TelephonyIcons.ICON_E = E.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_e : R.drawable.ic_e_mobiledata;
++        TelephonyIcons.ICON_H = H.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_h : R.drawable.ic_h_mobiledata;
++        TelephonyIcons.ICON_H_PLUS = H_PLUS.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_hp : R.drawable.ic_h_plus_mobiledata;
++        TelephonyIcons.ICON_3G = THREE_G.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_3g : R.drawable.ic_3g_mobiledata;
++        TelephonyIcons.ICON_4G = FOUR_G.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_4g : R.drawable.ic_4g_mobiledata;
++        TelephonyIcons.ICON_4G_PLUS = FOUR_G_PLUS.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_4g_plus : R.drawable.ic_4g_plus_mobiledata;
++        TelephonyIcons.ICON_1X = ONE_X.mDataType = useOldStyle ? R.drawable.stat_sys_data_fully_connected_1x : R.drawable.ic_1x_mobiledata;
++    }
++
++
++}
+-- 
+2.25.1
+

@@ -1,0 +1,26 @@
+From 667ba99d4f73b5b5d4e3472b9091be5182d70d4e Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 24 Apr 2020 09:53:34 +0300
+Subject: [PATCH 19/53] add Russian translation v2
+
+Change-Id: I84a908eee8dfb42120ea168c045d3b811697018f
+---
+ res/values-ru/custom_strings.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/res/values-ru/custom_strings.xml b/res/values-ru/custom_strings.xml
+index e6729f1fe2..9ebc4ced58 100644
+--- a/res/values-ru/custom_strings.xml
++++ b/res/values-ru/custom_strings.xml
+@@ -37,4 +37,8 @@
+     <string name="theme_customization_qsalpha_title">Прозрачность панели быстрых настроек</string>
+     <!-- [CHAR_LIMIT=NONE] Developer Settings: Title of the setting which enables overlays to customize the SystemUI speed performance -->
+     <string name="theme_customization_speedui_title">Ускорение интерфейса/Энергосбережение</string>
++    <!-- Theming -->
++    <string name="theme_customization_accent_color_title">Цветовой акцент</string>
++    <string name="theme_customization_font_title">Шрифт заголовка/содержимого</string>
++    <string name="theme_customization_icon_shape_title">Закругление иконок</string>
+ </resources>
+-- 
+2.25.1
+

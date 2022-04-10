@@ -1,0 +1,64 @@
+From f9779a045339c383177f2a4d92992a4894667720 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sat, 20 Feb 2021 02:26:19 -0500
+Subject: [PATCH 11/14] Revert "Don't start fingerprint for FOD devices early"
+
+This reverts commit e9117db35861a722a87d55a3e2a5f7c2ac5dc259.
+
+Change-Id: Ib0f43f29aafacc35d2fc7f98d6a0a1cd3a3b6841
+---
+ .../systemui/keyguard/KeyguardViewMediator.java        | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java b/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
+index 3eb5de9289e..0c939020780 100644
+--- a/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
++++ b/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
+@@ -38,7 +38,6 @@ import android.content.ContentResolver;
+ import android.content.Context;
+ import android.content.Intent;
+ import android.content.IntentFilter;
+-import android.content.pm.PackageManager;
+ import android.content.pm.UserInfo;
+ import android.hardware.biometrics.BiometricSourceType;
+ import android.media.AudioAttributes;
+@@ -102,7 +101,6 @@ import com.android.systemui.statusbar.phone.StatusBar;
+ import com.android.systemui.util.DeviceConfigProxy;
+ import com.android.systemui.util.InjectionInflationController;
+ 
+-import lineageos.app.LineageContextConstants;
+ import lineageos.app.Profile;
+ import lineageos.app.ProfileManager;
+ 
+@@ -387,8 +385,6 @@ public class KeyguardViewMediator extends SystemUI implements Dumpable {
+     private IKeyguardDrawnCallback mDrawnCallback;
+     private CharSequence mCustomMessage;
+ 
+-    private boolean mHasFod;
+-
+     private final DeviceConfig.OnPropertiesChangedListener mOnPropertiesChangedListener =
+             new DeviceConfig.OnPropertiesChangedListener() {
+             @Override
+@@ -757,8 +753,6 @@ public class KeyguardViewMediator extends SystemUI implements Dumpable {
+                 QuickStepContract.isGesturalMode(navigationModeController.addListener(mode -> {
+                     mInGestureNavigationMode = QuickStepContract.isGesturalMode(mode);
+                 }));
+-        PackageManager packageManager = context.getPackageManager();
+-        mHasFod = packageManager.hasSystemFeature(LineageContextConstants.Features.FOD);
+     }
+ 
+     public void userActivity() {
+@@ -891,9 +885,7 @@ public class KeyguardViewMediator extends SystemUI implements Dumpable {
+             // explicitly DO NOT want to call
+             // mKeyguardViewControllerLazy.get().setKeyguardGoingAwayState(false)
+             // here, since that will mess with the device lock state.
+-            if (!mHasFod) {
+-                mUpdateMonitor.dispatchKeyguardGoingAway(false);
+-            }
++            mUpdateMonitor.dispatchKeyguardGoingAway(false);
+ 
+             // Lock immediately based on setting if secure (user has a pin/pattern/password).
+             // This also "locks" the device when not secure to provide easy access to the
+-- 
+2.30.2
+
