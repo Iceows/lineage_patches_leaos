@@ -1,0 +1,32 @@
+From 82cd8338fa19ad80047ea57ced7f23bb6511d108 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 3 Jun 2022 15:13:13 +0200
+Subject: [PATCH] Fix ModernMediaScanner crash on system partitions a-only
+ device
+
+On a-only phones the ModernMediaScanner crashes preventing the discovery of all sounds stored in /system/media or in /system/product/media
+---
+ src/com/android/providers/media/util/FileUtils.java | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/com/android/providers/media/util/FileUtils.java b/src/com/android/providers/media/util/FileUtils.java
+index 47c5bc1..faa89e5 100644
+--- a/src/com/android/providers/media/util/FileUtils.java
++++ b/src/com/android/providers/media/util/FileUtils.java
+@@ -833,8 +833,11 @@ public class FileUtils {
+      */
+     public static @NonNull String getVolumeName(@NonNull Context context, @NonNull File path) {
+         if (contains(Environment.getStorageDirectory(), path)) {
+-            return context.getSystemService(StorageManager.class).getStorageVolume(path)
+-                    .getMediaStoreVolumeName();
++            StorageManager storage=context.getSystemService(StorageManager.class);
++            if (storage.getStorageVolume(path)!=null)
++                return storage.getStorageVolume(path).getMediaStoreVolumeName();
++            else
++                return MediaStore.VOLUME_INTERNAL;
+         } else {
+             return MediaStore.VOLUME_INTERNAL;
+         }
+-- 
+2.30.2
+
