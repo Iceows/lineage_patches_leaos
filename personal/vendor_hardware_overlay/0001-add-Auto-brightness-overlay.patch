@@ -1,4 +1,4 @@
-From 57734a257d3ba356af37e9770a68591e85e5df08 Mon Sep 17 00:00:00 2001
+From 0e9a0d6e7e579e31ef956e11333c799b0199fd42 Mon Sep 17 00:00:00 2001
 From: Victor Bo <bvoid@yandex.ru>
 Date: Mon, 8 Feb 2021 06:26:06 -0500
 Subject: [PATCH 07/21] add Auto brightness overlay
@@ -54,7 +54,7 @@ index 0000000..8abe291
 +    <bool name="config_automatic_brightness_available">true</bool>
 +</resources>
 diff --git a/overlay.mk b/overlay.mk
-index c090711..ce1912b 100755
+index 1be11d8..947648c 100755
 --- a/overlay.mk
 +++ b/overlay.mk
 @@ -13,6 +13,7 @@ PRODUCT_PACKAGES += \

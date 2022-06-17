@@ -1,4 +1,4 @@
-From 1867ed051fa5b23962fb371793d86e8ef6c42f49 Mon Sep 17 00:00:00 2001
+From e6a9c78a895404644803ce50af3e8340545381d1 Mon Sep 17 00:00:00 2001
 From: Victor Bo <bvoid@yandex.ru>
 Date: Fri, 16 Apr 2021 00:33:37 -0400
 Subject: [PATCH 09/21] rename autobrightness overlay to match phh style
@@ -34,7 +34,7 @@ index f251f14..5919d1a 100644
          android:versionName="1.0">
          <overlay android:targetPackage="android"
 diff --git a/overlay.mk b/overlay.mk
-index ce1912b..61ac8d7 100755
+index 947648c..f552072 100755
 --- a/overlay.mk
 +++ b/overlay.mk
 @@ -13,7 +13,6 @@ PRODUCT_PACKAGES += \
