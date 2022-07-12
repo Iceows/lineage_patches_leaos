@@ -1,0 +1,26 @@
+From 9d9c0650373c74ec9da35c81d1741dbd2d4def14 Mon Sep 17 00:00:00 2001
+From: Iceows <mounierr07@gmail.com>
+Date: Tue, 12 Jul 2022 10:40:14 +0200
+Subject: [PATCH] Build with release keys
+
+Build with release keys instead of test-keys
+---
+ core/sysprop.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/sysprop.mk b/core/sysprop.mk
+index 5dc0ec1f69..7f635b6810 100644
+--- a/core/sysprop.mk
++++ b/core/sysprop.mk
+@@ -150,7 +150,7 @@ endif
+ # Both of these tags will be removed and replaced with "release-keys"
+ # when the target-files is signed in a post-build step.
+ ifeq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/make/target/product/security/testkey)
+-BUILD_KEYS := test-keys
++BUILD_KEYS := release-keys
+ else
+ BUILD_KEYS := dev-keys
+ endif
+-- 
+2.33.0.windows.2
+
