@@ -1,0 +1,228 @@
+From 64d80b2558f0c6b1eceed54b1a3826ec4c83bb52 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 18 Aug 2022 11:26:15 +0200
+Subject: [PATCH] Add new options from LeaOS 18.1 (eremitein )
+
+Dump log, restart ui, dynamic root, safetynet, auto run, nolog
+---
+ base.mk             |  8 ++++
+ generate.sh         |  6 ++-
+ phh-on-data.sh      | 10 ++++-
+ phh-prop-handler.sh | 92 +++++++++++++++++++++++++++++++++++++++++++++
+ vndk.rc             | 18 +++++++++
+ 5 files changed, 131 insertions(+), 3 deletions(-)
+
+diff --git a/base.mk b/base.mk
+index 711236b..7a1923e 100644
+--- a/base.mk
++++ b/base.mk
+@@ -63,6 +63,9 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/rw-system.sh:system/bin/rw-system.sh \
+ 	device/phh/treble/phh-on-data.sh:system/bin/phh-on-data.sh \
+ 	device/phh/treble/phh-prop-handler.sh:system/bin/phh-prop-handler.sh \
++	device/phh/treble/secure.sh:system/phh/secure.sh \
++	device/phh/treble/phh.superuser.apk:system/phh/phh.superuser.apk \
++	device/phh/treble/su/su:system/phh/xbin/su \
+ 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
+ 
+ PRODUCT_COPY_FILES += \
+@@ -76,9 +79,14 @@ PRODUCT_PACKAGES += \
+ 	bootctl \
+ 	vintf \
+ 
++# add usefull symlinks
++PRODUCT_PACKAGES += \
++	busybox-links
++
+ # Fix Offline Charging on Huawmeme
+ PRODUCT_PACKAGES += \
+ 	huawei-charger
++	
+ PRODUCT_COPY_FILES += \
+ 	$(call find-copy-subdir-files,*,device/phh/treble/huawei_charger/files,system/etc/charger)
+ 
+diff --git a/generate.sh b/generate.sh
+index 84d1e3d..0c7fe0d 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -17,7 +17,7 @@ echo 'PRODUCT_MAKEFILES := \' > AndroidProducts.mk
+ for part in a ab;do
+ 	for apps in vanilla gapps foss gapps-go;do
+ 		for arch in arm64 arm a64;do
+-			for su in yes no;do
++			for su in yes no z;do
+ 				apps_suffix=""
+ 				apps_script=""
+ 				apps_name=""
+@@ -56,6 +56,10 @@ for part in a ab;do
+ 					su_suffix='S'
+ 					extra_packages+=' phh-su me.phh.superuser'
+ 				fi
++				if [ "$su" == "z" ];then
++					su_suffix='Z'
++					extra_packages+='zerodaemon'
++				fi
+ 
+ 				part_suffix='a'
+ 				if [ "$part" == 'ab' ];then
+diff --git a/phh-on-data.sh b/phh-on-data.sh
+index 472d16e..34ffe16 100644
+--- a/phh-on-data.sh
++++ b/phh-on-data.sh
+@@ -3,16 +3,22 @@
+ vndk="$(getprop persist.sys.vndk)"
+ [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
+ 
+-if getprop persist.sys.phh.no_vendor_overlay |grep -q true;then
++if getprop persist.sys.phh.no_vendor_overlay |grep -q true; then
+ 	for part in odm vendor;do
+ 		mount /mnt/phh/empty_dir/ /$part/overlay
+ 	done
+ fi
+ 
+-if getprop persist.sys.phh.caf.media_profile |grep -q true;then
++if getprop persist.sys.phh.caf.media_profile |grep -q true; then
+     setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
+ fi
+ 
++if getprop persist.sys.phh.no_stock_apps |grep -q true; then
++	for part in odm vendor; do
++		mount /mnt/phh/empty_dir/ /$part/overlay
++		mount /mnt/phh/empty_dir/ /$part/app
++	done
++fi
+ 
+ minijailSrc=/system/system_ext/apex/com.android.vndk.v28/lib/libminijail.so
+ minijailSrc64=/system/system_ext/apex/com.android.vndk.v28/lib64/libminijail.so
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 4371632..8504d1b 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -210,3 +210,95 @@ if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
+     restartAudio
+     exit
+ fi
++
++#root
++if [ "$1" == "persist.sys.phh.root" ]; then
++    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]] || [ -d /sbin/.magisk ]; then
++        exit 1
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        umount -nfl /system/xbin
++        cp -r --preserve=all /system/xbin /mnt/phh/xbin
++        cp --preserve=all /system/phh/xbin/* /mnt/phh/xbin
++        mount /mnt/phh/xbin /system/xbin
++        setprop ctl.start zerodaemon
++        pm install -r /system/phh/phh.superuser.apk
++    else
++        pm uninstall -k me.phh.superuser
++        setprop ctl.stop zerodaemon
++        umount -nfl /system/xbin
++        rm -rf /mnt/phh/xbin /data/su
++    fi
++    exit
++fi
++
++#safetynet
++if [ "$1" == "persist.sys.phh.safetynet" ]; then
++    if [[ "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ ! -f /data/adb/phh/secure ]; then
++        mkdir -p /data/adb/phh
++        cp /system/phh/secure.sh /data/adb/phh/secure
++    fi
++    /system/bin/sh /data/adb/phh/secure
++    exit
++fi
++
++#autorun
++if [ "$1" == "persist.sys.phh.autorun" ]; then
++    if [[ "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ ! -f /data/adb/phh/run ]; then
++        mkdir -p /data/adb/phh
++        touch /data/adb/phh/run
++    fi
++    /system/bin/sh /data/adb/phh/run
++    exit
++fi
++
++#nolog
++if [ "$1" == "persist.sys.phh.nolog" ]; then
++    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        setprop ctl.stop logd
++        setprop ctl.stop traced
++        setprop ctl.stop traced_probes
++    else
++        setprop ctl.start traced_probes
++        setprop ctl.start traced
++        setprop ctl.start logd
++    fi
++    exit
++fi
++
++#restart_sysui
++if [ "$1" == "sys.phh.restart_sysui" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        pkill systemui
++    fi
++    exit
++fi
++
++#dump_logs
++if [ "$1" == "sys.phh.dump_logs" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        logcat -b all -d > /sdcard/logs.txt
++    fi
++    exit
++fi
+diff --git a/vndk.rc b/vndk.rc
+index c150ace..e395402 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -62,6 +62,24 @@ on property:persist.sys.phh.disable_a2dp_offload=1
+ on property:persist.sys.phh.disable_a2dp_offload=*
+     setprop persist.bluetooth.bluetooth_audio_hal.disabled ${persist.sys.phh.disable_a2dp_offload}
+ 
++on property:persist.sys.phh.root=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.root"
++
++on property:persist.sys.phh.safetynet=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.safetynet"
++
++on property:persist.sys.phh.autorun=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.autorun"
++
++on property:persist.sys.phh.nolog=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.nolog"
++
++on property:sys.phh.restart_sysui=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "sys.phh.restart_sysui"
++
++on property:sys.phh.dump_logs=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "sys.phh.dump_logs"
++
+ on property:init.svc.ril-proxy=stopped && property:persist.sys.phh.restart_ril=true
+     start ril-proxy
+ 
+-- 
+2.30.2
+
