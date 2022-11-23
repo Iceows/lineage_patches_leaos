@@ -1,7 +1,9 @@
-From 04598f43a9b84a3099fb20e558caaa5accb3bebf Mon Sep 17 00:00:00 2001
-From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sat, 7 Mar 2020 14:49:09 +0100
-Subject: [PATCH 5/6] Failing to create facedata shouldn't be fatal
+From b28d09c1a4f72c64382c57a714012b04fa02585b Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 13 Nov 2022 20:43:17 +0100
+Subject: [PATCH 11/14] Failing to create facedata shouldn't be fatal
+
+(new version of phh patch for november 2022 release android 11)
 
 Some Pie vendors create it on their own, so SELinux would deny that
 Also not all devices have face unlock anyway
@@ -34,5 +36,5 @@ index d624d73..60056f3 100644
          }
      }
 -- 
-2.17.1
+2.25.1
 

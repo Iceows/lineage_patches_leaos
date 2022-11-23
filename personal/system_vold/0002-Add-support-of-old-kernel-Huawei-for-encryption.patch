@@ -1,7 +1,7 @@
 From f7db60b0056d5fb0ff8fa146666e10461c65bcc0 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Tue, 22 Feb 2022 10:47:35 +0100
-Subject: [PATCH] Add support of old kernel Huawei for encryption
+Subject: [PATCH 02/14] Add support of old kernel Huawei for encryption
 
 Search key in session keyring fscrypt entry and e4crypt
 ---
@@ -58,5 +58,5 @@ index dafe4da..4b74278 100644
      return true;
  }
 -- 
-2.30.2
+2.25.1
 

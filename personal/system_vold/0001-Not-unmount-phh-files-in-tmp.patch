@@ -1,0 +1,24 @@
+From 5b0ddbd0907339f61451e2dc4c04bb3e30d858fe Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 30 Jan 2022 11:41:04 +0100
+Subject: [PATCH 01/14] Not unmount phh files in tmp
+
+---
+ VolumeManager.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/VolumeManager.cpp b/VolumeManager.cpp
+index 585d2d5..6f67d4a 100644
+--- a/VolumeManager.cpp
++++ b/VolumeManager.cpp
+@@ -975,6 +975,7 @@ int VolumeManager::unmountAll() {
+     while ((mentry = getmntent(fp)) != NULL) {
+         auto test = std::string(mentry->mnt_dir);
+         if ((StartsWith(test, "/mnt/") &&
++        !StartsWith(test, "/mnt/phh") &&
+ #ifdef __ANDROID_DEBUGGABLE__
+              !StartsWith(test, "/mnt/scratch") &&
+ #endif
+-- 
+2.25.1
+

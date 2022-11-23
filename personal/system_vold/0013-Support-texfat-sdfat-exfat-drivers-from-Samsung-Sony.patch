@@ -1,0 +1,52 @@
+From 0773cf4f62ea5822da3dd2f3d80945d999c2b687 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 13 Nov 2022 20:56:06 +0100
+Subject: [PATCH 13/14] Support texfat/sdfat exfat drivers from Samsung/Sony
+
+(new version of phh patch for november 2022 release android 11)
+
+Support texfat/sdfat exfat drivers from Samsung/Sony
+---
+ fs/Exfat.cpp | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/fs/Exfat.cpp b/fs/Exfat.cpp
+index 34f1024..e38ca21 100644
+--- a/fs/Exfat.cpp
++++ b/fs/Exfat.cpp
+@@ -34,8 +34,11 @@ static const char* kMkfsPath = "/system/bin/mkfs.exfat";
+ static const char* kFsckPath = "/system/bin/fsck.exfat";
+ 
+ bool IsSupported() {
+-    return access(kMkfsPath, X_OK) == 0 && access(kFsckPath, X_OK) == 0 &&
+-           IsFilesystemSupported("exfat");
++    return (access(kMkfsPath, X_OK) == 0) && 
++           (access(kFsckPath, X_OK) == 0) &&
++           (IsFilesystemSupported("exfat") ||
++           IsFilesystemSupported("sdfat") ||
++           IsFilesystemSupported("texfat"));
+ }
+ 
+ status_t Check(const std::string& source) {
+@@ -61,13 +64,16 @@ status_t Mount(const std::string& source, const std::string& target, int ownerUi
+     auto mountData = android::base::StringPrintf("uid=%d,gid=%d,fmask=%o,dmask=%o", ownerUid,
+                                                  ownerGid, permMask, permMask);
+ 
+-    if (mount(source.c_str(), target.c_str(), "exfat", mountFlags, mountData.c_str()) == 0) {
++    const char *fs = "exfat";
++    if (IsFilesystemSupported("texfat")) fs = "texfat";
++    if (IsFilesystemSupported("sdfat")) fs = "sdfat";
++    if (mount(source.c_str(), target.c_str(), fs, mountFlags, mountData.c_str()) == 0) {
+         return 0;
+     }
+ 
+     PLOG(ERROR) << "Mount failed; attempting read-only";
+     mountFlags |= MS_RDONLY;
+-    if (mount(source.c_str(), target.c_str(), "exfat", mountFlags, mountData.c_str()) == 0) {
++    if (mount(source.c_str(), target.c_str(), fs, mountFlags, mountData.c_str()) == 0) {
+         return 0;
+     }
+ 
+-- 
+2.25.1
+

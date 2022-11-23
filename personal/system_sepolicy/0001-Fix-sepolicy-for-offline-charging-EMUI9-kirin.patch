@@ -1,0 +1,44 @@
+From 63c7d8ef0662e5a4bd5436611a99a8150dabb2dc Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 13 Nov 2022 11:18:06 +0100
+Subject: [PATCH] Fix sepolicy for offline charging EMUI9 kirin
+
+Fix sepolicy for offline charging EMUI9 kirin
+---
+ private/charger.te | 11 +++++++++++
+ public/attributes  |  5 +++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/private/charger.te b/private/charger.te
+index 65109deff..ff49cdc7f 100644
+--- a/private/charger.te
++++ b/private/charger.te
+@@ -1 +1,12 @@
+ typeattribute charger coredomain;
++
++
++# Allow charger to write to sysfs_backlight_attr
++allow charger sysfs_backlight_attr:file w_file_perms;
++
++# Allow charger to write to sysfs_led_attr
++allow charger sysfs_led_attr:file w_file_perms;
++
++# Allow charger to read and write to sysfs_power
++allow charger sysfs_power:file rw_file_perms;
++
+diff --git a/public/attributes b/public/attributes
+index 1efb95aaa..5ee15425c 100644
+--- a/public/attributes
++++ b/public/attributes
+@@ -366,3 +366,8 @@ attribute wifi_keystore_service_server;
+ 
+ # All types used for super partition block devices.
+ attribute super_block_device_type;
++
++# Huawei charger sysfs attr
++attribute sysfs_backlight_attr;
++attribute sysfs_led_attr;
++
+-- 
+2.25.1
+
