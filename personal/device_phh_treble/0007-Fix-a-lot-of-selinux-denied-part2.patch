@@ -1,0 +1,338 @@
+From ab4bbc5eca7906d961ee9a6ae9501ca1dd3a3228 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Mon, 12 Dec 2022 22:57:56 +0100
+Subject: [PATCH 7/7] Fix a lot of selinux denied - part2
+
+Fix a lot of selinux denied - part2
+---
+ sepolicy/hal_audio_sysbta.te |  13 ++
+ sepolicy/huawei.te           | 253 ++++++++++++++++++-----------------
+ 2 files changed, 146 insertions(+), 120 deletions(-)
+ create mode 100644 sepolicy/hal_audio_sysbta.te
+
+diff --git a/sepolicy/hal_audio_sysbta.te b/sepolicy/hal_audio_sysbta.te
+new file mode 100644
+index 0000000..8f24507
+--- /dev/null
++++ b/sepolicy/hal_audio_sysbta.te
+@@ -0,0 +1,13 @@
++type hal_audio_sysbta, domain, coredomain;
++hal_server_domain(hal_audio_sysbta, hal_audio)
++
++type hal_audio_sysbta_exec, exec_type, system_file_type, file_type;
++init_daemon_domain(hal_audio_sysbta)
++
++hal_client_domain(hal_audio_sysbta, hal_allocator)
++
++# allow audioserver to call hal_audio dump with its own fd to retrieve status
++allow hal_audio_sysbta audioserver:fifo_file write;
++
++get_prop(hal_audio_sysbta, vendor_default_prop)
++
+diff --git a/sepolicy/huawei.te b/sepolicy/huawei.te
+index ef0962b..4c1c6e5 100644
+--- a/sepolicy/huawei.te
++++ b/sepolicy/huawei.te
+@@ -16,133 +16,151 @@ allowxperm oeminfo_nvm oeminfo_nvm_device:blk_file ioctl { 0x1260 };
+ 
+ allow charger rootfs:file { ioctl read getattr lock map execute entrypoint open };
+ 
++# This is use exclusively for init to relabel /dev/selinux from tmpfs to device
++allow kernel tmpfs:{ dir file } relabelfrom;
++allow kernel device:{ dir file } relabelto;
++
++# system/core/init/mount_handler.cpp likes to browse all /sys/block/xxx, so let it do so...
++type sys_block_sdd, file_type;
++allow init { sysfs sys_block_sdd }:dir r_dir_perms;
++allow init { sysfs sys_block_sdd }:file r_file_perms;
++allow init { sysfs sys_block_sdd }:lnk_file read;
++
++allowxperm vendor_init { teecd_data_file }:dir ioctl { 
++  FS_IOC_GET_ENCRYPTION_POLICY
++  FS_IOC_SET_ENCRYPTION_POLICY
++};
++
++# Fixes boot issue in EMUI 9 P20 lite
++type sys_block_mmcblk0, file_type;
++allow init sys_block_mmcblk0:lnk_file read;
++allow init sysfs_zram:lnk_file read;
++
++
++# --------------------- Not need to boot but this rules are denied  ----------------------------------------
++
++# Add support off splash2 Huawei logging
+ type splash2_data_file, file_type;
+-type modem_secure_file, file_type;
+-type modem_log_file, file_type;
+-type modem_fw_file, file_type;
+-type modem_nv_file, file_type;
+-type teecd_data_file_system, data_file_type;
+ 
+-type sys_block_mmcblk0, fs_type;
++allow splash2_data_file self:filesystem { associate };
++allow init splash2_data_file:filesystem { mount relabelto relabelfrom };
++allow init splash2_data_file:dir { getattr mounton };
++allow vendor_init splash2_data_file:dir rw_dir_perms;
++allow vendor_init splash2_data_file:file rw_file_perms;
++allow vendor_init splash2_data_file:filesystem { getattr };
++allow installd splash2_data_file:filesystem { quotaget };
++allow rild splash2_data_file:dir rw_dir_perms;
++allow rild splash2_data_file:file rw_file_perms;
++allow kernel splash2_data_file:dir rw_dir_perms;
++allow kernel splash2_data_file:file rw_file_perms;
+ 
+-type hal_health_default, domain;
+-type hal_camera_default, domain;
+-type hal_audio_default, domain;
+-type hal_keymaster_default, domain;
+-type hi110x_daemon, domain;
+-type wpa_hisi, domain;
+-type aptouch_daemon, domain;
+-type gpsdaemon, domain;
+-type uniperf, domain;
+-type hinetmanager, domain;
+-type hisecd, domain;
+ 
+-allow kernel device:dir { write };
+-allow kernel self:capability { mknod };
+-allow kernel device:dir { add_name };
++# To display SELinux statut
++allow system_app selinuxfs:file r_file_perms;
++
++
++# Fix CPU gouvernor (rules are in xml file)
++type hwemerffu_service, domain;
++allow hwemerffu_service proc:file r_file_perms;
++
++
++# Fix all SEdenied 
++# allow vold modem_secure_file:filesystem { unmount };
++
++type hinetmanager, fs_type, sysfs_type;
++allow netutils_wrapper hinetmanager:fd { use };
++allow netutils_wrapper hinetmanager:fifo_file { write };
++allow hinetmanager self:capability { dac_override };
++
++allow mediaprovider_app cache_file:dir r_dir_perms;
++
++
++type hal_usb_default, domain;
++allow hal_usb_default self:capability { dac_override };
++
++type sysfs_led, domain;
++allow init sysfs_led:file { setattr };
++
++
++#allow crash_dump bluetooth_data_file:file r_dir_perms;
++#allow crash_dump resourcecache_data_file:file { read };
++#allow crash_dump resourcecache_data_file:file { open };
++
++allow vold sys_block_mmcblk0:file { write };
++allow vold sysfs_zram:file { write };
++
++allow kernel device:dir rw_dir_perms;
++allow kernel self:capability { mknod fsetid };
+ allow kernel device:chr_file { create setattr };
++
++type teecd_data_file_system, data_file_type;
+ allow vendor_init device:chr_file { getattr };
++allow vendor_init teecd_data_file_system:dir { relabelto getattr };
++allow vendor_init system_data_file:dir { add_name write setattr };
++
+ allow init teecd_data_file:dir { mounton };
+-allow init splash2_data_file:filesystem { relabelto relabelfrom };
+-allow splash2_data_file self:filesystem { associate };
+-allow init splash2_data_file:filesystem { mount };
++allow init teecd_data_file:filesystem { mount relabelto relabelfrom };
++allow init sys_block_mmcblk0:file { open write };
++
+ allow fsck block_device:blk_file { read open write ioctl };
+-allow vold sys_block_mmcblk0:file { write };
+-allow vold sysfs_zram:file { write };
+-allow init teecd_data_file:filesystem { relabelto relabelfrom };
+ allow teecd_data_file self:filesystem { associate };
+-allow init teecd_data_file:filesystem { mount };
+-allow init sysfs_zram:lnk_file { read };
+-allow init sys_block_mmcblk0:lnk_file { read };
+-allow init splash2_data_file:dir { getattr };
+-allow vendor_init splash2_data_file:dir { setattr getattr };
+-allow vendor_init teecd_data_file_system:dir { relabelto getattr };
+-allow phhsu_daemon splash2_data_file:dir { getattr };
+-allow phhsu_daemon splash2_data_file:filesystem { getattr };
+-allow phhsu_daemon teecd_data_file:filesystem { getattr };
+-allow phhsu_daemon modem_secure_file:filesystem { getattr };
+-allow phhsu_daemon modem_log_file:filesystem { getattr };
+-allow phhsu_daemon modem_fw_file:filesystem { getattr };
+-allow phhsu_daemon modem_nv_file:filesystem { getattr };
+-allow phhsu_daemon device:blk_file { ioctl };
+ allow rootfs labeledfs:filesystem { associate };
+-allow phhsu_daemon kernel:system { syslog_console };
+-allow phhsu_daemon dmd_device:chr_file { setattr };
+-allow phhsu_daemon self:capability { fsetid };
+ allow tee self:capability { sys_ptrace };
+-allow vendor_init system_data_file:dir { add_name write setattr };
+-allow vendor_init splash2_data_file:file { open write create setattr };
+-allow vendor_init splash2_data_file:filesystem { getattr };
+-allow vendor_init splash2_data_file:dir { open read };
+-allow vendor_init splash2_data_file:file { getattr };
+-allow fsck modem_secure_file:dir { getattr };
+-allow fsck modem_log_file:dir { getattr };
+-allow fsck modem_fw_file:dir { getattr };
+-allow fsck modem_nv_file:dir { getattr };
+-
+-allow init sys_block_mmcblk0:file { open write };
+ 
+ allow kernel device:chr_file { open write };
+-allow uniperf system_data_file:lnk_file { read };
+ allow oeminfo_nvm block_device:blk_file { ioctl getattr open read write };
+ allow gpsdaemon system_data_file:lnk_file { read };
+ allow oeminfo_nvm device:chr_file { ioctl open read write };
+ allow rild system_data_file:lnk_file { read };
+-allow netutils_wrapper hinetmanager:fd { use };
+-allow netutils_wrapper hinetmanager:fifo_file { write };
+-allow hinetmanager self:capability { dac_override };
+-allow kernel system_data_root_file:dir { open read setattr };
+-allow kernel system_data_root_file:file { open setattr getattr read append };
++allow kernel system_data_root_file:dir r_dir_perms;
++allow kernel system_data_root_file:file rw_file_perms;
+ allow kernel unlabeled:file { read open };
++
++
++allow hi110x_daemon rootfs:dir { open read };
+ allow hi110x_daemon self:fifo_file { ioctl };
++
++
+ allow hal_camera_default system_data_file:lnk_file { read };
+ allow surfaceflinger bootanim:dir { search };
+-allow surfaceflinger bootanim:file { open read };
++allow surfaceflinger bootanim:file r_file_perms;
+ allow hal_audio_default audioserver:fifo_file { write };
+ allow installd self:capability { sys_ptrace };
+ allow installd system_server:file { open read };
+ allow installd system_server:dir { search };
+-allow installd splash2_data_file:filesystem { quotaget };
++
+ allow installd teecd_data_file:filesystem { quotaget };
+ allow system_server sysfs_zram:lnk_file { read };
+-allow system_server vendor_file:file { getattr open read };
+-allow kernel sysfs_devices_system_cpu:file { write };
+-allow network_stack fs_bpf:file { read write };
+-
+-
+-allow installd system_server:process { getattr };
+-allow system_server audioserver:process { getattr };
+-allow system_server storaged:process { getattr };
+-allow system_server cameraserver:process { getattr };
+-allow system_server mediametrics:process { getattr };
+-allow system_server statsd:process { getattr };
+-allow system_server mediaextractor:process { getattr };
+-allow system_server netd:process { getattr };
+-allow system_server platform_app:process { getattr };
+-allow system_server mediaserver:process { getattr };
+-allow system_server surfaceflinger:process { getattr };
+-allow system_server shared_relro:process { getattr };
+-allow system_server network_stack:process { getattr };
+-allow system_server system_app:process { getattr };
+-allow system_server secure_element:process { getattr };
+-allow system_server radio:process { getattr };
+-allow system_server priv_app:process { getattr };
+-allow system_server vold:process { getattr };
+-allow system_server mediaprovider_app:process { getattr };
+-allow system_server shell:process { getattr };
+-allow system_server permissioncontroller_app:process { getattr };
+-allow system_server bluetooth:process { getattr };
+-allow surfaceflinger platform_app:process { getattr };
+-allow surfaceflinger system_app:process { getattr };
+-allow surfaceflinger priv_app:process { getattr };
+-allow surfaceflinger bootanim:process { getattr };
+-allow surfaceflinger system_server:process { getattr };
+-allow vold system_server:process { getattr };
+-allow tee hal_keymaster_default:process { getattr };
+-allow vold vdc:process { getattr };
+-allow servicemanager hal_audio_sysbta:process { getattr };
++allow system_server vendor_file:file r_file_perms;
++allow kernel sysfs_devices_system_cpu:file rw_file_perms;
++allow network_stack fs_bpf:file rw_file_perms;
++
++# OTPERASE = 0x4d19
++allowxperm oeminfo_nvm device:blk_file ioctl {
++  0x4d19
++};
++
++# TIOCGWINSZ = 0x5413
++allowxperm hi110x_daemon self:fifo_file ioctl {
++  TIOCGWINSZ
++};
++
++# BLKROSET = 0x125d 0x127c
++allowxperm phhsu_daemon device:blk_file ioctl {
++  BLKROSET
++  BLKDISCARDZEROES
++};
+ 
+ 
++allow shell self:netlink_kobject_uevent_socket { create setopt getopt bind read };
++allow init self:netlink_kobject_uevent_socket { create setopt getopt bind read };
++
++
++# Authorize a lot of process to read default, config and system prop
++type hal_health_default, domain;
++type hal_camera_default, domain;
++type hal_audio_default, domain;
++type hal_keymaster_default, domain;
+ 
+ get_prop(rild, config_prop)
+ get_prop(rild, system_prop)
+@@ -156,32 +174,27 @@ get_prop(hal_audio_default, config_prop)
+ get_prop(hal_audio_default, system_prop)
+ get_prop(hal_keymaster_default, config_prop)
+ 
++type hi110x_daemon, domain;
++type wpa_hisi, domain;
++type aptouch_daemon, domain;
++type gpsdaemon, domain;
++type atcmdserver, domain;
++
+ get_prop(hi110x_daemon, default_prop)
+ get_prop(wpa_hisi, default_prop)
+ get_prop(aptouch_daemon, system_prop)
+-get_prop(hisecd, default_prop)
+-get_prop(oeminfo_nvm, default_prop)
+ get_prop(gpsdaemon, default_prop)
+ 
++get_prop(oeminfo_nvm, default_prop)
++get_prop(atcmdserver, default_prop)
++
++type hal_drm_widevine, domain;
++type hisecd, domain;
++type storage_info, domain;
++
++get_prop(hal_drm_widevine, default_prop)
++get_prop(hisecd, default_prop)
++get_prop(mediaserver, vendor_default_prop)
++get_prop(storage_info, default_prop)
+ 
+-# For the block devices where we have ioctl access,
+-# allow at a minimum the following common fsck ioctls.
+-# dev_type
+-allowxperm fsck block_device:blk_file ioctl {
+-  0x1268
+-  0x127c
+-};
+-allowxperm phhsu_daemon device:blk_file ioctl {
+-  0x125d
+-  0x127c
+-};
+-allowxperm oeminfo_nvm block_device:blk_file ioctl {
+-  0x1260
+-};
+-allowxperm oeminfo_nvm device:blk_file ioctl {
+-  0x4d19
+-};
+-allowxperm hi110x_daemon hi110x_daemon:fifo_file ioctl {
+-  0x5413
+-};
+ 
+-- 
+2.25.1
+

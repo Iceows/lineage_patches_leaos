@@ -1,0 +1,25 @@
+From c5680b9892c31a158c4e841c089dec18c36717de Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 1 Oct 2022 14:39:48 +0200
+Subject: [PATCH 2/7] remove LD_PRELOAD
+
+Remove LD_PRELOAD hook, This prevents the loading of certain huawei  libraries (libtee)
+---
+ vndk.rc | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/vndk.rc b/vndk.rc
+index e39a66e..a80ab34 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -3,7 +3,6 @@ on post-fs
+ 	exec - root -- /system/bin/rw-system.sh
+ 	mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
+         setprop ro.vndk.version ${persist.sys.vndk}
+-	export LD_PRELOAD :
+ 
+ on property:vold.decrypt=trigger_restart_framework
+ 	exec - root -- /system/bin/phh-on-data.sh
+-- 
+2.25.1
+
