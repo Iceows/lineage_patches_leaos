@@ -1,4 +1,4 @@
-From 6f9026e0548bd82e7b728ef29dd7d14db93b2105 Mon Sep 17 00:00:00 2001
+From b63b5c1fb46eaf032270bbb65b9a61fe487c5e46 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Sat, 26 Jun 2021 14:23:09 +0000
 Subject: [PATCH] Jelly: MainActivity: Restore applyThemeColor
@@ -11,10 +11,10 @@ Change-Id: I6816f5b1dcb3c7bcaee2736a9e2a3ecd63217bc6
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/app/src/main/java/org/lineageos/jelly/MainActivity.kt b/app/src/main/java/org/lineageos/jelly/MainActivity.kt
-index 2902b0a..9ff74ed 100644
+index 0143957..af7191c 100644
 --- a/app/src/main/java/org/lineageos/jelly/MainActivity.kt
 +++ b/app/src/main/java/org/lineageos/jelly/MainActivity.kt
-@@ -193,6 +193,7 @@ class MainActivity : WebViewExtActivity(), SearchBarController.OnCancelListener,
+@@ -192,6 +192,7 @@ class MainActivity : WebViewExtActivity(), SearchBarController.OnCancelListener,
                  findViewById(R.id.search_menu_cancel),
                  this)
          setUiMode()
@@ -22,8 +22,8 @@ index 2902b0a..9ff74ed 100644
          try {
              val httpCacheDir = File(cacheDir, "suggestion_responses")
              val httpCacheSize = 1024 * 1024.toLong() // 1 MiB
-@@ -763,4 +764,4 @@ class MainActivity : WebViewExtActivity(), SearchBarController.OnCancelListener,
-         private const val STORAGE_PERM_REQ = 423
+@@ -726,4 +727,4 @@ class MainActivity : WebViewExtActivity(), SearchBarController.OnCancelListener,
+         private const val STATE_KEY_THEME_COLOR = "theme_color"
          private const val LOCATION_PERM_REQ = 424
      }
 -}
