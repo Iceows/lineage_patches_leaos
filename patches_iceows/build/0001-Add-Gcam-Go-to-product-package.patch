@@ -1,0 +1,25 @@
+From e865fc5a14b0314217ef9f206cb5f03e72bd9a55 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Wed, 22 Feb 2023 07:26:10 +0100
+Subject: [PATCH] Add Gcam Go to product package
+
+Add Gcam Go to product package
+---
+ target/product/handheld_product.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/target/product/handheld_product.mk b/target/product/handheld_product.mk
+index 81735af4b0..d5e9e408bc 100644
+--- a/target/product/handheld_product.mk
++++ b/target/product/handheld_product.mk
+@@ -37,6 +37,7 @@ PRODUCT_PACKAGES += \
+ ifeq ($(LINEAGE_BUILD),)
+ PRODUCT_PACKAGES += \
+     Camera2 \
++    GcamGo \
+     LatinIME
+ endif
+ 
+-- 
+2.25.1
+
