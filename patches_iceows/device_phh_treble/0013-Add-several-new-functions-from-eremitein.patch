@@ -1,6 +1,6 @@
-From fcc67819ca33a0f702086c7bbfda1eada05f448f Mon Sep 17 00:00:00 2001
+From 4c6a014a56baff9ad9cd428a76993c9f871ff473 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Sun, 26 Feb 2023 14:39:08 +0100
+Date: Thu, 2 Mar 2023 09:26:35 +0100
 Subject: [PATCH] Add several new functions from eremitein
 
 Add several new functions from eremitein :
@@ -11,14 +11,27 @@ Add several new functions from eremitein :
 - Add Dump Logs
 - Add Disable Sound Volume Effect
 ---
+ base.mk             |  1 +
  phh-on-data.sh      | 15 ++++++--
  phh-prop-handler.sh | 89 +++++++++++++++++++++++++++++++++++++++------
  rw-system.sh        |  7 ++++
  secure.sh           | 16 ++++++++
  vndk.rc             | 20 +++++++++-
- 5 files changed, 129 insertions(+), 18 deletions(-)
+ 6 files changed, 130 insertions(+), 18 deletions(-)
  create mode 100644 secure.sh
 
+diff --git a/base.mk b/base.mk
+index 2345be4..f820b68 100644
+--- a/base.mk
++++ b/base.mk
+@@ -92,6 +92,7 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
+ 
+ PRODUCT_COPY_FILES += \
++	device/phh/treble/secure.sh:system/phh/secure.sh \
+ 	device/phh/treble/empty:system/phh/empty \
+ 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
+ 
 diff --git a/phh-on-data.sh b/phh-on-data.sh
 index 472d16e..34ad54b 100644
 --- a/phh-on-data.sh
