@@ -1,0 +1,25 @@
+From a2c75047a4a1a642c201c024c124c52214cd91b5 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 2 Mar 2023 09:58:40 +0100
+Subject: [PATCH 1/2] Add Gcam Go to product package v2
+
+Add Gcam Go to product package - Version HDR
+---
+ target/product/handheld_product.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/target/product/handheld_product.mk b/target/product/handheld_product.mk
+index 81735af4b0..bb1b211ab5 100644
+--- a/target/product/handheld_product.mk
++++ b/target/product/handheld_product.mk
+@@ -27,6 +27,7 @@ PRODUCT_PACKAGES += \
+     Contacts \
+     DeskClock \
+     Gallery2 \
++    GcamGo \
+     Music \
+     OneTimeInitializer \
+     preinstalled-packages-platform-handheld-product.xml \
+-- 
+2.25.1
+

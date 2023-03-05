@@ -1,0 +1,27 @@
+From 769e87dd1c6969c0477eda9acb8e89b2224dad09 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 2 Mar 2023 10:02:36 +0100
+Subject: [PATCH 2/2] Fix Prebuilt apk found in product
+
+Fix Prebuilt apk found in product
+---
+ core/Makefile | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/core/Makefile b/core/Makefile
+index c19b0754af..118d86abca 100644
+--- a/core/Makefile
++++ b/core/Makefile
+@@ -25,9 +25,6 @@ SYSTEM_DLKM_NOTICE_DEPS :=
+ #$(1): the src:dest pair
+ #$(2): the dest
+ define check-product-copy-files
+-$(if $(filter-out $(TARGET_COPY_OUT_SYSTEM_OTHER)/%,$(2)), \
+-  $(if $(filter %.apk, $(2)),$(error \
+-     Prebuilt apk found in PRODUCT_COPY_FILES: $(1), use BUILD_PREBUILT instead!))) \
+ $(if $(filter true,$(BUILD_BROKEN_VINTF_PRODUCT_COPY_FILES)),, \
+   $(if $(filter $(TARGET_COPY_OUT_SYSTEM)/etc/vintf/% \
+                 $(TARGET_COPY_OUT_SYSTEM)/manifest.xml \
+-- 
+2.25.1
+

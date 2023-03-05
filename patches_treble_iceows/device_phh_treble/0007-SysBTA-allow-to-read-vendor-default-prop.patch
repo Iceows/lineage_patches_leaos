@@ -1,0 +1,24 @@
+From bd3b1f91678149f89bd5196da33bdff8723a73bc Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Tue, 20 Dec 2022 06:23:14 +0100
+Subject: [PATCH 7/8] SysBTA allow to read vendor default prop
+
+Fix kirin 960 audio sysbta
+---
+ sepolicy/hal_audio_sysbta.te | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sepolicy/hal_audio_sysbta.te b/sepolicy/hal_audio_sysbta.te
+index d871ed3..8f24507 100644
+--- a/sepolicy/hal_audio_sysbta.te
++++ b/sepolicy/hal_audio_sysbta.te
+@@ -8,3 +8,6 @@ hal_client_domain(hal_audio_sysbta, hal_allocator)
+ 
+ # allow audioserver to call hal_audio dump with its own fd to retrieve status
+ allow hal_audio_sysbta audioserver:fifo_file write;
++
++get_prop(hal_audio_sysbta, vendor_default_prop)
++
+-- 
+2.25.1
+
