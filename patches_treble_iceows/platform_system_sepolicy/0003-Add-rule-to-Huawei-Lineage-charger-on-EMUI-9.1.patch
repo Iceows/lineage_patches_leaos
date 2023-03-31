@@ -1,0 +1,55 @@
+From 9f316c5e28c3ca64284f0476978023de29052c3f Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Mon, 21 Nov 2022 20:50:46 +0100
+Subject: [PATCH] Add rule to Huawei/Lineage charger on EMUI 9.1
+
+These rules are necessary to use the Huawei charger or the lineage charger on EMUI 9 (ab version)
+---
+ private/charger.te | 18 ++++++++++++++++++
+ public/attributes  |  4 ++++
+ 2 files changed, 22 insertions(+)
+
+diff --git a/private/charger.te b/private/charger.te
+index c5f3a50a5..d608499fa 100644
+--- a/private/charger.te
++++ b/private/charger.te
+@@ -18,3 +18,21 @@ compatible_property_only(`
+         -charger
+     } charger_prop:file no_rw_file_perms;
+ ')
++
++# Allow charger to write to sysfs_backlight_attr
++allow charger sysfs_backlight_attr:file w_file_perms;
++
++# Allow charger to write to sysfs_led_attr
++allow charger sysfs_led_attr:file w_file_perms;
++
++# Allow charger to read and write to sysfs_power
++allow charger sysfs_power:file rw_file_perms;
++allow charger sysfs_power:dir r_dir_perms;
++allow charger sysfs_power:lnk_file read;
++
++type sys_dev_block, file_type;
++allow charger system_file:file { entrypoint };
++allow init sys_dev_block:lnk_file { read };
++
++# The system charger can write  powerctl properties
++set_prop(charger, powerctl_prop)
+diff --git a/public/attributes b/public/attributes
+index 742264a55..a6b0aad05 100644
+--- a/public/attributes
++++ b/public/attributes
+@@ -77,6 +77,10 @@ attribute sysfs_type;
+ # TODO(b/202520796) Remove this attribute once the sc-dev branch stops using it.
+ attribute sysfs_block_type;
+ 
++# Huawei charger sysfs attr
++attribute sysfs_backlight_attr;
++attribute sysfs_led_attr;
++
+ # All types use for debugfs files.
+ attribute debugfs_type;
+ 
+-- 
+2.25.1
+
