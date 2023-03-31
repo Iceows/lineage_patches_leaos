@@ -1,27 +1,26 @@
-From 4c6a014a56baff9ad9cd428a76993c9f871ff473 Mon Sep 17 00:00:00 2001
+From e08dd3e405795043914593e30a1216b4873b4dea Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Thu, 2 Mar 2023 09:26:35 +0100
+Date: Fri, 31 Mar 2023 08:41:21 +0200
 Subject: [PATCH] Add several new functions from eremitein
 
-Add several new functions from eremitein :
-- Add safetynet, securize
+Add several new functions
+- Add safetynet/securize
 - Add Autorun
 - Add NoLog
 - Add Restart sysui
 - Add Dump Logs
-- Add Disable Sound Volume Effect
 ---
  base.mk             |  1 +
- phh-on-data.sh      | 15 ++++++--
- phh-prop-handler.sh | 89 +++++++++++++++++++++++++++++++++++++++------
- rw-system.sh        |  7 ++++
- secure.sh           | 16 ++++++++
- vndk.rc             | 20 +++++++++-
- 6 files changed, 130 insertions(+), 18 deletions(-)
+ phh-on-data.sh      | 15 +++++++---
+ phh-prop-handler.sh | 68 ++++++++++++++++++++++++++++++++++++++++-----
+ rw-system.sh        |  6 ++++
+ secure.sh           | 16 +++++++++++
+ vndk.rc             | 31 +++++++++++++++------
+ 6 files changed, 118 insertions(+), 19 deletions(-)
  create mode 100644 secure.sh
 
 diff --git a/base.mk b/base.mk
-index 2345be4..f820b68 100644
+index b9925c9..f5fff47 100644
 --- a/base.mk
 +++ b/base.mk
 @@ -92,6 +92,7 @@ PRODUCT_COPY_FILES += \
@@ -74,53 +73,40 @@ index 472d16e..34ad54b 100644
      mount $minijailSrc /vendor/lib/libminijail_vendor.so
      mount $minijailSrc64 /system/lib64/vndk-28/libminijail.so
 diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
-index a8cea3f..7e881ed 100644
+index 3739eb4..181f9d3 100644
 --- a/phh-prop-handler.sh
 +++ b/phh-prop-handler.sh
-@@ -195,32 +195,97 @@ if [ "$1" == "persist.sys.phh.backlight.scale" ];then
+@@ -211,19 +211,73 @@ if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
      exit
  fi
  
--if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
-+if [ "$1" == "persist.sys.phh.qin.dt2w" ];then
-     if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
-         exit 1
-     fi
- 
--    if [[ "$prop_value" == 1 ]];then
--        mount /system/phh/empty /vendor/lib/soundfx/libvolumelistener.so
--        mount /system/phh/empty /vendor/lib64/soundfx/libvolumelistener.so
--    else
--        umount /vendor/lib/soundfx/libvolumelistener.so
--        umount /vendor/lib64/soundfx/libvolumelistener.so
-+    echo "$prop_value" > /sys/devices/platform/soc/soc:ap-apb/70800000.i2c/i2c-3/3-0038/fts_gesture_mode
-+    exit
-+fi
-+
+-if [ "$1" == "persist.sys.phh.securize" ];then
 +#securize
 +if [ "$1" == "persist.sys.phh.securize" ]; then
-+    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
++    if [[ "$prop_value" != "true" ]]; then
 +        exit 1
-     fi
--    restartAudio
++    fi
 +
 +    if [ ! -f /data/adb/phh/secure ]; then
 +        mkdir -p /data/adb/phh
 +        cp /system/phh/secure.sh /data/adb/phh/secure
 +    fi
 +    /system/bin/sh /data/adb/phh/secure
-     exit
- fi
- 
--if [ "$1" == "persist.sys.phh.securize" ];then
++    exit
++fi
++
 +#autorun
 +if [ "$1" == "persist.sys.phh.autorun" ]; then
      if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
          exit 1
      fi
  
+-    if [[ "$prop_value" == "true" ]]; then
+-        mkdir -p /metadata/phh
+-        touch /metadata/phh/secure
 +    if [ ! -f /data/adb/phh/run ]; then
-+        mkdir -p /data/adb/phh
+         mkdir -p /data/adb/phh
+-        touch /data/adb/phh/secure
 +        touch /data/adb/phh/run
 +    fi
 +    /system/bin/sh /data/adb/phh/run
@@ -137,7 +123,9 @@ index a8cea3f..7e881ed 100644
 +        setprop ctl.stop logd
 +        setprop ctl.stop traced
 +        setprop ctl.stop traced_probes
-+    else
+     else
+-        rm /metadata/phh/secure
+-        rm /data/adb/phh/secure
 +        setprop ctl.start traced_probes
 +        setprop ctl.start traced
 +        setprop ctl.start logd
@@ -151,13 +139,11 @@ index a8cea3f..7e881ed 100644
 +        exit
 +    fi
 +
-     if [[ "$prop_value" == "true" ]]; then
--        mkdir /metadata/phh
--        touch /metadata/phh/secure
++    if [[ "$prop_value" == "true" ]]; then
 +        pkill systemui
-+    fi
-+    exit
-+fi
+     fi
+     exit
+ fi
 +
 +#dump_logs
 +if [ "$1" == "sys.phh.dump_logs" ]; then
@@ -171,37 +157,19 @@ index a8cea3f..7e881ed 100644
 +    exit
 +fi
 +
-+if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
-+    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
-+        exit 1
-+    fi
-+
-+    if [[ "$prop_value" == 1 ]];then
-+        mount /system/phh/empty /vendor/lib/soundfx/libvolumelistener.so
-+        mount /system/phh/empty /vendor/lib64/soundfx/libvolumelistener.so
-     else
--        rm /metadata/phh/secure
-+        umount /vendor/lib/soundfx/libvolumelistener.so
-+        umount /vendor/lib64/soundfx/libvolumelistener.so
-     fi
-+    restartAudio
-     exit
- fi
 diff --git a/rw-system.sh b/rw-system.sh
-index b6f14f3..8522c9c 100644
+index a404e72..382edb2 100644
 --- a/rw-system.sh
 +++ b/rw-system.sh
-@@ -736,7 +736,9 @@ copyprop() {
+@@ -736,6 +736,7 @@ copyprop() {
          resetprop_phh "$1" "$(getprop "$2")"
      fi
  }
 +
- if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ];then
-+
+ if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ] || [ -f /data/adb/phh/secure ];then
      copyprop ro.build.device ro.vendor.build.device
      copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
-     copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
-@@ -762,6 +764,7 @@ if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ];then
+@@ -762,6 +763,7 @@ if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ] || [ -f /data/adb/ph
      copyprop ro.product.manufacturer ro.vendor.product.manufacturer
      copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
      copyprop ro.product.manufacturer ro.product.vendor.manufacturer
@@ -209,7 +177,7 @@ index b6f14f3..8522c9c 100644
      (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
          [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
      done
-@@ -773,10 +776,14 @@ if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ];then
+@@ -773,10 +775,14 @@ if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ] || [ -f /data/adb/ph
      resetprop_phh ro.boot.veritymode enforcing
      resetprop_phh ro.boot.warranty_bit 0
      resetprop_phh ro.warranty_bit 0
@@ -247,9 +215,29 @@ index 0000000..98027e7
 +resetprop_phh ro.adb.secure 1
 +setprop ctl.restart adbd
 diff --git a/vndk.rc b/vndk.rc
-index 7db62b7..8ed6838 100644
+index 7db62b7..a07c24c 100644
 --- a/vndk.rc
 +++ b/vndk.rc
+@@ -1,14 +1,14 @@
+ on post-fs
+-	exec - root -- /system/bin/vndk-detect
+-	exec - root -- /system/bin/rw-system.sh
+-	mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
++    exec - root -- /system/bin/vndk-detect
++    exec - root -- /system/bin/rw-system.sh
++    mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
+         setprop ro.vndk.version ${persist.sys.vndk}
+ 
+ on property:vold.decrypt=trigger_restart_framework
+-	exec - root -- /system/bin/phh-on-data.sh
++    exec - root -- /system/bin/phh-on-data.sh
+ 
+ on early-boot
+-	exec - root -- /system/bin/phh-on-data.sh
++    exec - root -- /system/bin/phh-on-data.sh
+ 
+ service phh_on_boot /system/bin/phh-on-boot.sh
+     oneshot
 @@ -52,6 +52,9 @@ on property:persist.sys.phh.disable_soundvolume_effect=*
  on property:ro.sf.lcd_density=*
      restart surfaceflinger
@@ -282,10 +270,11 @@ index 7db62b7..8ed6838 100644
  on property:init.svc.ril-proxy=stopped && property:persist.sys.phh.restart_ril=true
      start ril-proxy
  
-@@ -82,5 +100,3 @@ on property:sys.phh.uninstall-ota=true
+@@ -81,6 +99,3 @@ on property:sys.phh.uninstall-ota=true
+ 
  on property:ro.vendor.radio.default_network=*
      setprop ro.telephony.default_network ${ro.vendor.radio.default_network}
- 
+-
 -on property:persist.sys.phh.securize=*
 -    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.securize"
 -- 
