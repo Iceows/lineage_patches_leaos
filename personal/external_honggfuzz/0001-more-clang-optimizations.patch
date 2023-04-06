@@ -1,0 +1,25 @@
+From 920a663185567600e61c59207720ce0ff24e662c Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:42:54 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I04f99d9084069f0c6df2a25853082142b8c8f341
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index 5fcd6bfd..3fe17da6 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -14,6 +14,7 @@ cc_defaults {
+         "-Wframe-larger-than=131072",
+         "-D__HF_USES_CAPSTONE__",
+         "-D_HF_ARCH_LINUX",
++        "-O3", "-g0",
+     ],
+     c_std: "c11",
+     clang: true,
+-- 
+2.30.2
+

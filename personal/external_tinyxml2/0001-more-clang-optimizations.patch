@@ -1,0 +1,25 @@
+From 4406ccfbf4354041a85b598848cd991808f92ec3 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 23:04:55 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: If6e393f65026abbf98f6d308c861b8631d003288
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index 8c2f9c7..ec2f15d 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -14,6 +14,7 @@ cc_library {
+         "-Werror",
+         "-Wno-implicit-fallthrough",
+         // tinyxml2.cpp line 436, 441, 446 have -Wimplicit-fallthrough.
++        "-O3", "-g0",
+     ],
+ 
+     shared_libs: ["liblog"],
+-- 
+2.30.2
+

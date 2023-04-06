@@ -1,0 +1,33 @@
+From b15443804c5c55ebab3b39404e6d8e46eabc2710 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 23:01:15 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I580b78edcdfdc84a3ff69544231ecc262f297a75
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 9888fc7..2cbe907 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -67,6 +67,7 @@ cc_library_shared {
+         "-fvisibility=hidden",
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
++        "-O3", "-g0",
+     ],
+ 
+     cppflags:[
+@@ -79,6 +80,7 @@ cc_library_shared {
+         "-Wno-weak-vtables",
+         "-Wnon-virtual-dtor",
+         "-fexceptions",
++        "-O3", "-g0",
+     ],
+ 
+     local_include_dirs: [
+-- 
+2.30.2
+

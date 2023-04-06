@@ -1,0 +1,35 @@
+From 4b6ce4b90d4503111e65bb07d402daa01a240bc2 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:51:21 +0000
+Subject: [PATCH] disable debugging
+
+Change-Id: If15277d5106a6f50391ccfd74980543ba5474272
+---
+ Android.bp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index 0e705cc..a5c91e0 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -8,7 +8,7 @@ cc_library_static {
+         "-DMULTICORE",
+         "-fPIC",
+ 
+-        "-O3",
++        "-O3", "-g0",
+         "-DANDROID",
+         "-Wall",
+         "-Werror",
+@@ -432,7 +432,7 @@ cc_library_static {
+     cflags: [
+         "-DENABLE_MAIN_REXT_PROFILE",
+         "-fPIC",
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wno-unused-variable",
+         "-Wno-unused-parameter",
+-- 
+2.30.2
+

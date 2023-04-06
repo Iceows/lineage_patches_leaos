@@ -1,0 +1,53 @@
+From 3397dca2c1a6cb27cf3c024e638d9b8b6488b0c5 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Fri, 13 Nov 2020 06:00:04 -0500
+Subject: [PATCH] move from product
+
+Change-Id: Ie0dac1bd099a4558256247fd18acbc8347507f16
+---
+ Android.bp | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index 4963903..a5b75e3 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -15,35 +15,29 @@
+ prebuilt_font {
+     name: "Lato-Regular.ttf",
+     src: "Lato-Regular.ttf",
+-    product_specific: true,
+ }
+ 
+ prebuilt_font {
+     name: "Lato-Italic.ttf",
+     src: "Lato-Italic.ttf",
+-    product_specific: true,
+ }
+ 
+ prebuilt_font {
+     name: "Lato-Medium.ttf",
+     src: "Lato-Medium.ttf",
+-    product_specific: true,
+ }
+ 
+ prebuilt_font {
+     name: "Lato-MediumItalic.ttf",
+     src: "Lato-MediumItalic.ttf",
+-    product_specific: true,
+ }
+ 
+ prebuilt_font {
+     name: "Lato-Bold.ttf",
+     src: "Lato-Bold.ttf",
+-    product_specific: true,
+ }
+ 
+ prebuilt_font {
+     name: "Lato-BoldItalic.ttf",
+     src: "Lato-BoldItalic.ttf",
+-    product_specific: true,
+ }
+-- 
+2.17.1
+

@@ -1,0 +1,350 @@
+From f3371cb95bf80e1f6b510e4048522a0dad7b7f0d Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 06:44:58 -0400
+Subject: [PATCH 163/230] more clang optimizations
+
+Change-Id: Ib832f3a490c0814568015615c1949f4b39d946d9
+---
+ core/jni/Android.bp                           |  4 ++--
+ drm/jni/Android.bp                            |  1 +
+ libs/androidfw/Android.bp                     |  1 +
+ libs/hostgraphics/Android.bp                  |  3 ++-
+ libs/hwui/Android.bp                          | 11 ++++++++---
+ libs/input/Android.bp                         |  1 +
+ libs/services/Android.bp                      |  1 +
+ libs/storage/Android.bp                       |  1 +
+ media/jni/Android.bp                          |  3 +++
+ media/jni/audioeffect/Android.bp              |  1 +
+ media/mca/filterfw/Android.bp                 |  2 ++
+ media/mca/filterfw/native/Android.bp          |  1 +
+ media/mca/filterpacks/Android.bp              |  2 ++
+ native/android/Android.bp                     |  1 +
+ native/graphics/jni/Android.bp                |  1 +
+ packages/services/PacProcessor/jni/Android.bp |  1 +
+ tools/aapt/Android.bp                         |  1 +
+ tools/aapt2/Android.bp                        |  1 +
+ 18 files changed, 31 insertions(+), 6 deletions(-)
+
+diff --git a/core/jni/Android.bp b/core/jni/Android.bp
+index c6b5f1287e2..6e8079b6650 100644
+--- a/core/jni/Android.bp
++++ b/core/jni/Android.bp
+@@ -3,7 +3,7 @@ cc_library_shared {
+     name: "libandroid_runtime",
+     host_supported: true,
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wno-unused-parameter",
+         "-Wno-non-virtual-dtor",
+         "-Wno-maybe-uninitialized",
+@@ -21,7 +21,7 @@ cc_library_shared {
+         "-Wunreachable-code",
+     ],
+ 
+-    cppflags: ["-Wno-conversion-null", "-O3"],
++    cppflags: ["-Wno-conversion-null", "-O3", "-g0"],
+ 
+     srcs: [
+         "android_animation_PropertyValuesHolder.cpp",
+diff --git a/drm/jni/Android.bp b/drm/jni/Android.bp
+index 68757d86fb8..bc0ed85586b 100644
+--- a/drm/jni/Android.bp
++++ b/drm/jni/Android.bp
+@@ -35,5 +35,6 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/libs/androidfw/Android.bp b/libs/androidfw/Android.bp
+index 02c85aa34f4..3de1a15809f 100644
+--- a/libs/androidfw/Android.bp
++++ b/libs/androidfw/Android.bp
+@@ -19,6 +19,7 @@ cc_defaults {
+     cflags: [
+         "-Werror",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+     target: {
+         windows: {
+diff --git a/libs/hostgraphics/Android.bp b/libs/hostgraphics/Android.bp
+index e713b98b867..b6004fb4b2a 100644
+--- a/libs/hostgraphics/Android.bp
++++ b/libs/hostgraphics/Android.bp
+@@ -3,6 +3,7 @@ cc_library_host_static {
+ 
+     cflags: [
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+ 
+     srcs: [
+@@ -28,4 +29,4 @@ cc_library_host_static {
+             enabled: true,
+         }
+     },
+-}
+\ No newline at end of file
++}
+diff --git a/libs/hwui/Android.bp b/libs/hwui/Android.bp
+index f15e3830719..8f2fa3ae8cc 100644
+--- a/libs/hwui/Android.bp
++++ b/libs/hwui/Android.bp
+@@ -21,6 +21,7 @@ cc_defaults {
+         "-Wunreachable-code",
+         "-Werror",
+         "-fvisibility=hidden",
++        "-O3", "-g0",
+ 
+         // GCC false-positives on this warning, and since we -Werror that's
+         // a problem
+@@ -54,6 +55,7 @@ cc_defaults {
+             ],
+             cflags: [
+                 "-Wno-unused-variable",
++                "-O3", "-g0",
+             ],
+         }
+     }
+@@ -116,6 +118,7 @@ cc_defaults {
+         "-fno-omit-frame-pointer",
+         "-marm",
+         "-mapcs",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -168,7 +171,7 @@ cc_library_headers {
+ cc_defaults {
+     name: "android_graphics_apex",
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wno-unused-parameter",
+         "-Wno-non-virtual-dtor",
+         "-Wno-maybe-uninitialized",
+@@ -180,7 +183,7 @@ cc_defaults {
+         "-Wunreachable-code",
+     ],
+ 
+-    cppflags: ["-Wno-conversion-null", "-O3"],
++    cppflags: ["-Wno-conversion-null", "-O3", "-g0"],
+ 
+     srcs: [
+         "apex/android_matrix.cpp",
+@@ -243,6 +246,7 @@ cc_defaults {
+         "-Wno-error=deprecated-declarations",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ 
+     cppflags: ["-Wno-conversion-null"],
+@@ -353,6 +357,7 @@ cc_defaults {
+             cflags: [
+                 "-Wno-unused-const-variable",
+                 "-Wno-unused-function",
++                "-O3", "-g0",
+             ],
+             static_libs: [
+                 "libandroidfw",
+@@ -474,7 +479,7 @@ cc_defaults {
+             ],
+ 
+             // Allow implicit fallthroughs in HardwareBitmapUploader.cpp until they are fixed.
+-            cflags: ["-Wno-implicit-fallthrough"],
++            cflags: ["-Wno-implicit-fallthrough", "-O3", "-g0"],
+         },
+         host: {
+             srcs: [
+diff --git a/libs/input/Android.bp b/libs/input/Android.bp
+index 88d6033ed9f..a9f9c83f51b 100644
+--- a/libs/input/Android.bp
++++ b/libs/input/Android.bp
+@@ -42,6 +42,7 @@ cc_library_shared {
+         "-Wall",
+         "-Wextra",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+ }
+diff --git a/libs/services/Android.bp b/libs/services/Android.bp
+index 1e621079b53..2b8e6246410 100644
+--- a/libs/services/Android.bp
++++ b/libs/services/Android.bp
+@@ -43,5 +43,6 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/libs/storage/Android.bp b/libs/storage/Android.bp
+index c19933e39c9..4f1b76ccc01 100644
+--- a/libs/storage/Android.bp
++++ b/libs/storage/Android.bp
+@@ -14,6 +14,7 @@ cc_library_static {
+     cflags: [
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     shared_libs: ["libbinder"],
+diff --git a/media/jni/Android.bp b/media/jni/Android.bp
+index d2294b38d99..3a4f8c5835c 100644
+--- a/media/jni/Android.bp
++++ b/media/jni/Android.bp
+@@ -95,6 +95,7 @@ cc_library_shared {
+         "-Wno-error=deprecated-declarations",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -126,6 +127,7 @@ cc_library_shared {
+         "-Wno-error=deprecated-declarations",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -164,5 +166,6 @@ cc_library_shared {
+         "-Wno-error=deprecated-declarations",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/media/jni/audioeffect/Android.bp b/media/jni/audioeffect/Android.bp
+index 5ba5c015927..361da447543 100644
+--- a/media/jni/audioeffect/Android.bp
++++ b/media/jni/audioeffect/Android.bp
+@@ -27,5 +27,6 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/media/mca/filterfw/Android.bp b/media/mca/filterfw/Android.bp
+index 71899cf1653..523fc8a4ccf 100644
+--- a/media/mca/filterfw/Android.bp
++++ b/media/mca/filterfw/Android.bp
+@@ -19,6 +19,7 @@ cc_library_shared {
+     cflags: [
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     whole_static_libs: [
+@@ -63,6 +64,7 @@ cc_library_static {
+         "-Wunused",
+         "-Wunreachable-code",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+ 
+     shared_libs: [
+diff --git a/media/mca/filterfw/native/Android.bp b/media/mca/filterfw/native/Android.bp
+index 7a8a6a18664..b0d942f5749 100644
+--- a/media/mca/filterfw/native/Android.bp
++++ b/media/mca/filterfw/native/Android.bp
+@@ -35,6 +35,7 @@ cc_library_static {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ 
+     static_libs: ["libarect"],
+diff --git a/media/mca/filterpacks/Android.bp b/media/mca/filterpacks/Android.bp
+index 34fb27dd166..a5f30e18c01 100644
+--- a/media/mca/filterpacks/Android.bp
++++ b/media/mca/filterpacks/Android.bp
+@@ -26,6 +26,7 @@ cc_library_static {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -50,6 +51,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+ 
+         // Bug: http://b/29823425 Disable constant-conversion warning triggered in
+         // native/imageproc/to_rgba.c
+diff --git a/native/android/Android.bp b/native/android/Android.bp
+index 797d3fd8c2f..c0a84840e51 100644
+--- a/native/android/Android.bp
++++ b/native/android/Android.bp
+@@ -28,6 +28,7 @@ cc_defaults {
+         "-Wextra",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/native/graphics/jni/Android.bp b/native/graphics/jni/Android.bp
+index 15b473c2a6a..b93fcd99abd 100644
+--- a/native/graphics/jni/Android.bp
++++ b/native/graphics/jni/Android.bp
+@@ -20,6 +20,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ 
+     // our source files
+diff --git a/packages/services/PacProcessor/jni/Android.bp b/packages/services/PacProcessor/jni/Android.bp
+index 0e7e10152f8..f55c625348b 100644
+--- a/packages/services/PacProcessor/jni/Android.bp
++++ b/packages/services/PacProcessor/jni/Android.bp
+@@ -36,6 +36,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+     sanitize: {
+        cfi: true,
+diff --git a/tools/aapt/Android.bp b/tools/aapt/Android.bp
+index a594e5bf0ce..6b7e137cdd9 100644
+--- a/tools/aapt/Android.bp
++++ b/tools/aapt/Android.bp
+@@ -38,6 +38,7 @@ cc_defaults {
+     cflags: [
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     target: {
+diff --git a/tools/aapt2/Android.bp b/tools/aapt2/Android.bp
+index c1d05e47bc1..1788ab18299 100644
+--- a/tools/aapt2/Android.bp
++++ b/tools/aapt2/Android.bp
+@@ -31,6 +31,7 @@ cc_defaults {
+         "-Wall",
+         "-Werror",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+     cppflags: [
+         "-Wno-missing-field-initializers",
+-- 
+2.25.1
+

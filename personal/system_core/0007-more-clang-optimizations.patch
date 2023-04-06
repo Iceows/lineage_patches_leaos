@@ -1,0 +1,178 @@
+From db261d10076e34755d2351f20f6fd5f1fc09f614 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:03:52 -0400
+Subject: [PATCH 07/10] more clang optimizations
+
+Change-Id: Ia914006618b7c4d64928966badb18cee472bd8bf
+---
+ healthd/Android.bp          | 3 ++-
+ libbinderwrapper/Android.bp | 1 +
+ libcutils/Android.bp        | 1 +
+ libkeyutils/Android.bp      | 2 +-
+ libnetutils/Android.bp      | 4 ++--
+ libprocessgroup/Android.bp  | 1 +
+ libsync/Android.bp          | 2 +-
+ libunwindstack/Android.bp   | 1 +
+ libziparchive/Android.bp    | 2 ++
+ llkd/Android.bp             | 4 ++--
+ 10 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/healthd/Android.bp b/healthd/Android.bp
+index 14d46b3d3..95c49fba1 100644
+--- a/healthd/Android.bp
++++ b/healthd/Android.bp
+@@ -10,7 +10,7 @@ cc_library_headers {
+ cc_library_static {
+     name: "libbatterymonitor",
+     srcs: ["BatteryMonitor.cpp"],
+-    cflags: ["-Wall", "-Werror"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     vendor_available: true,
+     recovery_available: true,
+     export_include_dirs: ["include"],
+@@ -32,6 +32,7 @@ cc_defaults {
+     cflags: [
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     static_libs: [
+diff --git a/libbinderwrapper/Android.bp b/libbinderwrapper/Android.bp
+index d2487e20e..078ac0dc3 100644
+--- a/libbinderwrapper/Android.bp
++++ b/libbinderwrapper/Android.bp
+@@ -21,6 +21,7 @@ cc_defaults {
+         "-Wall",
+         "-Werror",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+ 
+         // for libchrome
+         "-Wno-sign-promo",
+diff --git a/libcutils/Android.bp b/libcutils/Android.bp
+index 24110eeae..1547dd74d 100644
+--- a/libcutils/Android.bp
++++ b/libcutils/Android.bp
+@@ -251,6 +251,7 @@ cc_library {
+         "-Werror",
+         "-Wall",
+         "-Wextra",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/libkeyutils/Android.bp b/libkeyutils/Android.bp
+index b388e9555..41abd95d4 100644
+--- a/libkeyutils/Android.bp
++++ b/libkeyutils/Android.bp
+@@ -1,6 +1,6 @@
+ cc_library {
+     name: "libkeyutils",
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+     defaults: ["linux_bionic_supported"],
+     recovery_available: true,
+     export_include_dirs: ["include/"],
+diff --git a/libnetutils/Android.bp b/libnetutils/Android.bp
+index 268496f7c..d4b5d92ac 100644
+--- a/libnetutils/Android.bp
++++ b/libnetutils/Android.bp
+@@ -18,7 +18,7 @@ cc_library_shared {
+         "liblog",
+     ],
+ 
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ 
+     export_include_dirs: ["include"],
+ }
+@@ -34,5 +34,5 @@ cc_binary {
+         "libnetutils",
+     ],
+ 
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ }
+diff --git a/libprocessgroup/Android.bp b/libprocessgroup/Android.bp
+index bda11e91d..e95c70db7 100644
+--- a/libprocessgroup/Android.bp
++++ b/libprocessgroup/Android.bp
+@@ -56,6 +56,7 @@ cc_library {
+         "-Wall",
+         "-Werror",
+         "-Wexit-time-destructors",
++        "-O3", "-g0",
+     ],
+     apex_available: [
+         "//apex_available:platform",
+diff --git a/libsync/Android.bp b/libsync/Android.bp
+index c996e1bf7..e1f824d52 100644
+--- a/libsync/Android.bp
++++ b/libsync/Android.bp
+@@ -17,7 +17,7 @@ cc_defaults {
+     srcs: ["sync.c"],
+     local_include_dirs: ["include"],
+     export_include_dirs: ["include"],
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ }
+ 
+ cc_library {
+diff --git a/libunwindstack/Android.bp b/libunwindstack/Android.bp
+index 9b974c237..a2fd89d1e 100644
+--- a/libunwindstack/Android.bp
++++ b/libunwindstack/Android.bp
+@@ -23,6 +23,7 @@ cc_defaults {
+         "-Wall",
+         "-Werror",
+         "-Wextra",
++        "-O3", "-g0",
+     ],
+ 
+     target: {
+diff --git a/libziparchive/Android.bp b/libziparchive/Android.bp
+index 1f0944647..c64f66ae6 100644
+--- a/libziparchive/Android.bp
++++ b/libziparchive/Android.bp
+@@ -21,6 +21,7 @@ cc_defaults {
+         "-Werror",
+         "-Wall",
+         "-D_FILE_OFFSET_BITS=64",
++        "-O3", "-g0",
+     ],
+     cppflags: [
+         // Incorrectly warns when C++11 empty brace {} initializer is used.
+@@ -28,6 +29,7 @@ cc_defaults {
+         "-Wno-missing-field-initializers",
+         "-Wconversion",
+         "-Wno-sign-conversion",
++        "-O3", "-g0",
+     ],
+ 
+     // Enable -Wold-style-cast only for non-Windows targets.  _islower_l,
+diff --git a/llkd/Android.bp b/llkd/Android.bp
+index 62a637dcd..4e2891180 100644
+--- a/llkd/Android.bp
++++ b/llkd/Android.bp
+@@ -19,7 +19,7 @@ cc_library_static {
+ 
+     export_include_dirs: ["include"],
+ 
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ 
+     product_variables: {
+         debuggable: {
+@@ -42,7 +42,7 @@ cc_binary {
+     static_libs: [
+         "libllkd",
+     ],
+-    cflags: ["-Werror"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ 
+     init_rc: ["llkd.rc"],
+     product_variables: {
+-- 
+2.25.1
+

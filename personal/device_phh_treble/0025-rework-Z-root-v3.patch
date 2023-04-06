@@ -1,0 +1,42 @@
+From fc25fd2c3350f1887981466913b57f0529fb9c91 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Tue, 13 Apr 2021 19:29:04 -0400
+Subject: [PATCH 25/80] rework Z root v3
+
+---
+ phh-prop-handler.sh | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 639326f..1554b7f 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -196,20 +196,22 @@ fi
+ 
+ #root
+ if [ "$1" == "persist.sys.phh.root" ]; then
+-    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]]; then
++    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]] || [ -d /sbin/.magisk ]; then
+         exit 1
+     fi
+ 
+     if [[ "$prop_value" == "true" ]]; then
+         umount -nfl /system/xbin
+-        mount /system/phh/xbin /system/xbin
++        cp -r --preserve=all /system/xbin /mnt/phh/xbin
++        cp --preserve=all /system/phh/xbin/* /mnt/phh/xbin
++        mount /mnt/phh/xbin /system/xbin
+         setprop ctl.start zerodaemon
+         pm install -r /system/phh/phh.superuser.apk
+     else
+         pm uninstall -k me.phh.superuser
+         setprop ctl.stop zerodaemon
+         umount -nfl /system/xbin
+-        rm -rf /data/su
++        rm -rf /mnt/phh/xbin /data/su
+     fi
+     exit
+ fi
+-- 
+2.25.1
+

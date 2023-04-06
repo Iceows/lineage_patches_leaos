@@ -1,0 +1,25 @@
+From f853e9d294b10d9bb7a2d1c0e3b0bbb365576923 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 23:03:10 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I5e9aa140c631279c3cc4bb9e01df4b758d615a29
+---
+ android/Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/android/Android.bp b/android/Android.bp
+index 11b2ce6..bfc7496 100644
+--- a/android/Android.bp
++++ b/android/Android.bp
+@@ -7,6 +7,7 @@ cc_library_static {
+         "-Werror",
+         "-Wno-unused-function",
+         "-Wno-unused-variable",
++        "-O3", "-g0",
+     ],
+     srcs: [
+         "PhoneNumberUtils.cpp",
+-- 
+2.30.2
+

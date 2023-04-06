@@ -1,0 +1,25 @@
+From 4451be1a35329fdd622970c4d549c3d17df88fa0 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:11:37 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: Icf5b30928b2b10627f2d0e8f918ebf4bf0794947
+---
+ apexd/Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/apexd/Android.bp b/apexd/Android.bp
+index e8d221d..68b06be 100644
+--- a/apexd/Android.bp
++++ b/apexd/Android.bp
+@@ -29,6 +29,7 @@ cc_defaults {
+     "-Wextra",
+     "-Werror",
+     "-Wno-unused-parameter",
++    "-O3", "-g0",
+ 
+     // Some extra flags.
+     "-fstrict-aliasing",
+-- 
+2.17.1
+

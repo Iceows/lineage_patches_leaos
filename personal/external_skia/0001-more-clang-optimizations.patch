@@ -1,0 +1,30 @@
+From 9c18573c7e7e42c1661c31709fb1b3773eabd299 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:14:54 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: If50fea77e31d271925374309729612b315b8be27
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 5ec949966a..a12c5c7748 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -18,10 +18,12 @@ cc_library_static {
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
+         "-fvisibility=hidden",
++        "-O3", "-g0",
+     ],
+ 
+     cppflags:[
+         "-fexceptions",
++        "-O3", "-g0",
+     ],
+ 
+     export_include_dirs: [
+-- 
+2.17.1
+

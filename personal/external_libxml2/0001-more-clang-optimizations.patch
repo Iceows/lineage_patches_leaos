@@ -1,0 +1,33 @@
+From 49d72e0e209ab1061ed42756baef6822cebbc8e7 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:55:24 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I681eeab42f5c8be9a9acbb8d286e4096bb8e2ff9
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 708549f9..8cc00a4a 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -99,6 +99,7 @@ cc_defaults {
+         "-Wno-tautological-pointer-compare",
+         "-Wno-unused-function",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+     static: {
+         cflags: [
+@@ -151,6 +152,7 @@ cc_binary_host {
+ 
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+     shared_libs: ["libxml2"],
+ }
+-- 
+2.30.2
+

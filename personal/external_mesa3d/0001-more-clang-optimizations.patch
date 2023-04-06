@@ -1,0 +1,33 @@
+From dae97235dc18e10b03b4f16fbfcf0bb59bd2c741 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:59:48 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I1ca2b16e71477e7574201b4a1a4f0bb1d2ac6846
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 8df7f3809da..8d11ccd6c62 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -113,6 +113,7 @@ cc_defaults {
+         "-Wno-typedef-redefinition",
+         "-Wno-uninitialized",
+         "-DHAVE_TIMESPEC_GET",
++        "-O3", "-g0",
+     ],
+ 
+     // mesa requires at least c99 compiler
+@@ -124,6 +125,7 @@ cc_defaults {
+         "-D__STDC_LIMIT_MACROS",
+         "-Wno-error=non-virtual-dtor",
+         "-Wno-non-virtual-dtor",
++        "-O3", "-g0",
+     ],
+ 
+     arch: {
+-- 
+2.30.2
+

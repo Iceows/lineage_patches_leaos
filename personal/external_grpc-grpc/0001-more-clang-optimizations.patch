@@ -1,0 +1,25 @@
+From 62692f5b0d30bd135e432bd5e457e267584e173b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:39:41 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: Ic3610fb845e18c32052f62d47e76d88173249426
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index 7034daf458..2033644854 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -4,6 +4,7 @@ cc_defaults {
+         "-Wno-unused-parameter",
+         "-Wno-implicit-fallthrough",
+         "-Wno-unused-result",
++        "-O3", "-g0",
+     ],
+     host_supported: true,
+     vendor_available: true,
+-- 
+2.30.2
+

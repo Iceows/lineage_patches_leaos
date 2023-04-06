@@ -1,0 +1,52 @@
+From bcd970dc3e07fc40e52ce6b926f380bf72da5c09 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:42:18 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I22486a87030a3f47b394c4be6864007063ec44d7
+---
+ libs/gralloc/types/Android.bp | 1 +
+ libs/graphicsenv/Android.bp   | 2 +-
+ libs/renderengine/Android.bp  | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/libs/gralloc/types/Android.bp b/libs/gralloc/types/Android.bp
+index 66fb295a1..ba3bea68f 100644
+--- a/libs/gralloc/types/Android.bp
++++ b/libs/gralloc/types/Android.bp
+@@ -19,6 +19,7 @@ cc_library {
+         "-Wall",
+         "-Werror",
+         "-Wno-enum-compare",
++        "-O3", "-g0",
+     ],
+     host_supported: true,
+ 
+diff --git a/libs/graphicsenv/Android.bp b/libs/graphicsenv/Android.bp
+index 642c5f2cc..caabb93a6 100644
+--- a/libs/graphicsenv/Android.bp
++++ b/libs/graphicsenv/Android.bp
+@@ -21,7 +21,7 @@ cc_library_shared {
+         "IGpuService.cpp"
+     ],
+ 
+-    cflags: ["-Wall", "-Werror"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+ 
+     shared_libs: [
+         "libbase",
+diff --git a/libs/renderengine/Android.bp b/libs/renderengine/Android.bp
+index eb6080fc2..2f46b61f4 100644
+--- a/libs/renderengine/Android.bp
++++ b/libs/renderengine/Android.bp
+@@ -7,6 +7,7 @@ cc_defaults {
+         "-Wthread-safety",
+         "-Wunused",
+         "-Wunreachable-code",
++        "-O3", "-g0",
+     ],
+ }
+ 
+-- 
+2.17.1
+

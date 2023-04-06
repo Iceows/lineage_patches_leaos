@@ -1,0 +1,26 @@
+From 6eff059625170798402ce3650101456e731a5ae4 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:53:31 +0000
+Subject: [PATCH] disable debugging
+
+Change-Id: Ie347dad513210518baa1f253e0e81244456f7da3
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 448ebb6..d8128b1 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -1135,7 +1135,7 @@ cc_library {
+     },
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wno-unused-parameter",
+     ],
+ 
+-- 
+2.30.2
+

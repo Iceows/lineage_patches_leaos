@@ -1,0 +1,26 @@
+From 71f0ad148f1d5a015d3f1ad86067d755660ca741 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 23:07:42 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I35cc7dede26e79f68c08f7883cae803fb5542ee5
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 385081ba..f0b3f2db 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -48,7 +48,7 @@ cc_defaults {
+         "-fvisibility=hidden",
+         "-fno-rtti",
+         "-g0",
+-        "-Os",
++        "-O3",
+         "-DV8_TYPED_ARRAY_MAX_SIZE_IN_HEAP=64",
+         "-DV8_ATOMIC_OBJECT_FIELD_WRITES",
+         "-DV8_ATOMIC_MARKING_STATE",
+-- 
+2.30.2
+

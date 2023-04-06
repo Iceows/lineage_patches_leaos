@@ -1,0 +1,203 @@
+From 41bda9847b9bad5f85b79e7b5884d2a7dfdba4ef Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 6 May 2021 14:32:34 -0400
+Subject: [PATCH] disable debugging
+
+Change-Id: I12ea3e16cd53026d381c59af0fb443474ff95de0
+---
+ compiler/Android.bp | 12 ++++++------
+ dalvikvm/Android.bp |  2 +-
+ dex2oat/Android.bp  | 14 +++++++-------
+ runtime/Android.bp  | 10 +++++-----
+ 4 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/compiler/Android.bp b/compiler/Android.bp
+index 6f2d36f210..defbda8858 100644
+--- a/compiler/Android.bp
++++ b/compiler/Android.bp
+@@ -21,7 +21,7 @@
+ 
+ art_cc_defaults {
+     name: "libart-compiler-defaults",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: ["art_defaults"],
+     host_supported: true,
+     srcs: [
+@@ -187,7 +187,7 @@ gensrcs {
+ 
+ art_cc_library {
+     name: "libart-compiler",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "libart-compiler-defaults",
+         "dex2oat-pgo-defaults",
+@@ -269,7 +269,7 @@ cc_defaults {
+ 
+ art_cc_library {
+     name: "libartd-compiler",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_debug_defaults",
+         "libart-compiler-defaults",
+@@ -343,7 +343,7 @@ cc_defaults {
+ 
+ art_cc_library {
+     name: "libart-compiler-gtest",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: ["libart-gtest-defaults"],
+     srcs: [
+         "common_compiler_test.cc",
+@@ -359,7 +359,7 @@ art_cc_library {
+ 
+ art_cc_test {
+     name: "art_compiler_tests",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_gtest_defaults",
+     ],
+@@ -468,7 +468,7 @@ art_cc_test {
+ art_cc_test {
+     name: "art_compiler_host_tests",
+     device_supported: false,
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_gtest_defaults",
+     ],
+diff --git a/dalvikvm/Android.bp b/dalvikvm/Android.bp
+index 9d67acff85..87b9f504f5 100644
+--- a/dalvikvm/Android.bp
++++ b/dalvikvm/Android.bp
+@@ -24,7 +24,7 @@ art_cc_binary {
+         "-Wall",
+         "-Werror",
+         "-Wextra",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     shared_libs: [
+         "libnativehelper",
+diff --git a/dex2oat/Android.bp b/dex2oat/Android.bp
+index afeadc547d..c2ce8acf07 100644
+--- a/dex2oat/Android.bp
++++ b/dex2oat/Android.bp
+@@ -16,7 +16,7 @@
+ 
+ art_cc_defaults {
+     name: "libart-dex2oat-defaults",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: ["art_defaults"],
+     host_supported: true,
+     srcs: [
+@@ -167,7 +167,7 @@ cc_library_headers {
+         // TODO(b/133140750): Clean this up.
+         "//frameworks/native/cmds/installd",
+     ],
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     host_supported: true,
+     export_include_dirs: ["include"],
+ 
+@@ -180,7 +180,7 @@ cc_library_headers {
+ 
+ cc_defaults {
+     name: "dex2oat-defaults",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     host_supported: true,
+     defaults: ["art_defaults"],
+     srcs: [
+@@ -205,7 +205,7 @@ cc_defaults {
+         "//art:__subpackages__",
+         "//external/vixl",
+     ],
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     pgo: {
+         instrumentation: true,
+         benchmarks: ["dex2oat"],
+@@ -236,7 +236,7 @@ cc_defaults {
+ 
+ art_cc_binary {
+     name: "dex2oat",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "dex2oat-defaults",
+         "dex2oat-pgo-defaults",
+@@ -309,7 +309,7 @@ art_cc_binary {
+ 
+ art_cc_binary {
+     name: "dex2oatd",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_debug_defaults",
+         "dex2oat-defaults",
+@@ -448,7 +448,7 @@ art_cc_library_static {
+ 
+ art_cc_test {
+     name: "art_dex2oat_tests",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_gtest_defaults",
+     ],
+diff --git a/runtime/Android.bp b/runtime/Android.bp
+index fe077cb5e2..b3eb77174c 100644
+--- a/runtime/Android.bp
++++ b/runtime/Android.bp
+@@ -516,7 +516,7 @@ gensrcs {
+ 
+ art_cc_library {
+     name: "libart",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "libart_defaults",
+         "libart_nativeunwind_defaults",
+@@ -551,7 +551,7 @@ art_cc_library {
+ 
+ art_cc_library {
+     name: "libartd",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_debug_defaults",
+         "libart_defaults",
+@@ -579,7 +579,7 @@ art_cc_library {
+ 
+ art_cc_library {
+     name: "libart-runtime-gtest",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: ["libart-gtest-defaults"],
+     srcs: [
+         "common_runtime_test.cc",
+@@ -598,7 +598,7 @@ art_cc_library {
+ 
+ art_cc_test {
+     name: "art_runtime_tests",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_gtest_defaults",
+     ],
+@@ -687,7 +687,7 @@ art_cc_test {
+ 
+ art_cc_test {
+     name: "art_runtime_compiler_tests",
+-    cflags: ["-O3"],
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "art_gtest_defaults",
+     ],
+-- 
+2.17.1
+

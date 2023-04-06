@@ -1,0 +1,25 @@
+From 03bf06455655ee1090dc28220a1ea7f00611a1dc Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:30:47 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I224fcc984a8a27bbc1b193052d6a763dd6d4b61e
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index d593a1d8..45dce395 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -22,6 +22,7 @@ cc_defaults {
+         "-D_XOPEN_SOURCE=700",
+         "-Werror",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+ 
+     cppflags: [
+-- 
+2.30.2
+

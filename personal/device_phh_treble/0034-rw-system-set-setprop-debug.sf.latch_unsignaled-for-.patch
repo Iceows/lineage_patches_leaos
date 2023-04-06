@@ -1,0 +1,30 @@
+From aa3e041b8613f0b650b4d5bc77b1e4d0bbb39cb0 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Wed, 19 May 2021 16:05:41 -0400
+Subject: [PATCH 34/80] rw-system: set setprop debug.sf.latch_unsignaled for
+ (all)
+
+  !!! EXPERIMENTAL !!!
+---
+ rw-system.sh | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 310d5b2..0ecc4d0 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -533,6 +533,11 @@ if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landro
+     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
+ fi
+ 
++#experimental
++if [ ! getprop ro.board.platform |grep -q mt6785 ] && [ ! grep -q 338 /sys/devices/soc0/soc_id ]; then
++    setprop debug.sf.latch_unsignaled 1
++fi
++
+ if getprop ro.hardware | grep -qF exynos; then
+     setprop debug.sf.latch_unsignaled 1
+ fi
+-- 
+2.25.1
+

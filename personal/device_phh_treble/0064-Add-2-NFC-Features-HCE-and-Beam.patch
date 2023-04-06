@@ -1,0 +1,37 @@
+From 2a33934c36f98afc8db57186c996e3340476950d Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Apr 2023 08:16:49 +0200
+Subject: [PATCH 2/2] Add 2 NFC Features (HCE and Beam)
+
+Enable two NFC features
+
+- Host-based card emulation overview. Many Android-powered devices that offer NFC functionality already support NFC card emulation. In most cases, the card is emulated by a separate chip in the device, called a secure element. Many SIM cards provided by wireless carriers also contain a secure element.
+
+- Android Beam. Sharing files with NFC. Android allows you to transfer large files between devices using the Android Beam file transfer feature. This feature has a simple API and allows users to start the transfer process by simply touching devices. In response, Android Beam file transfer automatically copies files from one device to the other and notifies the user when it's finished.
+---
+ base.mk | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/base.mk b/base.mk
+index 139fa3b..8f544f9 100644
+--- a/base.mk
++++ b/base.mk
+@@ -6,7 +6,14 @@ PRODUCT_COPY_FILES := \
+ 	frameworks/native/data/etc/android.hardware.telephony.ims.xml:system/etc/permissions/android.hardware.telephony.ims.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+-	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
++	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml
++
++# Add NFC HCE and NFC Beam features
++PRODUCT_COPY_FILES += \
++	frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
++	frameworks/native/data/etc/android.hardware.nfc.hcef.xml:system/etc/permissions/android.hardware.nfc.hcef.xml \
++	frameworks/native/data/etc/android.sofware.nfc.beam.xml:system/etc/permissions/android.sofware.nfc.beam.xml \
++	frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml
+ 
+ #Use a more decent APN config
+ PRODUCT_COPY_FILES += \
+-- 
+2.25.1
+

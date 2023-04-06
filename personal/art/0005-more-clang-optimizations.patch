@@ -1,0 +1,97 @@
+From 9e959bec3f28488f34f734c191665a46e5dd6421 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 07:25:02 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I258c973a556fa79dd05016936fb52deff4fc49a3
+---
+ build/Android.bp           | 1 +
+ libartbase/Android.bp      | 3 ++-
+ libnativeloader/Android.bp | 3 ++-
+ libprofile/Android.bp      | 2 +-
+ runtime/Android.bp         | 2 +-
+ 5 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/build/Android.bp b/build/Android.bp
+index 6329785818..724965a164 100644
+--- a/build/Android.bp
++++ b/build/Android.bp
+@@ -78,6 +78,7 @@ art_global_defaults {
+         "-Wshadow",
+         "-Wunused",
+         "-fvisibility=protected",
++        "-O3", "-g0",
+ 
+         // Warn about thread safety violations with clang.
+         "-Wthread-safety",
+diff --git a/libartbase/Android.bp b/libartbase/Android.bp
+index cb2ff6af0e..4b7872be2b 100644
+--- a/libartbase/Android.bp
++++ b/libartbase/Android.bp
+@@ -115,7 +115,7 @@ cc_defaults {
+         },
+     },
+     generated_sources: ["art_libartbase_operator_srcs"],
+-    cflags: ["-DBUILDING_LIBART=1"],
++    cflags: ["-DBUILDING_LIBART=1", "-O3", "-g0"],
+ 
+     // Utilities used by various ART libs and tools are linked in statically
+     // here to avoid shared lib dependencies outside the ART APEX. No target
+@@ -168,6 +168,7 @@ gensrcs {
+ 
+ art_cc_library {
+     name: "libartbase",
++    cflags: ["-O3", "-g0"],
+     defaults: [
+         "libartbase_defaults",
+         "libart_nativeunwind_defaults",
+diff --git a/libnativeloader/Android.bp b/libnativeloader/Android.bp
+index bfafa7656c..aba444d310 100644
+--- a/libnativeloader/Android.bp
++++ b/libnativeloader/Android.bp
+@@ -3,6 +3,7 @@
+ cc_defaults {
+     name: "libnativeloader-defaults",
+     defaults: ["art_defaults"],
++    cflags: ["-O3", "-g0"],
+     cppflags: [
+         "-fvisibility=hidden",
+     ],
+@@ -94,7 +95,7 @@ cc_test {
+         "native_loader_namespace.cpp",
+         "public_libraries.cpp",
+     ],
+-    cflags: ["-DANDROID"],
++    cflags: ["-DANDROID", "-O3", "-g0"],
+     static_libs: [
+         "libbase",
+         "liblog",
+diff --git a/libprofile/Android.bp b/libprofile/Android.bp
+index 367eefc1e3..67acacad50 100644
+--- a/libprofile/Android.bp
++++ b/libprofile/Android.bp
+@@ -59,7 +59,7 @@ cc_defaults {
+         },
+     },
+     //generated_sources: ["art_libartbase_operator_srcs"],
+-    cflags: ["-DBUILDING_LIBART=1"],
++    cflags: ["-DBUILDING_LIBART=1", "-O3", "-g0"],
+     export_include_dirs: ["."],
+     // ART's macros.h depends on libbase's macros.h.
+     // Note: runtime_options.h depends on cmdline. But we don't really want to export this
+diff --git a/runtime/Android.bp b/runtime/Android.bp
+index b3eb77174c..e5eef4aba0 100644
+--- a/runtime/Android.bp
++++ b/runtime/Android.bp
+@@ -395,7 +395,7 @@ libart_cc_defaults {
+             ],
+         },
+     },
+-    cflags: ["-DBUILDING_LIBART=1"],
++    cflags: ["-DBUILDING_LIBART=1", "-O3", "-g0"],
+     generated_sources: ["art_operator_srcs"],
+     // asm_support_gen.h (used by asm_support.h) is generated with cpp-define-generator
+     generated_headers: ["cpp-define-generator-asm-support"],
+-- 
+2.17.1
+

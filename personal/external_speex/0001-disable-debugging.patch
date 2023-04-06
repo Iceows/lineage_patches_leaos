@@ -1,0 +1,26 @@
+From f350145e885840896d31daa803954e26f4744075 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 23:06:28 +0000
+Subject: [PATCH] disable debugging
+
+Change-Id: I95ba563963d9c767cca96e464fd9022de35c5df7
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 290835f..e8ff5ad 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -45,7 +45,7 @@ cc_library_shared {
+         "-DFIXED_POINT",
+         "-DHAVE_STDINT_H",
+         "-DRESAMPLE_FULL_SINC_TABLE",
+-        "-O3",
++        "-O3", "-g0",
+         "-fstrict-aliasing",
+         "-fprefetch-loop-arrays",
+         "-Wall",
+-- 
+2.30.2
+

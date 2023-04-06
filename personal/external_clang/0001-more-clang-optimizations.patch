@@ -1,0 +1,25 @@
+From 8cd9f57cfa7dcc2c408fa8c88625f25d5806b4c8 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:32:27 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I1a08ae81f4aec7e74b2fc0b7b1ab8b208467d467
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index 03930c6bb2..8ec725ac2a 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -12,6 +12,7 @@ cc_defaults {
+         "-Wno-long-long",
+         "-Wno-unused-private-field",
+         "-Wno-unused-lambda-capture",
++        "-O3", "-g0",
+     ],
+ 
+     include_dirs: [
+-- 
+2.30.2
+

@@ -1,0 +1,33 @@
+From bc5f25be1d29073ceea503934ee0ec48e8685297 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:34:34 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I979bfe4c953611ca15284948249fb06e4e7e1192
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index d8f5cff2..ee23ed2f 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -40,6 +40,7 @@ cc_library_static {
+         "-Wno-visibility",
+         "-Wno-incompatible-pointer-types",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     arch: {
+@@ -241,6 +242,7 @@ cc_library {
+         "-Wno-visibility",
+         "-Wno-incompatible-pointer-types",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     arch: {
+-- 
+2.30.2
+

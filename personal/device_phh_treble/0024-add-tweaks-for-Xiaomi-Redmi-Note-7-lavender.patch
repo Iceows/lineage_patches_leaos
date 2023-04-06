@@ -1,0 +1,34 @@
+From 472b67a811ce98a0570268693f4381cc62458496 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 28 Mar 2021 11:24:18 -0400
+Subject: [PATCH 24/80] add tweaks for Xiaomi Redmi Note 7 'lavender'
+
+---
+ rw-system.sh | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 715b2ad..175db0b 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -544,12 +544,16 @@ fi
+ 
+ if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/daisy; then
+     setprop debug.sf.latch_unsignaled 1
+-    setprop debug.sf.enable_hwc_vds 1
+     setprop ro.telephony.default_network 9,9
+     setprop persist.vendor.radio.block_allow_data 0
+     setprop telephony.lteOnGsmDevice 1
+ fi
+ 
++if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/lavender; then
++    setprop debug.sf.latch_unsignaled 1
++    setprop ro.netflix.bsp_rev Q660-13149-1
++fi
++
+ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/merlin; then
+     setprop debug.sf.latch_unsignaled 1
+     setprop debug.sf.enable_hwc_vds 0
+-- 
+2.25.1
+

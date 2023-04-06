@@ -1,0 +1,34 @@
+From 434f2cbcb75fa846a4c266688262a99dc580d8dd Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:23:34 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I64ee4f44cf81e0fb2045d1c7a756de032a219b92
+---
+ Android.bp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index 8b3d01d0a..cbd6cf590 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -56,7 +56,7 @@ cc_library {
+         "-DFT_CONFIG_OPTION_USE_PNG",
+         "-DFT_CONFIG_OPTION_USE_ZLIB",
+ 
+-        "-O2",
++        "-O3", "-g0",
+ 
+         // Upstream ignores unused parameter warning
+         "-Wno-unused-parameter",
+@@ -148,6 +148,6 @@ cc_library_static {
+         "-DDARWIN_NO_CARBON",
+         "-DFT2_BUILD_LIBRARY",
+ 
+-        "-O2",
++        "-O3", "-g0",
+     ],
+ }
+-- 
+2.17.1
+

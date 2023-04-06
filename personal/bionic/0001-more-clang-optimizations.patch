@@ -1,0 +1,83 @@
+From 6509ad3c2a911fc8ecc6ce3aed6edd55ba657934 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 07:35:52 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I287866d00704005b1b968cc9c3f2f4c14cc094de
+---
+ libdl/Android.bp  | 3 +++
+ libm/Android.bp   | 1 +
+ linker/Android.bp | 3 +++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/libdl/Android.bp b/libdl/Android.bp
+index 8e3a3fc25..028859f91 100644
+--- a/libdl/Android.bp
++++ b/libdl/Android.bp
+@@ -18,6 +18,7 @@ cc_library_static {
+         "-Wextra",
+         "-Wunused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     // For private/CFIShadow.h.
+@@ -92,6 +93,7 @@ cc_library {
+         "-Wextra",
+         "-Wunused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+     stl: "none",
+ 
+@@ -169,6 +171,7 @@ cc_library {
+         "-Wextra",
+         "-Wunused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     stl: "none",
+diff --git a/libm/Android.bp b/libm/Android.bp
+index 1c4fe551a..198e3327b 100644
+--- a/libm/Android.bp
++++ b/libm/Android.bp
+@@ -476,6 +476,7 @@ cc_library {
+         "-Wno-unknown-pragmas",
+         "-Wno-unused-const-variable",
+         "-Wno-unused-variable",
++        "-O3", "-g0",
+     ],
+ 
+     ldflags: [
+diff --git a/linker/Android.bp b/linker/Android.bp
+index 582a9e41e..c2e4edea7 100644
+--- a/linker/Android.bp
++++ b/linker/Android.bp
+@@ -33,6 +33,7 @@ cc_object {
+         "-Wextra",
+         "-Wno-unused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     srcs: [
+@@ -78,6 +79,7 @@ cc_defaults {
+         "-Wextra",
+         "-Wunused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     // TODO: split out the asflags.
+@@ -401,6 +403,7 @@ cc_library {
+         "-Wextra",
+         "-Wunused",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+     stl: "none",
+ 
+-- 
+2.17.1
+

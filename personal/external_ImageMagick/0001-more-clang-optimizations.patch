@@ -1,0 +1,81 @@
+From eec898194bf5c720d82636a90d29993485bfe013 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Mon, 24 May 2021 08:19:52 -0400
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I62390cc0adafb4cc3b26df4172ca3ef83a085d90
+---
+ Magick++/Android.bp   | 3 ++-
+ MagickCore/Android.bp | 1 +
+ MagickWand/Android.bp | 1 +
+ coders/Android.bp     | 2 +-
+ filters/Android.bp    | 1 +
+ 5 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/Magick++/Android.bp b/Magick++/Android.bp
+index 0642099c8..f52bc2bd7 100644
+--- a/Magick++/Android.bp
++++ b/Magick++/Android.bp
+@@ -23,8 +23,9 @@ cc_library_static {
+         "-Werror",
+         "-Wno-deprecated-register",
+         "-Wno-unused-private-field",
++        "-O3", "-g0",
+     ],
+-    cppflags: ["-fexceptions"],
++    cppflags: ["-fexceptions", "-O3", "-g0"],
+ 
+     header_libs: ["Magick_headers"],
+     export_header_lib_headers: ["Magick_headers"],
+diff --git a/MagickCore/Android.bp b/MagickCore/Android.bp
+index ee9a33b8f..a9a5c502f 100644
+--- a/MagickCore/Android.bp
++++ b/MagickCore/Android.bp
+@@ -28,6 +28,7 @@ cc_library_static {
+         "-Wno-for-loop-analysis",
+         "-Wno-unused-function",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: ["Magick_headers"],
+diff --git a/MagickWand/Android.bp b/MagickWand/Android.bp
+index 205cf19c9..56db8fc96 100644
+--- a/MagickWand/Android.bp
++++ b/MagickWand/Android.bp
+@@ -24,6 +24,7 @@ cc_library_static {
+         "-Wall",
+         "-Werror",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: ["Magick_headers"],
+diff --git a/coders/Android.bp b/coders/Android.bp
+index 7235d2a22..f51ca7242 100644
+--- a/coders/Android.bp
++++ b/coders/Android.bp
+@@ -19,7 +19,7 @@ cc_library_static {
+ 
+     srcs: ["dds.c", "jpeg.c", "xc.c"],
+ 
+-    cflags: ["-DHAVE_CONFIG_H"],
++    cflags: ["-DHAVE_CONFIG_H", "-O3", "-g0"],
+ 
+     header_libs: ["Magick_headers"],
+     static_libs: ["libjpeg_static_ndk"],
+diff --git a/filters/Android.bp b/filters/Android.bp
+index af29fdcae..a73c38745 100644
+--- a/filters/Android.bp
++++ b/filters/Android.bp
+@@ -23,6 +23,7 @@ cc_library_static {
+         "-DHAVE_CONFIG_H",
+         "-Wall",
+         "-Werror",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: ["Magick_headers"],
+-- 
+2.17.1
+

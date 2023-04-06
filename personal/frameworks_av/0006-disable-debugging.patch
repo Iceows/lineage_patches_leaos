@@ -1,0 +1,1474 @@
+From 19046c068fdee18c638d0e1653f7c68cf12bf55e Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 6 May 2021 14:34:57 -0400
+Subject: [PATCH 6/7] disable debugging
+
+---
+ camera/Android.bp                                  |  2 +-
+ camera/cameraserver/Android.bp                     |  2 +-
+ cmds/screenrecord/Android.bp                       |  2 +-
+ media/bufferpool/2.0/Android.bp                    |  2 +-
+ media/codec2/components/amr_nb_wb/Android.bp       |  2 +-
+ media/codec2/components/avc/Android.bp             |  2 +-
+ media/codec2/components/base/Android.bp            |  2 +-
+ media/codec2/components/cmds/Android.bp            |  2 +-
+ media/codec2/components/g711/Android.bp            |  2 +-
+ media/codec2/components/gav1/Android.bp            |  2 +-
+ media/codec2/components/mpeg4_h263/Android.bp      |  8 ++++----
+ media/codec2/components/vpx/Android.bp             |  4 ++--
+ media/codec2/core/Android.bp                       |  2 +-
+ media/codec2/vndk/Android.bp                       |  2 +-
+ media/extractors/Android.bp                        |  2 +-
+ media/libaaudio/examples/input_monitor/Android.bp  |  4 ++--
+ media/libaaudio/examples/loopback/Android.bp       |  2 +-
+ media/libaaudio/examples/write_sine/Android.bp     |  4 ++--
+ media/libaaudio/src/Android.bp                     |  4 ++--
+ media/libaudioclient/Android.bp                    |  4 ++--
+ media/libaudiofoundation/Android.bp                |  2 +-
+ media/libaudiohal/Android.bp                       |  4 ++--
+ media/libaudiohal/impl/Android.bp                  | 10 +++++-----
+ media/libaudioprocessing/Android.bp                |  2 +-
+ .../libaudioprocessing/audio-resampler/Android.bp  |  2 +-
+ media/libcpustats/Android.bp                       |  2 +-
+ media/libeffects/downmix/Android.bp                |  2 +-
+ media/libeffects/dynamicsproc/Android.bp           |  2 +-
+ media/libeffects/factory/Android.bp                |  4 ++--
+ media/libeffects/loudness/Android.bp               |  2 +-
+ media/libeffects/preprocessing/Android.bp          |  2 +-
+ media/libeffects/proxy/Android.bp                  |  2 +-
+ media/libheif/Android.bp                           |  2 +-
+ media/libmedia/Android.bp                          | 10 +++++-----
+ media/libmedia/xsd/vts/Android.bp                  |  2 +-
+ media/libmediahelper/Android.bp                    |  2 +-
+ media/libmediametrics/Android.bp                   |  2 +-
+ media/libmediaplayerservice/Android.bp             |  2 +-
+ media/libmediaplayerservice/nuplayer/Android.bp    |  4 ++--
+ media/libmediatranscoding/Android.bp               |  2 +-
+ media/libnbaio/Android.bp                          |  2 +-
+ media/libstagefright/Android.bp                    | 14 +++++++-------
+ .../libstagefright/codecs/amrnb/common/Android.bp  |  2 +-
+ media/libstagefright/codecs/amrnb/dec/Android.bp   |  6 +++---
+ media/libstagefright/codecs/amrwb/Android.bp       |  4 ++--
+ media/libstagefright/codecs/amrwbenc/Android.bp    |  6 +++---
+ media/libstagefright/codecs/avcdec/Android.bp      |  2 +-
+ media/libstagefright/codecs/avcenc/Android.bp      |  2 +-
+ media/libstagefright/codecs/common/Android.bp      |  2 +-
+ media/libstagefright/codecs/hevcdec/Android.bp     |  2 +-
+ .../libstagefright/codecs/m4v_h263/dec/Android.bp  |  4 ++--
+ media/libstagefright/codecs/mp3dec/Android.bp      |  4 ++--
+ media/libstagefright/codecs/mpeg2dec/Android.bp    |  2 +-
+ media/libstagefright/codecs/on2/enc/Android.bp     |  2 +-
+ media/libstagefright/codecs/xaacdec/Android.bp     |  2 +-
+ media/libstagefright/colorconversion/Android.bp    |  2 +-
+ media/libstagefright/filters/Android.bp            |  2 +-
+ media/libstagefright/flac/dec/Android.bp           |  2 +-
+ media/libstagefright/foundation/Android.bp         |  6 +++---
+ media/libstagefright/http/Android.bp               |  2 +-
+ media/libstagefright/mpeg2ts/Android.bp            |  2 +-
+ media/libstagefright/omx/Android.bp                | 10 +++++-----
+ media/libstagefright/rtsp/Android.bp               |  6 +++---
+ media/libstagefright/webm/Android.bp               |  4 ++--
+ media/mediaserver/Android.bp                       |  4 ++--
+ media/mtp/Android.bp                               |  2 +-
+ media/ndk/Android.bp                               |  6 +++---
+ media/utils/Android.bp                             |  2 +-
+ services/audioflinger/Android.bp                   |  2 +-
+ services/camera/libcameraservice/Android.bp        |  2 +-
+ services/mediacodec/Android.bp                     |  4 ++--
+ services/mediaextractor/Android.bp                 |  4 ++--
+ services/mediametrics/Android.bp                   |  2 +-
+ services/mediatranscoding/Android.bp               |  4 ++--
+ services/minijail/Android.bp                       |  2 +-
+ 75 files changed, 122 insertions(+), 122 deletions(-)
+
+diff --git a/camera/Android.bp b/camera/Android.bp
+index 9a4a45aa7b..e8e50ab16b 100644
+--- a/camera/Android.bp
++++ b/camera/Android.bp
+@@ -73,7 +73,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wall",
+         "-Wextra",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+ }
+diff --git a/camera/cameraserver/Android.bp b/camera/cameraserver/Android.bp
+index aec597981e..eb062c5740 100644
+--- a/camera/cameraserver/Android.bp
++++ b/camera/cameraserver/Android.bp
+@@ -43,7 +43,7 @@ cc_binary {
+         "-Wextra",
+         "-Werror",
+         "-Wno-unused-parameter",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     init_rc: ["cameraserver.rc"],
+diff --git a/cmds/screenrecord/Android.bp b/cmds/screenrecord/Android.bp
+index f1487d8d9b..7477b61e5d 100644
+--- a/cmds/screenrecord/Android.bp
++++ b/cmds/screenrecord/Android.bp
+@@ -53,7 +53,7 @@ cc_binary {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-multichar",
+diff --git a/media/bufferpool/2.0/Android.bp b/media/bufferpool/2.0/Android.bp
+index 81431daccb..6a57b70614 100644
+--- a/media/bufferpool/2.0/Android.bp
++++ b/media/bufferpool/2.0/Android.bp
+@@ -35,7 +35,7 @@ cc_library {
+     double_loadable: true,
+     cflags: [
+         "-DBUFFERPOOL_CLONE_HANDLES",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/media/codec2/components/amr_nb_wb/Android.bp b/media/codec2/components/amr_nb_wb/Android.bp
+index 5aeef697c5..88c5d85f56 100644
+--- a/media/codec2/components/amr_nb_wb/Android.bp
++++ b/media/codec2/components/amr_nb_wb/Android.bp
+@@ -9,7 +9,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DAMRNB",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     static_libs: [
+diff --git a/media/codec2/components/avc/Android.bp b/media/codec2/components/avc/Android.bp
+index 608ee43e26..ba904c00b1 100644
+--- a/media/codec2/components/avc/Android.bp
++++ b/media/codec2/components/avc/Android.bp
+@@ -33,6 +33,6 @@ cc_library_shared {
+ 
+     cflags: [
+         "-Wno-unused-variable",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/media/codec2/components/base/Android.bp b/media/codec2/components/base/Android.bp
+index 4382a4d145..1cca357be8 100644
+--- a/media/codec2/components/base/Android.bp
++++ b/media/codec2/components/base/Android.bp
+@@ -61,7 +61,7 @@ cc_defaults {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+     ],
+diff --git a/media/codec2/components/cmds/Android.bp b/media/codec2/components/cmds/Android.bp
+index 23db570bda..e3ecc7a76b 100644
+--- a/media/codec2/components/cmds/Android.bp
++++ b/media/codec2/components/cmds/Android.bp
+@@ -29,7 +29,7 @@ cc_binary {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+diff --git a/media/codec2/components/g711/Android.bp b/media/codec2/components/g711/Android.bp
+index bcd5661904..78f5e2bf25 100644
+--- a/media/codec2/components/g711/Android.bp
++++ b/media/codec2/components/g711/Android.bp
+@@ -9,7 +9,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DALAW",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/media/codec2/components/gav1/Android.bp b/media/codec2/components/gav1/Android.bp
+index 787bfe022d..331f303531 100644
+--- a/media/codec2/components/gav1/Android.bp
++++ b/media/codec2/components/gav1/Android.bp
+@@ -9,7 +9,7 @@ cc_library_shared {
+     // so only 1 of them has the official c2.android.av1.decoder name
+     cflags: [
+         "-DCODECNAME=\"c2.android.av1.decoder\"",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     srcs: ["C2SoftGav1Dec.cpp"],
+diff --git a/media/codec2/components/mpeg4_h263/Android.bp b/media/codec2/components/mpeg4_h263/Android.bp
+index 21ea649554..d4c991083a 100644
+--- a/media/codec2/components/mpeg4_h263/Android.bp
++++ b/media/codec2/components/mpeg4_h263/Android.bp
+@@ -12,7 +12,7 @@ cc_library_shared {
+     cflags: [
+         "-DOSCL_IMPORT_REF=",
+         "-DMPEG4",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -29,7 +29,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DOSCL_IMPORT_REF=",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -48,7 +48,7 @@ cc_library_shared {
+     cflags: [
+         "-DMPEG4",
+         "-DOSCL_IMPORT_REF=",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -65,6 +65,6 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DOSCL_IMPORT_REF=",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/media/codec2/components/vpx/Android.bp b/media/codec2/components/vpx/Android.bp
+index bfc6ae7328..9e9a98f60d 100644
+--- a/media/codec2/components/vpx/Android.bp
++++ b/media/codec2/components/vpx/Android.bp
+@@ -11,7 +11,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DVP9",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -41,7 +41,7 @@ cc_library_shared {
+ 
+     shared_libs: ["libvpx"],
+ 
+-    cflags: ["-DVP9", "-O3"],
++    cflags: ["-DVP9", "-O3", "-g0"],
+ }
+ 
+ cc_library_shared {
+diff --git a/media/codec2/core/Android.bp b/media/codec2/core/Android.bp
+index b9b04789a0..c1e66d6c31 100644
+--- a/media/codec2/core/Android.bp
++++ b/media/codec2/core/Android.bp
+@@ -17,7 +17,7 @@ cc_library_shared {
+     srcs: ["C2.cpp"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+     ],
+diff --git a/media/codec2/vndk/Android.bp b/media/codec2/vndk/Android.bp
+index 6c35692506..2ce71403ed 100644
+--- a/media/codec2/vndk/Android.bp
++++ b/media/codec2/vndk/Android.bp
+@@ -76,7 +76,7 @@ cc_library_shared {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/media/extractors/Android.bp b/media/extractors/Android.bp
+index 4df471d8ec..973347b220 100644
+--- a/media/extractors/Android.bp
++++ b/media/extractors/Android.bp
+@@ -32,7 +32,7 @@ cc_defaults {
+     compile_multilib: "first",
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-fvisibility=hidden",
+diff --git a/media/libaaudio/examples/input_monitor/Android.bp b/media/libaaudio/examples/input_monitor/Android.bp
+index 20819cf4f4..7ac7ec4e25 100644
+--- a/media/libaaudio/examples/input_monitor/Android.bp
++++ b/media/libaaudio/examples/input_monitor/Android.bp
+@@ -2,7 +2,7 @@ cc_test {
+     name: "input_monitor",
+     gtest: false,
+     srcs: ["src/input_monitor.cpp"],
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     shared_libs: ["libaaudio"],
+     header_libs: ["libaaudio_example_utils"],
+ }
+@@ -11,7 +11,7 @@ cc_test {
+     name: "input_monitor_callback",
+     gtest: false,
+     srcs: ["src/input_monitor_callback.cpp"],
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     shared_libs: ["libaaudio"],
+     header_libs: ["libaaudio_example_utils"],
+ }
+diff --git a/media/libaaudio/examples/loopback/Android.bp b/media/libaaudio/examples/loopback/Android.bp
+index 1ae7747b87..9623a1ed3a 100644
+--- a/media/libaaudio/examples/loopback/Android.bp
++++ b/media/libaaudio/examples/loopback/Android.bp
+@@ -2,7 +2,7 @@ cc_test {
+     name: "aaudio_loopback",
+     gtest: false,
+     srcs: ["src/loopback.cpp"],
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     static_libs: ["libsndfile"],
+     shared_libs: [
+         "libaaudio",
+diff --git a/media/libaaudio/examples/write_sine/Android.bp b/media/libaaudio/examples/write_sine/Android.bp
+index 83e271198f..75f5d11c70 100644
+--- a/media/libaaudio/examples/write_sine/Android.bp
++++ b/media/libaaudio/examples/write_sine/Android.bp
+@@ -1,7 +1,7 @@
+ cc_test {
+     name: "write_sine",
+     srcs: ["src/write_sine.cpp"],
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     shared_libs: ["libaaudio"],
+     header_libs: ["libaaudio_example_utils"],
+ }
+@@ -9,7 +9,7 @@ cc_test {
+ cc_test {
+     name: "write_sine_callback",
+     srcs: ["src/write_sine_callback.cpp"],
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+     shared_libs: ["libaaudio"],
+     header_libs: ["libaaudio_example_utils"],
+ }
+diff --git a/media/libaaudio/src/Android.bp b/media/libaaudio/src/Android.bp
+index 3167b64312..0d2e58c24e 100644
+--- a/media/libaaudio/src/Android.bp
++++ b/media/libaaudio/src/Android.bp
+@@ -21,7 +21,7 @@ cc_library {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wno-unused-parameter",
+         "-Wall",
+         "-Werror",
+@@ -92,7 +92,7 @@ cc_library {
+         "-Wno-unused-parameter",
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     srcs: [
+diff --git a/media/libaudioclient/Android.bp b/media/libaudioclient/Android.bp
+index eec4c8fd7f..dccc76e802 100644
+--- a/media/libaudioclient/Android.bp
++++ b/media/libaudioclient/Android.bp
+@@ -32,7 +32,7 @@ cc_library_shared {
+         "libutils",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+@@ -118,7 +118,7 @@ cc_library_shared {
+         "libc_malloc_debug_backtrace",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+diff --git a/media/libaudiofoundation/Android.bp b/media/libaudiofoundation/Android.bp
+index b555c2cde5..2b580fe2a2 100644
+--- a/media/libaudiofoundation/Android.bp
++++ b/media/libaudiofoundation/Android.bp
+@@ -46,7 +46,7 @@ cc_library {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+diff --git a/media/libaudiohal/Android.bp b/media/libaudiohal/Android.bp
+index 8e441de1ac..fbccd11c87 100644
+--- a/media/libaudiohal/Android.bp
++++ b/media/libaudiohal/Android.bp
+@@ -8,7 +8,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+@@ -42,7 +42,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+     ],
+diff --git a/media/libaudiohal/impl/Android.bp b/media/libaudiohal/impl/Android.bp
+index b776f8bf2c..6549c461dc 100644
+--- a/media/libaudiohal/impl/Android.bp
++++ b/media/libaudiohal/impl/Android.bp
+@@ -17,7 +17,7 @@ cc_defaults {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+@@ -63,7 +63,7 @@ cc_library_shared {
+         "android.hardware.audio@2.0",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-DMAJOR_VERSION=2",
+         "-DMINOR_VERSION=0",
+         "-include common/all-versions/VersionMacro.h",
+@@ -80,7 +80,7 @@ cc_library_shared {
+         "android.hardware.audio@4.0",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-DMAJOR_VERSION=4",
+         "-DMINOR_VERSION=0",
+         "-include common/all-versions/VersionMacro.h",
+@@ -97,7 +97,7 @@ cc_library_shared {
+         "android.hardware.audio@5.0",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-DMAJOR_VERSION=5",
+         "-DMINOR_VERSION=0",
+         "-include common/all-versions/VersionMacro.h",
+@@ -114,7 +114,7 @@ cc_library_shared {
+         "android.hardware.audio@6.0",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-DMAJOR_VERSION=6",
+         "-DMINOR_VERSION=0",
+         "-include common/all-versions/VersionMacro.h",
+diff --git a/media/libaudioprocessing/Android.bp b/media/libaudioprocessing/Android.bp
+index 6104896c44..7f05061367 100644
+--- a/media/libaudioprocessing/Android.bp
++++ b/media/libaudioprocessing/Android.bp
+@@ -13,7 +13,7 @@ cc_defaults {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+ 
+diff --git a/media/libaudioprocessing/audio-resampler/Android.bp b/media/libaudioprocessing/audio-resampler/Android.bp
+index 16d95ec30c..32ec0cc631 100644
+--- a/media/libaudioprocessing/audio-resampler/Android.bp
++++ b/media/libaudioprocessing/audio-resampler/Android.bp
+@@ -9,7 +9,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+diff --git a/media/libcpustats/Android.bp b/media/libcpustats/Android.bp
+index 6837c47eb2..d7868f75b3 100644
+--- a/media/libcpustats/Android.bp
++++ b/media/libcpustats/Android.bp
+@@ -17,7 +17,7 @@ cc_library_static {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     host_supported: true,
+diff --git a/media/libeffects/downmix/Android.bp b/media/libeffects/downmix/Android.bp
+index c6c6a1e392..f6b3e053f8 100644
+--- a/media/libeffects/downmix/Android.bp
++++ b/media/libeffects/downmix/Android.bp
+@@ -18,7 +18,7 @@ cc_library_shared {
+         "-fvisibility=hidden",
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: [
+diff --git a/media/libeffects/dynamicsproc/Android.bp b/media/libeffects/dynamicsproc/Android.bp
+index dbc90d73ab..e79fb27904 100644
+--- a/media/libeffects/dynamicsproc/Android.bp
++++ b/media/libeffects/dynamicsproc/Android.bp
+@@ -25,7 +25,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-fvisibility=hidden",
+         "-Wall",
+         "-Werror",
+diff --git a/media/libeffects/factory/Android.bp b/media/libeffects/factory/Android.bp
+index b7a9837d5d..f0ccc96222 100644
+--- a/media/libeffects/factory/Android.bp
++++ b/media/libeffects/factory/Android.bp
+@@ -23,7 +23,7 @@ cc_library_shared {
+         "libdl",
+         "libeffectsconfig",
+     ],
+-    cflags: ["-fvisibility=hidden", "-O3"],
++    cflags: ["-fvisibility=hidden", "-O3", "-g0"],
+ 
+     local_include_dirs:["include/media"],
+ 
+@@ -45,7 +45,7 @@ cc_binary {
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+ 
+diff --git a/media/libeffects/loudness/Android.bp b/media/libeffects/loudness/Android.bp
+index 4f07e5e986..ca028f71a2 100644
+--- a/media/libeffects/loudness/Android.bp
++++ b/media/libeffects/loudness/Android.bp
+@@ -9,7 +9,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-fvisibility=hidden",
+         "-Wall",
+         "-Werror",
+diff --git a/media/libeffects/preprocessing/Android.bp b/media/libeffects/preprocessing/Android.bp
+index e5c713c6a2..2b9510786b 100644
+--- a/media/libeffects/preprocessing/Android.bp
++++ b/media/libeffects/preprocessing/Android.bp
+@@ -26,7 +26,7 @@ cc_library_shared {
+         "-fvisibility=hidden",
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: [
+diff --git a/media/libeffects/proxy/Android.bp b/media/libeffects/proxy/Android.bp
+index fe1e94db70..e246b16f34 100644
+--- a/media/libeffects/proxy/Android.bp
++++ b/media/libeffects/proxy/Android.bp
+@@ -23,7 +23,7 @@ cc_library_shared {
+         "-fvisibility=hidden",
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     include_dirs: ["frameworks/av/media/libeffects/factory"],
+diff --git a/media/libheif/Android.bp b/media/libheif/Android.bp
+index 910b38cb9c..03fbb33983 100644
+--- a/media/libheif/Android.bp
++++ b/media/libheif/Android.bp
+@@ -13,7 +13,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+diff --git a/media/libmedia/Android.bp b/media/libmedia/Android.bp
+index b5a19de78f..e5c1162cee 100644
+--- a/media/libmedia/Android.bp
++++ b/media/libmedia/Android.bp
+@@ -118,7 +118,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+@@ -178,7 +178,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+@@ -210,7 +210,7 @@ cc_library_static {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+@@ -254,7 +254,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+@@ -363,7 +363,7 @@ cc_library {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+diff --git a/media/libmedia/xsd/vts/Android.bp b/media/libmedia/xsd/vts/Android.bp
+index ed8a9057ca..f539f03b71 100644
+--- a/media/libmedia/xsd/vts/Android.bp
++++ b/media/libmedia/xsd/vts/Android.bp
+@@ -28,7 +28,7 @@ cc_test {
+         "liblog",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+     ],
+diff --git a/media/libmediahelper/Android.bp b/media/libmediahelper/Android.bp
+index dd3c15c126..4f306a1e9f 100644
+--- a/media/libmediahelper/Android.bp
++++ b/media/libmediahelper/Android.bp
+@@ -17,7 +17,7 @@ cc_library {
+         "TypeConverter.cpp",
+     ],
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wextra",
+         "-Wall",
+diff --git a/media/libmediametrics/Android.bp b/media/libmediametrics/Android.bp
+index 92d636fecc..62b3987a9c 100644
+--- a/media/libmediametrics/Android.bp
++++ b/media/libmediametrics/Android.bp
+@@ -22,7 +22,7 @@ cc_library_shared {
+     export_include_dirs: ["include"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Werror",
+         "-Wextra",
+diff --git a/media/libmediaplayerservice/Android.bp b/media/libmediaplayerservice/Android.bp
+index b1a3813f20..63b0eeabd4 100644
+--- a/media/libmediaplayerservice/Android.bp
++++ b/media/libmediaplayerservice/Android.bp
+@@ -68,7 +68,7 @@ cc_library_shared {
+     local_include_dirs: ["include"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+diff --git a/media/libmediaplayerservice/nuplayer/Android.bp b/media/libmediaplayerservice/nuplayer/Android.bp
+index aa0cb892c2..f10254bb59 100644
+--- a/media/libmediaplayerservice/nuplayer/Android.bp
++++ b/media/libmediaplayerservice/nuplayer/Android.bp
+@@ -33,7 +33,7 @@ cc_library_static {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+@@ -42,7 +42,7 @@ cc_library_static {
+         debuggable: {
+             cflags: [
+                 "-DENABLE_STAGEFRIGHT_EXPERIMENTS",
+-                "-O3",
++                "-O3", "-g0",
+             ],
+         }
+     },
+diff --git a/media/libmediatranscoding/Android.bp b/media/libmediatranscoding/Android.bp
+index 9f93508ee5..41e961d1de 100644
+--- a/media/libmediatranscoding/Android.bp
++++ b/media/libmediatranscoding/Android.bp
+@@ -56,7 +56,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+diff --git a/media/libnbaio/Android.bp b/media/libnbaio/Android.bp
+index 2e9488e7d5..0a9d99e9ce 100644
+--- a/media/libnbaio/Android.bp
++++ b/media/libnbaio/Android.bp
+@@ -28,7 +28,7 @@ cc_defaults {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+diff --git a/media/libstagefright/Android.bp b/media/libstagefright/Android.bp
+index 2f1aecf00c..bcae3d001f 100644
+--- a/media/libstagefright/Android.bp
++++ b/media/libstagefright/Android.bp
+@@ -23,7 +23,7 @@ cc_library_static {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     sanitize: {
+         misc_undefined: [
+@@ -50,7 +50,7 @@ cc_library_static {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     sanitize: {
+         misc_undefined: [
+@@ -81,7 +81,7 @@ cc_library_shared {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: [
+@@ -144,7 +144,7 @@ cc_library_static {
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+@@ -192,7 +192,7 @@ cc_library_shared {
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+@@ -330,7 +330,7 @@ cc_library {
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     version_script: "exports.lds",
+@@ -338,7 +338,7 @@ cc_library {
+     product_variables: {
+         debuggable: {
+             // enable experiments only in userdebug and eng builds
+-            cflags: ["-DENABLE_STAGEFRIGHT_EXPERIMENTS", "-O3"],
++            cflags: ["-DENABLE_STAGEFRIGHT_EXPERIMENTS", "-O3", "-g0"],
+         },
+     },
+ 
+diff --git a/media/libstagefright/codecs/amrnb/common/Android.bp b/media/libstagefright/codecs/amrnb/common/Android.bp
+index 2a1d452854..81d45d7702 100644
+--- a/media/libstagefright/codecs/amrnb/common/Android.bp
++++ b/media/libstagefright/codecs/amrnb/common/Android.bp
+@@ -72,7 +72,7 @@ cc_library {
+         "-DOSCL_IMPORT_REF=",
+         "-DOSCL_EXPORT_REF=",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     target: {
+diff --git a/media/libstagefright/codecs/amrnb/dec/Android.bp b/media/libstagefright/codecs/amrnb/dec/Android.bp
+index 09acecb557..83f132815a 100644
+--- a/media/libstagefright/codecs/amrnb/dec/Android.bp
++++ b/media/libstagefright/codecs/amrnb/dec/Android.bp
+@@ -48,7 +48,7 @@ cc_library_static {
+         "-DOSCL_UNUSED_ARG(x)=(void)(x)",
+         "-DOSCL_IMPORT_REF=",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     version_script: "exports.lds",
+@@ -83,7 +83,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DOSCL_IMPORT_REF=",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     version_script: "exports.lds",
+@@ -113,7 +113,7 @@ cc_test {
+ 
+     srcs: ["test/amrnbdec_test.cpp"],
+ 
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+ 
+     local_include_dirs: ["src"],
+ 
+diff --git a/media/libstagefright/codecs/amrwb/Android.bp b/media/libstagefright/codecs/amrwb/Android.bp
+index 3bc71605cb..f37ca14701 100644
+--- a/media/libstagefright/codecs/amrwb/Android.bp
++++ b/media/libstagefright/codecs/amrwb/Android.bp
+@@ -55,7 +55,7 @@ cc_library_static {
+         "-DOSCL_UNUSED_ARG(x)=(void)(x)",
+         "-DOSCL_IMPORT_REF=",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+@@ -79,7 +79,7 @@ cc_test {
+ 
+     srcs: ["test/amrwbdec_test.cpp"],
+ 
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+ 
+     static_libs: [
+         "libstagefright_amrwbdec",
+diff --git a/media/libstagefright/codecs/amrwbenc/Android.bp b/media/libstagefright/codecs/amrwbenc/Android.bp
+index 2bed93ba95..6d5b965d57 100644
+--- a/media/libstagefright/codecs/amrwbenc/Android.bp
++++ b/media/libstagefright/codecs/amrwbenc/Android.bp
+@@ -70,7 +70,7 @@ cc_library_static {
+             ],
+ 
+             cflags: [
+-                "-O3",
++                "-O3", "-g0",
+                 "-DARM",
+                 "-DASM_OPT",
+             ],
+@@ -109,7 +109,7 @@ cc_library_static {
+ 
+                 // don't actually generate neon instructions, see bug 26932980
+                 cflags: [
+-                    "-O3",
++                    "-O3", "-g0",
+                     "-DARMV7",
+                     "-mfpu=vfpv3",
+                 ],
+@@ -135,7 +135,7 @@ cc_library_static {
+         "liblog",
+     ],
+ 
+-    cflags: ["-Werror", "-O3"],
++    cflags: ["-Werror", "-O3", "-g0"],
+     sanitize: {
+         cfi: true,
+     },
+diff --git a/media/libstagefright/codecs/avcdec/Android.bp b/media/libstagefright/codecs/avcdec/Android.bp
+index 1259512fb3..fd9fec8eed 100644
+--- a/media/libstagefright/codecs/avcdec/Android.bp
++++ b/media/libstagefright/codecs/avcdec/Android.bp
+@@ -6,7 +6,7 @@ cc_library_shared {
+     srcs: ["SoftAVCDec.cpp"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+     ],
+ 
+diff --git a/media/libstagefright/codecs/avcenc/Android.bp b/media/libstagefright/codecs/avcenc/Android.bp
+index b8816f89c3..796f1e1185 100644
+--- a/media/libstagefright/codecs/avcenc/Android.bp
++++ b/media/libstagefright/codecs/avcenc/Android.bp
+@@ -13,7 +13,7 @@ cc_library_shared {
+     },
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wno-unused-variable",
+     ],
+diff --git a/media/libstagefright/codecs/common/Android.bp b/media/libstagefright/codecs/common/Android.bp
+index d8bf914697..d1cf250adb 100644
+--- a/media/libstagefright/codecs/common/Android.bp
++++ b/media/libstagefright/codecs/common/Android.bp
+@@ -13,5 +13,5 @@ cc_library {
+ 
+     export_include_dirs: ["include"],
+ 
+-    cflags: ["-Werror", "-O3"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ }
+diff --git a/media/libstagefright/codecs/hevcdec/Android.bp b/media/libstagefright/codecs/hevcdec/Android.bp
+index 342b24f30f..3d06f14f81 100644
+--- a/media/libstagefright/codecs/hevcdec/Android.bp
++++ b/media/libstagefright/codecs/hevcdec/Android.bp
+@@ -6,7 +6,7 @@ cc_library_shared {
+     srcs: ["SoftHEVC.cpp"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wno-unused-variable",
+     ],
+diff --git a/media/libstagefright/codecs/m4v_h263/dec/Android.bp b/media/libstagefright/codecs/m4v_h263/dec/Android.bp
+index 6c14436e19..84468278fc 100644
+--- a/media/libstagefright/codecs/m4v_h263/dec/Android.bp
++++ b/media/libstagefright/codecs/m4v_h263/dec/Android.bp
+@@ -53,7 +53,7 @@ cc_library_static {
+ 
+     cflags: [
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     version_script: "exports.lds",
+@@ -77,7 +77,7 @@ cc_library_shared {
+     local_include_dirs: ["src"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     static_libs: ["libstagefright_m4vh263dec"],
+diff --git a/media/libstagefright/codecs/mp3dec/Android.bp b/media/libstagefright/codecs/mp3dec/Android.bp
+index 016877a9f3..f3d3af52f7 100644
+--- a/media/libstagefright/codecs/mp3dec/Android.bp
++++ b/media/libstagefright/codecs/mp3dec/Android.bp
+@@ -72,7 +72,7 @@ cc_library_static {
+     cflags: [
+         "-DOSCL_UNUSED_ARG(x)=(void)(x)",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -111,7 +111,7 @@ cc_test {
+         "test/mp3reader.cpp",
+     ],
+ 
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+ 
+     local_include_dirs: [
+         "src",
+diff --git a/media/libstagefright/codecs/mpeg2dec/Android.bp b/media/libstagefright/codecs/mpeg2dec/Android.bp
+index 36e04c9ac8..bf6b6dd64b 100644
+--- a/media/libstagefright/codecs/mpeg2dec/Android.bp
++++ b/media/libstagefright/codecs/mpeg2dec/Android.bp
+@@ -6,7 +6,7 @@ cc_library_shared {
+     srcs: ["SoftMPEG2.cpp"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wno-unused-variable",
+     ],
+diff --git a/media/libstagefright/codecs/on2/enc/Android.bp b/media/libstagefright/codecs/on2/enc/Android.bp
+index 6dd24fd5f6..fb4000a9ff 100644
+--- a/media/libstagefright/codecs/on2/enc/Android.bp
++++ b/media/libstagefright/codecs/on2/enc/Android.bp
+@@ -8,7 +8,7 @@ cc_library_shared {
+         "SoftVP9Encoder.cpp",
+     ],
+ 
+-    cflags: ["-Wall", "-O3"],
++    cflags: ["-Wall", "-O3", "-g0"],
+ 
+     version_script: "exports.lds",
+ 
+diff --git a/media/libstagefright/codecs/xaacdec/Android.bp b/media/libstagefright/codecs/xaacdec/Android.bp
+index f76ea902fe..df10f5aa75 100644
+--- a/media/libstagefright/codecs/xaacdec/Android.bp
++++ b/media/libstagefright/codecs/xaacdec/Android.bp
+@@ -8,7 +8,7 @@ cc_library_shared {
+ 
+     cflags: [
+         "-DENABLE_MPEG_D_DRC",
+-        "-O3"
++        "-O3", "-g0"
+     ],
+ 
+     sanitize: {
+diff --git a/media/libstagefright/colorconversion/Android.bp b/media/libstagefright/colorconversion/Android.bp
+index 738617d2c2..31c89401ce 100644
+--- a/media/libstagefright/colorconversion/Android.bp
++++ b/media/libstagefright/colorconversion/Android.bp
+@@ -22,7 +22,7 @@ cc_library_static {
+ 
+     static_libs: ["libyuv_static"],
+ 
+-    cflags: ["-Werror", "-O3"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ 
+     sanitize: {
+         misc_undefined: [
+diff --git a/media/libstagefright/filters/Android.bp b/media/libstagefright/filters/Android.bp
+index 94b52efbb7..4c89daf08f 100644
+--- a/media/libstagefright/filters/Android.bp
++++ b/media/libstagefright/filters/Android.bp
+@@ -21,7 +21,7 @@ cc_library_static {
+         "-Wno-multichar",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     header_libs: [
+diff --git a/media/libstagefright/flac/dec/Android.bp b/media/libstagefright/flac/dec/Android.bp
+index 576fe370e5..96fa64be70 100644
+--- a/media/libstagefright/flac/dec/Android.bp
++++ b/media/libstagefright/flac/dec/Android.bp
+@@ -9,7 +9,7 @@ cc_library {
+ 
+     export_include_dirs: [ "." ],
+ 
+-    cflags: ["-Werror", "-O3"],
++    cflags: ["-Werror", "-O3", "-g0"],
+ 
+     sanitize: {
+         misc_undefined: [
+diff --git a/media/libstagefright/foundation/Android.bp b/media/libstagefright/foundation/Android.bp
+index 45b03dc13c..c33555ace6 100644
+--- a/media/libstagefright/foundation/Android.bp
++++ b/media/libstagefright/foundation/Android.bp
+@@ -40,7 +40,7 @@ cc_defaults {
+         "-Wno-multichar",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     shared_libs: [
+@@ -85,7 +85,7 @@ cc_defaults {
+             ],
+             cflags: [
+                 "-DNO_IMEMORY",
+-                "-O3",
++                "-O3", "-g0",
+             ],
+         },
+     },
+@@ -117,6 +117,6 @@ cc_library_static {
+         "-Werror",
+         "-Wall",
+         "-DNO_IMEMORY",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+diff --git a/media/libstagefright/http/Android.bp b/media/libstagefright/http/Android.bp
+index 3b59f0b91a..be5ce308b9 100644
+--- a/media/libstagefright/http/Android.bp
++++ b/media/libstagefright/http/Android.bp
+@@ -22,7 +22,7 @@ cc_library_shared {
+         "-Wno-multichar",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+diff --git a/media/libstagefright/mpeg2ts/Android.bp b/media/libstagefright/mpeg2ts/Android.bp
+index d1ec473d7a..4e8c0aa4f4 100644
+--- a/media/libstagefright/mpeg2ts/Android.bp
++++ b/media/libstagefright/mpeg2ts/Android.bp
+@@ -15,7 +15,7 @@ cc_library_static {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+diff --git a/media/libstagefright/omx/Android.bp b/media/libstagefright/omx/Android.bp
+index 2f6a5fef3c..205d50892c 100644
+--- a/media/libstagefright/omx/Android.bp
++++ b/media/libstagefright/omx/Android.bp
+@@ -59,7 +59,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-unused-parameter",
+@@ -107,7 +107,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-unused-parameter",
+@@ -151,7 +151,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-unused-parameter",
+@@ -172,7 +172,7 @@ cc_defaults {
+     vendor_available: true,
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+     ],
+ 
+@@ -230,6 +230,6 @@ cc_library_shared {
+         ],
+         cfi: true,
+     },
+-    cflags: ["-Wall", "-Werror", "-O3"],
++    cflags: ["-Wall", "-Werror", "-O3", "-g0"],
+ }
+ 
+diff --git a/media/libstagefright/rtsp/Android.bp b/media/libstagefright/rtsp/Android.bp
+index a80a913b4d..336008a9c1 100644
+--- a/media/libstagefright/rtsp/Android.bp
++++ b/media/libstagefright/rtsp/Android.bp
+@@ -32,14 +32,14 @@ cc_defaults {
+ 
+     arch: {
+         arm: {
+-            cflags: ["-Wno-psabi", "-O3"],
++            cflags: ["-Wno-psabi", "-O3", "-g0"],
+         },
+     },
+ 
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+@@ -96,7 +96,7 @@ cc_test {
+         "-Wno-multichar",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+diff --git a/media/libstagefright/webm/Android.bp b/media/libstagefright/webm/Android.bp
+index 34c2248be4..5cb0667df8 100644
+--- a/media/libstagefright/webm/Android.bp
++++ b/media/libstagefright/webm/Android.bp
+@@ -1,12 +1,12 @@
+ cc_library_static {
+     name: "libstagefright_webm",
+ 
+-    cppflags: ["-D__STDINT_LIMITS", "-O3"],
++    cppflags: ["-D__STDINT_LIMITS", "-O3", "-g0"],
+ 
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     sanitize: {
+diff --git a/media/mediaserver/Android.bp b/media/mediaserver/Android.bp
+index f51c049fe0..22e5f78c56 100644
+--- a/media/mediaserver/Android.bp
++++ b/media/mediaserver/Android.bp
+@@ -6,7 +6,7 @@ cc_library_static {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ }
+ 
+@@ -46,7 +46,7 @@ cc_binary {
+     cflags: [
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     vintf_fragments: ["manifest_media_c2_software.xml"],
+diff --git a/media/mtp/Android.bp b/media/mtp/Android.bp
+index d47c9cf1d7..5489b7f38b 100644
+--- a/media/mtp/Android.bp
++++ b/media/mtp/Android.bp
+@@ -45,7 +45,7 @@ cc_library_shared {
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     shared_libs: [
+         "libasyncio",
+diff --git a/media/ndk/Android.bp b/media/ndk/Android.bp
+index 59181337aa..87a7245c89 100644
+--- a/media/ndk/Android.bp
++++ b/media/ndk/Android.bp
+@@ -72,7 +72,7 @@ cc_library_shared {
+         "-DEXPORT=__attribute__((visibility(\"default\")))",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     static_libs: [
+@@ -150,7 +150,7 @@ cc_library {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wno-error=deprecated-declarations",
+         "-Wall",
+@@ -192,7 +192,7 @@ cc_test {
+ 
+     cflags: [
+         "-D__ANDROID_VNDK__",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     include_dirs: [
+         "frameworks/av/media/ndk/",
+diff --git a/media/utils/Android.bp b/media/utils/Android.bp
+index a093d8caab..7f746d5b58 100644
+--- a/media/utils/Android.bp
++++ b/media/utils/Android.bp
+@@ -43,7 +43,7 @@ cc_library {
+     logtags: ["EventLogTags.logtags"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+diff --git a/services/audioflinger/Android.bp b/services/audioflinger/Android.bp
+index 8980996b42..23bb3222b0 100644
+--- a/services/audioflinger/Android.bp
++++ b/services/audioflinger/Android.bp
+@@ -72,7 +72,7 @@ cc_library_shared {
+         "-fvisibility=hidden",
+         "-Werror",
+         "-Wall",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     sanitize: {
+         integer_overflow: true,
+diff --git a/services/camera/libcameraservice/Android.bp b/services/camera/libcameraservice/Android.bp
+index 6af3326cb5..8464e51196 100644
+--- a/services/camera/libcameraservice/Android.bp
++++ b/services/camera/libcameraservice/Android.bp
+@@ -159,7 +159,7 @@ cc_library_shared {
+     export_include_dirs: ["."],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wextra",
+         "-Werror",
+diff --git a/services/mediacodec/Android.bp b/services/mediacodec/Android.bp
+index cd2b276cdb..f8a2f243f0 100644
+--- a/services/mediacodec/Android.bp
++++ b/services/mediacodec/Android.bp
+@@ -34,7 +34,7 @@ cc_binary {
+     init_rc: ["mediaswcodec.rc"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-error=deprecated-declarations",
+@@ -124,7 +124,7 @@ cc_binary {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+         "-Wno-error=deprecated-declarations",
+diff --git a/services/mediaextractor/Android.bp b/services/mediaextractor/Android.bp
+index 8fe71f3e01..8012035ae1 100644
+--- a/services/mediaextractor/Android.bp
++++ b/services/mediaextractor/Android.bp
+@@ -4,7 +4,7 @@ cc_library_shared {
+     cflags: [
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+     srcs: ["MediaExtractorService.cpp"],
+ 
+@@ -55,7 +55,7 @@ cc_binary {
+     cflags: [
+         "-Wall",
+         "-Werror",
+-        "-O3",
++        "-O3", "-g0",
+     ],
+ 
+     required: ["mediaextractor.policy"],
+diff --git a/services/mediametrics/Android.bp b/services/mediametrics/Android.bp
+index ab66831e62..e5305a5f5e 100644
+--- a/services/mediametrics/Android.bp
++++ b/services/mediametrics/Android.bp
+@@ -55,7 +55,7 @@ cc_defaults {
+     // https://clang.llvm.org/docs/UsersManual.html#command-line-options
+     // https://clang.llvm.org/docs/DiagnosticsReference.html
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Wall",
+         "-Wdeprecated",
+         "-Werror",
+diff --git a/services/mediatranscoding/Android.bp b/services/mediatranscoding/Android.bp
+index aaadce20c6..46de0aaa30 100644
+--- a/services/mediatranscoding/Android.bp
++++ b/services/mediatranscoding/Android.bp
+@@ -17,7 +17,7 @@ cc_library_shared {
+     ],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+@@ -60,7 +60,7 @@ cc_binary {
+     init_rc: ["mediatranscoding.rc"],
+ 
+     cflags: [
+-        "-O3",
++        "-O3", "-g0",
+         "-Werror",
+         "-Wall",
+     ],
+diff --git a/services/minijail/Android.bp b/services/minijail/Android.bp
+index b482258488..6634e224f0 100644
+--- a/services/minijail/Android.bp
++++ b/services/minijail/Android.bp
+@@ -1,7 +1,7 @@
+ minijail_common_cflags = [
+     "-Wall",
+     "-Werror",
+-    "-O3",
++    "-O3", "-g0",
+ ]
+ 
+ cc_defaults {
+-- 
+2.25.1
+

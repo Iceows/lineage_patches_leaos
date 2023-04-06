@@ -1,0 +1,269 @@
+From 7dcfad0d7034bb39cc45abd228a656ab7a433466 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 20 Jan 2022 09:43:53 +0000
+Subject: [PATCH 224/230] add wallpaper swipe zooming overlays
+
+---
+ packages/overlays/Android.mk                  | 32 ++++++++++---------
+ .../Wallpaper100ZoomOverlay/Android.mk        | 30 +++++++++++++++++
+ .../AndroidManifest.xml                       | 24 ++++++++++++++
+ .../res/values/dimens.xml                     | 22 +++++++++++++
+ .../Wallpaper120ZoomOverlay/Android.mk        | 30 +++++++++++++++++
+ .../AndroidManifest.xml                       | 24 ++++++++++++++
+ .../res/values/dimens.xml                     | 22 +++++++++++++
+ 7 files changed, 169 insertions(+), 15 deletions(-)
+ create mode 100644 packages/overlays/Wallpaper100ZoomOverlay/Android.mk
+ create mode 100644 packages/overlays/Wallpaper100ZoomOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/Wallpaper100ZoomOverlay/res/values/dimens.xml
+ create mode 100644 packages/overlays/Wallpaper120ZoomOverlay/Android.mk
+ create mode 100644 packages/overlays/Wallpaper120ZoomOverlay/AndroidManifest.xml
+ create mode 100644 packages/overlays/Wallpaper120ZoomOverlay/res/values/dimens.xml
+
+diff --git a/packages/overlays/Android.mk b/packages/overlays/Android.mk
+index cf7052002c1..4db93e3e664 100644
+--- a/packages/overlays/Android.mk
++++ b/packages/overlays/Android.mk
+@@ -34,7 +34,7 @@ LOCAL_REQUIRED_MODULES := \
+ 	AccentColorTangerineOverlay \
+ 	DisplayCutoutEmulationCornerOverlay \
+ 	DisplayCutoutEmulationDoubleOverlay \
+-    DisplayCutoutEmulationHoleOverlay \
++	DisplayCutoutEmulationHoleOverlay \
+ 	DisplayCutoutEmulationTallOverlay \
+ 	DisplayCutoutEmulationWaterfallOverlay \
+ 	FontAlegreyaSansOverlay \
+@@ -69,20 +69,20 @@ LOCAL_REQUIRED_MODULES := \
+ 	IconPackCircularSystemUIOverlay \
+ 	IconPackCircularThemePickerOverlay \
+ 	IconPackVictorAndroidOverlay \
+-    IconPackVictorLauncherOverlay \
+-    IconPackVictorSettingsOverlay \
+-    IconPackVictorSystemUIOverlay \
+-    IconPackVictorThemePickerOverlay \
+-    IconPackSamAndroidOverlay \
+-    IconPackSamLauncherOverlay \
+-    IconPackSamSettingsOverlay \
+-    IconPackSamSystemUIOverlay \
+-    IconPackSamThemePickerOverlay \
+-    IconPackKaiAndroidOverlay \
+-    IconPackKaiLauncherOverlay \
+-    IconPackKaiSettingsOverlay \
+-    IconPackKaiSystemUIOverlay \
+-    IconPackKaiThemePickerOverlay \
++	IconPackVictorLauncherOverlay \
++	IconPackVictorSettingsOverlay \
++	IconPackVictorSystemUIOverlay \
++	IconPackVictorThemePickerOverlay \
++	IconPackSamAndroidOverlay \
++	IconPackSamLauncherOverlay \
++	IconPackSamSettingsOverlay \
++	IconPackSamSystemUIOverlay \
++	IconPackSamThemePickerOverlay \
++	IconPackKaiAndroidOverlay \
++	IconPackKaiLauncherOverlay \
++	IconPackKaiSettingsOverlay \
++	IconPackKaiSystemUIOverlay \
++	IconPackKaiThemePickerOverlay \
+ 	IconPackFilledAndroidOverlay \
+ 	IconPackFilledLauncherOverlay \
+ 	IconPackFilledSettingsOverlay \
+@@ -156,6 +156,8 @@ LOCAL_REQUIRED_MODULES := \
+ 	UIcorners16dpOverlay \
+ 	UIcorners20dpOverlay \
+ 	UIcorners24dpOverlay \
++	Wallpaper100ZoomOverlay \
++	Wallpaper120ZoomOverlay \
+ 	preinstalled-packages-platform-overlays.xml
+ 
+ include $(BUILD_PHONY_PACKAGE)
+diff --git a/packages/overlays/Wallpaper100ZoomOverlay/Android.mk b/packages/overlays/Wallpaper100ZoomOverlay/Android.mk
+new file mode 100644
+index 00000000000..88d3e77fa8a
+--- /dev/null
++++ b/packages/overlays/Wallpaper100ZoomOverlay/Android.mk
+@@ -0,0 +1,30 @@
++#
++#  Copyright 2019, The Android Open Source Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := Wallpaper100Zoom
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := Wallpaper100ZoomOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/Wallpaper100ZoomOverlay/AndroidManifest.xml b/packages/overlays/Wallpaper100ZoomOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..7d8fbc63bfb
+--- /dev/null
++++ b/packages/overlays/Wallpaper100ZoomOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.wallpaperzoom100"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.wallpaperzoom" android:priority="1"/>
++    <application android:label="Disabled" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/Wallpaper100ZoomOverlay/res/values/dimens.xml b/packages/overlays/Wallpaper100ZoomOverlay/res/values/dimens.xml
+new file mode 100644
+index 00000000000..6d164246d2b
+--- /dev/null
++++ b/packages/overlays/Wallpaper100ZoomOverlay/res/values/dimens.xml
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (c) 2020, CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <!-- The max scale for the wallpaper when it's zoomed in -->
++    <item name="config_wallpaperMaxScale" format="float" type="dimen">1</item>
++</resources>
+diff --git a/packages/overlays/Wallpaper120ZoomOverlay/Android.mk b/packages/overlays/Wallpaper120ZoomOverlay/Android.mk
+new file mode 100644
+index 00000000000..88963852e5e
+--- /dev/null
++++ b/packages/overlays/Wallpaper120ZoomOverlay/Android.mk
+@@ -0,0 +1,30 @@
++#
++#  Copyright 2019, The Android Open Source Project
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++LOCAL_PATH:= $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_RRO_THEME := Wallpaper120Zoom
++
++LOCAL_PRODUCT_MODULE := true
++
++LOCAL_SRC_FILES := $(call all-subdir-java-files)
++
++LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
++
++LOCAL_PACKAGE_NAME := Wallpaper120ZoomOverlay
++LOCAL_SDK_VERSION := current
++
++include $(BUILD_RRO_PACKAGE)
+diff --git a/packages/overlays/Wallpaper120ZoomOverlay/AndroidManifest.xml b/packages/overlays/Wallpaper120ZoomOverlay/AndroidManifest.xml
+new file mode 100644
+index 00000000000..2e665992dde
+--- /dev/null
++++ b/packages/overlays/Wallpaper120ZoomOverlay/AndroidManifest.xml
+@@ -0,0 +1,24 @@
++<!--
++/**
++ * Copyright (c) 2019, The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.android.theme.wallpaperzoom120"
++    android:versionCode="1"
++    android:versionName="1.0">
++    <overlay android:targetPackage="android" android:category="android.theme.customization.wallpaperzoom" android:priority="1"/>
++    <application android:label="120" android:hasCode="false"/>
++</manifest>
+diff --git a/packages/overlays/Wallpaper120ZoomOverlay/res/values/dimens.xml b/packages/overlays/Wallpaper120ZoomOverlay/res/values/dimens.xml
+new file mode 100644
+index 00000000000..42d0f0059a8
+--- /dev/null
++++ b/packages/overlays/Wallpaper120ZoomOverlay/res/values/dimens.xml
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++/**
++ * Copyright (c) 2020, CAOS Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++-->
++<resources>
++    <!-- The max scale for the wallpaper when it's zoomed in -->
++    <item name="config_wallpaperMaxScale" format="float" type="dimen">1.20</item>
++</resources>
+-- 
+2.25.1
+

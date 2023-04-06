@@ -1,0 +1,31 @@
+From 968a43f07d9a30ce0c0199ee41ac5e4fa189ab39 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Sun, 13 Dec 2020 04:55:40 -0500
+Subject: [PATCH 09/80] tweaks for Xiaomi Redmi 'angelican' and 'dandelion'
+
+---
+ rw-system.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index b8ca1c1..3f6efdd 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -380,12 +380,12 @@ if getprop ro.vendor.build.fingerprint | grep -q -i \
+     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
+     -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
+     -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine \
+-    -e Redmi/lancelot -e Redmi/galahad -e Redmi/merlin; then
++    -e Redmi/lancelot -e Redmi/galahad -e Redmi/merlin -e Redmi/angelican -e Redmi/dandelion; then
+     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+ fi
+ 
+ #Xiaomi Redmi Note 9, Redmi 9 (Prime)
+-if getprop ro.vendor.build.fingerprint |grep -qi -e Redmi/merlin -e Redmi/lancelot; then
++if getprop ro.vendor.build.fingerprint |grep -qi -e Redmi/merlin -e Redmi/lancelot -e Redmi/angelican -e Redmi/dandelion; then
+     setprop persist.sys.overlay.devinputjack true
+ fi
+ 
+-- 
+2.25.1
+

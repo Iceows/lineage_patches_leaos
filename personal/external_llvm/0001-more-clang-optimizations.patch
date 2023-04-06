@@ -1,0 +1,31 @@
+From bc89ddd8c3b7fa874ed62483e2588fd9796b1622 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:57:13 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: I55ad08fd7b5b8a846ca3619a36401e27b83fd6fa
+---
+ Android.bp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 432340a9e9..4d0df72b46 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -38,11 +38,13 @@ llvm_defaults {
+         "-Wwrite-strings",
+         "-Werror",
+         "-Dsprintf=sprintf",
++        "-O3", "-g0",
+     ],
+ 
+     cppflags: [
+         "-Wno-sign-promo",
+         "-std=c++11",
++        "-O3", "-g0",
+     ],
+ 
+     tidy_checks: [
+-- 
+2.30.2
+

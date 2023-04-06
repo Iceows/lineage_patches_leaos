@@ -1,0 +1,25 @@
+From 701ac5c0056d00a745f7b8f73d1d68efeb68ee9b Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:36:05 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: Ic18b73d2813401ee57169b56134779d7c1327093
+---
+ Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Android.bp b/Android.bp
+index 71b6fb6a2..853e38029 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -60,6 +60,7 @@ cc_library_shared {
+         "-Wno-sign-conversion",
+         "-Wno-unused-private-field",
+         "-DENABLE_HLSL",
++        "-O3", "-g0",
+     ],
+ 
+     sdk_version: "27",
+-- 
+2.30.2
+

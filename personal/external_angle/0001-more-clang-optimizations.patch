@@ -1,0 +1,289 @@
+From 069c3b55d0edb6feedacc2f3381b5ad667464061 Mon Sep 17 00:00:00 2001
+From: Victor Bo <bvoid@yandex.ru>
+Date: Thu, 12 Aug 2021 22:27:16 +0000
+Subject: [PATCH] more clang optimizations
+
+Change-Id: Ie663f171a2eb6c4b0170f0cca76c667feba9ba2a
+---
+ Android.bp | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 517898091..c86cf1769 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -51,6 +51,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+ }
+ cc_library_shared {
+@@ -113,6 +114,7 @@ cc_library_shared {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_jsoncpp",
+@@ -183,6 +185,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -291,6 +294,7 @@ cc_library_shared {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -397,6 +401,7 @@ cc_library_shared {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -433,6 +438,7 @@ cc_defaults {
+     sdk_version: "28",
+     cflags: [
+         "-Wno-unknown-warning-option",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_volk",
+@@ -478,6 +484,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_vulkan_headers",
+@@ -523,6 +530,7 @@ cc_defaults {
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_volk",
+@@ -573,6 +581,7 @@ cc_defaults {
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_vulkan_memory_allocator",
+@@ -698,6 +707,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_spvtools_headers",
+@@ -867,6 +877,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+ }
+ cc_genrule {
+@@ -969,6 +980,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+ }
+ cc_library_static {
+@@ -1050,6 +1062,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_spv_headers",
+@@ -1217,6 +1230,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_spvtools_headers",
+@@ -1334,6 +1348,7 @@ cc_defaults {
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
++        "-O3", "-g0",    
+     ],
+ }
+ cc_defaults {
+@@ -1394,6 +1409,7 @@ cc_defaults {
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
+         "-Wno-unused-variable",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_glslang_sources",
+@@ -1470,6 +1486,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_glslang_default_resource_limits_sources",
+@@ -1621,6 +1638,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_glslang_wrapper",
+@@ -1711,6 +1729,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_translator_headers",
+@@ -1900,6 +1919,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -1963,6 +1983,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -2044,6 +2065,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_translator_headers",
+@@ -2117,6 +2139,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     arch: {
+         arm64: {
+@@ -2193,6 +2216,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_image_util_headers",
+@@ -2256,6 +2280,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+ }
+ cc_library_static {
+@@ -2315,6 +2340,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_vulkan_headers",
+@@ -2380,6 +2406,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     arch: {
+         arm64: {
+@@ -2444,6 +2471,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     arch: {
+         arm64: {
+@@ -2532,6 +2560,7 @@ cc_library_static {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -2776,6 +2805,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+@@ -2883,6 +2913,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_libANGLE_base",
+@@ -2945,6 +2976,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     arch: {
+         arm64: {
+@@ -3019,6 +3051,7 @@ cc_defaults {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     arch: {
+         arm64: {
+@@ -3139,6 +3172,7 @@ cc_library_shared {
+         "-Wno-unknown-warning-option",
+         "-Wno-unneeded-internal-declaration",
+         "-Wno-unused-parameter",
++        "-O3", "-g0",    
+     ],
+     defaults: [
+         "angle_includes",
+-- 
+2.30.2
+

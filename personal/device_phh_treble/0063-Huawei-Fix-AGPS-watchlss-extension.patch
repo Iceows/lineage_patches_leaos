@@ -1,0 +1,42 @@
+From 32f252c620bd05ce7be73b0af0d6e7e2f263b144 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Apr 2023 08:11:45 +0200
+Subject: [PATCH 1/2] Huawei - Fix AGPS watchlss extension
+
+Fix bad AGPS logspams, process vendor watchlss
+Fix sdcard permission
+---
+ rw-system.sh | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index 80e0f92..f9569dc 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -583,16 +583,16 @@ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/merlin; then
+     setprop debug.sf.enable_hwc_vds 0
+ fi
+ 
++# Iceows patch - NFC NXP conf remove, you must set by specify model patch
+ if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
+-    p=/product/etc/nfc/libnfc_nxp_*_*.conf
+-    mount -o bind "$p" /system/etc/libnfc-nxp.conf ||
+-        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
++    setprop debug.sf.latch_unsignaled 1
+ 
+-    p=/product/etc/nfc/libnfc_brcm_*_*.conf
+-    mount -o bind "$p" /system/etc/libnfc-brcm.conf ||
+-        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
++    # Set proper /sdcard permissions to avoid dead storage
++    chown media_rw:media_rw /data/media/0
++    chmod 0770 /data/media/0
+ 
+-    mount -o bind /system/phh/libnfc-nci-huawei.conf /system/etc/libnfc-nci.conf
++    # Disable this watchlss extension to fix logspams and dead gps
++    mount -o bind /system/phh/empty /vendor/bin/gnss_watchlssd_thirdparty
+ fi
+ 
+ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" -e ".*(SC-0[23]K|SCV3[89]).*" && [ "$vndk" -lt 28 ]; then
+-- 
+2.25.1
+
