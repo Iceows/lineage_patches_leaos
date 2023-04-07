@@ -1,0 +1,35 @@
+From 9ae6f135b8331412f564c43401be1d050a501c92 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Apr 2023 21:29:59 +0200
+Subject: [PATCH] Rename securize to safetynet
+
+---
+ phh-prop-handler.sh | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index fe55da6..95cc07b 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -234,8 +234,8 @@ if [ "$1" == "persist.sys.phh.root" ]; then
+     exit
+ fi
+ 
+-#securize
+-if [ "$1" == "persist.sys.phh.securize" ]; then
++#safetynet/securize
++if [ "$1" == "persist.sys.phh.safetynet" ]; then
+     if [[ "$prop_value" != "true" ]]; then
+         exit 1
+     fi
+@@ -248,6 +248,7 @@ if [ "$1" == "persist.sys.phh.securize" ]; then
+     exit
+ fi
+ 
++
+ #pixel5props
+ if [ "$1" == "persist.sys.phh.pixelprops" ]; then
+     if [[ "$prop_value" != "true" ]]; then
+-- 
+2.25.1
+

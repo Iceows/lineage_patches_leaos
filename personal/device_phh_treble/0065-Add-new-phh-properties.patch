@@ -1,0 +1,143 @@
+From 0397fcb50ab04cbe7aa48776f44c47b2e46130f8 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Apr 2023 13:32:41 +0200
+Subject: [PATCH 1/2] Add new phh properties
+
+rename persist.sys.phh.safetynet to persist.sys.phh.securize
+add  sys.phh.restart_sysui
+add sys.phh.dump_logs
+---
+ phh-prop-handler.sh | 64 ++++++++++++++++++++++++++++++++++++++-------
+ phh-securize.sh     |  2 ++
+ 2 files changed, 56 insertions(+), 10 deletions(-)
+
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 5166dd4..fe55da6 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -52,6 +52,15 @@ xiaomi_toggle_dt2w_event_node() {
+     return 1
+ }
+ 
++xiaomi_toggle_dt2w_ioctl() {
++    if [ -c "/dev/xiaomi-touch" ]; then
++        echo "Trying to set dt2w mode with ioctl on /dev/xiaomi-touch"
++        # 14 - Touch_Doubletap_Mode
++        xiaomi-touch 14 "$1"
++        return
++    fi
++    return 1
++}
+ 
+ restartAudio() {
+     setprop ctl.restart audioserver
+@@ -66,11 +75,12 @@ if [ "$1" == "persist.sys.phh.xiaomi.dt2w" ]; then
+         exit 1
+     fi
+ 
+-    if ! xiaomi_toggle_dt2w_proc_node "$prop_value"; then
+-        # Fallback to event node method
+-        xiaomi_toggle_dt2w_event_node "$prop_value"
+-    fi
+-    exit $?
++    xiaomi_toggle_dt2w_proc_node "$prop_value"
++    # Fallback to event node method
++    xiaomi_toggle_dt2w_event_node "$prop_value"
++    # Fallback to ioctl method
++    xiaomi_toggle_dt2w_ioctl "$prop_value"
++    exit
+ fi
+ 
+ if [ "$1" == "persist.sys.phh.oppo.dt2w" ]; then
+@@ -185,15 +195,23 @@ if [ "$1" == "persist.sys.phh.backlight.scale" ];then
+     exit
+ fi
+ 
+-if [ "$1" == "persist.sys.phh.qin.dt2w" ];then
++if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
+     if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
+         exit 1
+     fi
+ 
+-    echo "$prop_value" > /sys/devices/platform/soc/soc:ap-apb/70800000.i2c/i2c-3/3-0038/fts_gesture_mode
++    if [[ "$prop_value" == 1 ]];then
++        mount /system/phh/empty /vendor/lib/soundfx/libvolumelistener.so
++        mount /system/phh/empty /vendor/lib64/soundfx/libvolumelistener.so
++    else
++        umount /vendor/lib/soundfx/libvolumelistener.so
++        umount /vendor/lib64/soundfx/libvolumelistener.so
++    fi
++    restartAudio
+     exit
+ fi
+ 
++
+ #root
+ if [ "$1" == "persist.sys.phh.root" ]; then
+     if [[ "$prop_value" != "false" && "$prop_value" != "true" ]] || [ -d /sbin/.magisk ]; then
+@@ -216,8 +234,8 @@ if [ "$1" == "persist.sys.phh.root" ]; then
+     exit
+ fi
+ 
+-#safetynet
+-if [ "$1" == "persist.sys.phh.safetynet" ]; then
++#securize
++if [ "$1" == "persist.sys.phh.securize" ]; then
+     if [[ "$prop_value" != "true" ]]; then
+         exit 1
+     fi
+@@ -242,9 +260,10 @@ if [ "$1" == "persist.sys.phh.pixelprops" ]; then
+     exit
+ fi
+ 
++
+ #autorun
+ if [ "$1" == "persist.sys.phh.autorun" ]; then
+-    if [[ "$prop_value" != "true" ]]; then
++    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
+         exit 1
+     fi
+ 
+@@ -273,3 +292,28 @@ if [ "$1" == "persist.sys.phh.nolog" ]; then
+     fi
+     exit
+ fi
++
++#restart_sysui
++if [ "$1" == "sys.phh.restart_sysui" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        pkill systemui
++    fi
++    exit
++fi
++
++#dump_logs
++if [ "$1" == "sys.phh.dump_logs" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        logcat -b all -d > /sdcard/logs.txt
++    fi
++    exit
++fi
++
+diff --git a/phh-securize.sh b/phh-securize.sh
+index 0b361b5..80b46d7 100644
+--- a/phh-securize.sh
++++ b/phh-securize.sh
+@@ -33,4 +33,6 @@ rm -Rf $SYSTEM/{app,priv-app}/me.phh.superuser/
+ rm -Rf /data/su || true
+ mount -o remount,ro $MOUNTPOINT
+ sync
++mkdir /metadata/phh
++touch /metadata/phh/secure
+ reboot
+-- 
+2.25.1
+
