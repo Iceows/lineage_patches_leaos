@@ -1,21 +1,21 @@
-From 1d1171da0caffbef9249b8f095f0b625a5a231ac Mon Sep 17 00:00:00 2001
+From 99e248f9ded092f43c1e04ebffe4b4a1636bb008 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Tue, 20 Dec 2022 06:21:10 +0100
-Subject: [PATCH 6/8] Fix a lot of Huawei EMUI9 denied under android 13
+Date: Tue, 25 Apr 2023 07:49:26 +0200
+Subject: [PATCH] Huawei - Add selinux denied rules on EMUI 9.1
 
-Fix tee denied (hisuite)
-Add support off splash2 Huawei logging
-Authorize a lot of process to read properties
-Fix various denied
+Allows you to pass almost all the selinux rules on a Huawei phone under EMUI 9
 ---
- sepolicy/huawei.te | 161 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 158 insertions(+), 3 deletions(-)
+ sepolicy/huawei.te         | 210 ++++++++++++++++++++++++++++++++++++-
+ sepolicy/phh.te            |   4 +
+ sepolicy/property_contexts |  10 +-
+ sepolicy/vold.te           |   4 +
+ 4 files changed, 224 insertions(+), 4 deletions(-)
 
 diff --git a/sepolicy/huawei.te b/sepolicy/huawei.te
-index 2988ed6..d5c89a7 100644
+index 2988ed6..4cabd78 100644
 --- a/sepolicy/huawei.te
 +++ b/sepolicy/huawei.te
-@@ -6,9 +6,9 @@ type dmd_device, file_type;
+@@ -6,14 +6,15 @@ type dmd_device, file_type;
  allow hal_fingerprint_server dmd_device:chr_file rw_file_perms;
  allow hal_fingerprint_server sysfs:file rw_file_perms;
  allow tee hal_fingerprint_default:process { getattr };
@@ -28,7 +28,13 @@ index 2988ed6..d5c89a7 100644
  
  type oeminfo_nvm, domain;
  type oeminfo_nvm_device, file_type;
-@@ -35,3 +35,158 @@ allowxperm vendor_init { teecd_data_file }:dir ioctl {
+ allowxperm oeminfo_nvm oeminfo_nvm_device:blk_file ioctl { 0x1260 };
+ 
++# offline charging
+ allow charger rootfs:file { ioctl read getattr lock map execute entrypoint open };
+ 
+ # This is use exclusively for init to relabel /dev/selinux from tmpfs to device
+@@ -35,3 +36,206 @@ allowxperm vendor_init { teecd_data_file }:dir ioctl {
  type sys_block_mmcblk0, file_type;
  allow init sys_block_mmcblk0:lnk_file read;
  allow init sysfs_zram:lnk_file read;
@@ -48,9 +54,23 @@ index 2988ed6..d5c89a7 100644
 +allow installd splash2_data_file:filesystem { quotaget };
 +allow rild splash2_data_file:dir rw_dir_perms;
 +allow rild splash2_data_file:file rw_file_perms;
-+allow kernel splash2_data_file:dir { rw_dir_perms create setattr };
-+allow kernel splash2_data_file:file rw_file_perms;
++allow kernel splash2_data_file:dir { rw_dir_perms create setattr rmdir };
++allow kernel splash2_data_file:file { rw_file_perms create unlink setattr };
 +
++# Add support off modem Huawei firmware and nv file
++type mnt_modem_file, file_type;  
++type modem_log_file, file_type;
++type modem_secure_file, file_type;
++type modem_fw_file, file_type;
++type modem_nv_file, file_type;
++
++allow fsck mnt_modem_file:dir r_dir_perms;
++allow fsck modem_log_file:dir r_dir_perms;
++allow fsck modem_secure_file:dir r_dir_perms;
++allow fsck modem_fw_file:dir r_dir_perms;
++allow fsck modem_nv_file:dir r_dir_perms;
++
++allow gmscore_app mnt_modem_file:dir r_dir_perms;
 +
 +# Fix CPU gouvernor (rules are in xml file)
 +type hwemerffu_service, domain;
@@ -58,7 +78,6 @@ index 2988ed6..d5c89a7 100644
 +
 +
 +# Fix all SEdenied
-+# allow vold modem_secure_file:filesystem { unmount };
 +
 +type hinetmanager, fs_type, sysfs_type;
 +allow netutils_wrapper hinetmanager:fd { use };
@@ -75,7 +94,7 @@ index 2988ed6..d5c89a7 100644
 +allow init sysfs_led:file { setattr };
 +
 +
-+#allow crash_dump bluetooth_data_file:file r_dir_perms;
++#allow crash_dump bluetooth_data_file:file rw_file_perms;
 +#allow crash_dump resourcecache_data_file:file { read open };
 +
 +allow vold sys_block_mmcblk0:file { write };
@@ -107,8 +126,7 @@ index 2988ed6..d5c89a7 100644
 +allow rild system_data_file:lnk_file { read };
 +allow kernel system_data_root_file:dir r_dir_perms;
 +allow kernel system_data_root_file:file rw_file_perms;
-+allow kernel unlabeled:file { read open };
-+
++allow kernel unlabeled:file r_file_perms;
 +
 +allow hi110x_daemon rootfs:dir { open read };
 +allow hi110x_daemon self:fifo_file { ioctl };
@@ -128,6 +146,17 @@ index 2988ed6..d5c89a7 100644
 +allow kernel sysfs_devices_system_cpu:file rw_file_perms;
 +allow network_stack fs_bpf:file rw_file_perms;
 +
++
++type hi110x_cust_data_file, file_type; 
++allow wpa_hisi hi110x_cust_data_file:dir r_dir_perms;
++
++
++allow kernel anr_data_file:dir r_dir_perms;
++allow bootanim system_data_file:dir r_dir_perms;
++
++allow priv_app gmscore_app:file { read };
++
++
 +# OTPERASE = 0x4d19
 +allowxperm oeminfo_nvm device:blk_file ioctl {
 +  0x4d19
@@ -144,9 +173,30 @@ index 2988ed6..d5c89a7 100644
 +  BLKDISCARDZEROES
 +};
 +
-+
 +allow shell self:netlink_kobject_uevent_socket { create setopt getopt bind read };
 +allow init self:netlink_kobject_uevent_socket { create setopt getopt bind read };
++
++
++allow priv_app metadata_file:dir { read };
++
++# DRM
++type hal_drm_widevine, domain;
++allow hal_drm_widevine shell_data_file:dir { search };
++allow hal_drm_widevine shell_test_data_file:dir { search };
++
++# AGPS-Supl 2.0 Huawei
++type hi110x_vendor_file, file_type;
++allow system_app hi110x_vendor_file:file r_file_perms;
++
++# For huawei EMUI 9 logging
++type dft_syshwdebug_prop, property_type;
++get_prop(rild, dft_syshwdebug_prop)
++get_prop(hal_nfc_default, dft_syshwdebug_prop)
++get_prop(hal_audio_default, dft_syshwdebug_prop)
++
++# Camera
++type cameradaemon_prop, property_type;
++get_prop(priv_app, cameradaemon_prop)
 +
 +
 +# Authorize a lot of process to read default, config and system prop
@@ -154,8 +204,16 @@ index 2988ed6..d5c89a7 100644
 +type hal_camera_default, domain;
 +type hal_audio_default, domain;
 +type hal_keymaster_default, domain;
-+type hal_drm_widevine, domain;
++type hal_nfc_default, domain;
++type hi110x_daemon, domain;
++type wpa_hisi, domain;
++type aptouch_daemon, domain;
++type gpsdaemon, domain;
++type atcmdserver, domain;
++type hisecd, domain;
++type storage_info, domain;
 +
++get_prop(system_app, cameradaemon_prop)
 +get_prop(rild, config_prop)
 +get_prop(rild, system_prop)
 +get_prop(hal_health_default, default_prop)
@@ -168,18 +226,11 @@ index 2988ed6..d5c89a7 100644
 +get_prop(hal_audio_default, system_prop)
 +get_prop(hal_keymaster_default, config_prop)
 +get_prop(hal_drm_widevine, default_prop)
-+
-+type hi110x_daemon, domain;
-+type wpa_hisi, domain;
-+type aptouch_daemon, domain;
-+type gpsdaemon, domain;
-+type atcmdserver, domain;
-+
-+type hisecd, domain;
-+type storage_info, domain;
-+
++get_prop(hal_nfc_default, system_prop)
 +get_prop(hi110x_daemon, default_prop)
 +get_prop(wpa_hisi, default_prop)
++get_prop(wpa_hisi, config_prop)
++get_prop(wpa_hisi, system_prop)
 +get_prop(aptouch_daemon, system_prop)
 +get_prop(gpsdaemon, default_prop)
 +get_prop(oeminfo_nvm, default_prop)
@@ -187,6 +238,49 @@ index 2988ed6..d5c89a7 100644
 +get_prop(hisecd, default_prop)
 +get_prop(mediaserver, vendor_default_prop)
 +get_prop(storage_info, default_prop)
++get_prop(audioserver, vendor_default_prop)
++
++
+diff --git a/sepolicy/phh.te b/sepolicy/phh.te
+index 9e233c3..c4ae324 100644
+--- a/sepolicy/phh.te
++++ b/sepolicy/phh.te
+@@ -15,3 +15,7 @@ allow phhsu_daemon userdata_block_device:blk_file ioctl;
+ allowxperm phhsu_daemon userdata_block_device:blk_file ioctl { 0x1278 0x127a };
+ 
+ allow kernel gsi_data_file:file rw_file_perms;
++
++allow phhsu_daemon self:capability { fsetid };
++allow phhsu_daemon kernel:system { syslog_console };
++allow phhsu_daemon dmd_device:chr_file { setattr };
+diff --git a/sepolicy/property_contexts b/sepolicy/property_contexts
+index 185a08b..2f22579 100644
+--- a/sepolicy/property_contexts
++++ b/sepolicy/property_contexts
+@@ -1,2 +1,10 @@
+ persist.sys.sf.hs_mode         u:object_r:sf_hs_mode_prop:s0
+-hwc.exynos.vsync_mode      u:object_r:vendor_hwc_prop:s0
++hwc.exynos.vsync_mode          u:object_r:vendor_hwc_prop:s0
++
++# GCAM
++vendor.camera.aux.packagelist  u:object_r:exported2_default_prop:s0 exact string
++persist.vendor.camera.privapp.list   u:object_r:exported2_default_prop:s0 exact string
++persist.vendor.camera.privapp.list2  u:object_r:exported2_default_prop:s0 exact string
++
++# Huawei debug vendor prop
++persist.sys.huawei.debug.on    u:object_r:dft_syshwdebug_prop:s0 exact int
+diff --git a/sepolicy/vold.te b/sepolicy/vold.te
+index 24ed13d..35b69e9 100644
+--- a/sepolicy/vold.te
++++ b/sepolicy/vold.te
+@@ -3,3 +3,7 @@ hal_client_domain(vold, hal_bootctl)
+ 
+ allow vold system_data_file:lnk_file { unlink };
+ allow mediaextractor sdcard_type:file read;
++
++allow vold block_device:blk_file { read open write ioctl};
++allow vold splash2_data_file:dir { rw_dir_perms };
++allow vold teecd_data_file:dir { rw_dir_perms };
 -- 
 2.25.1
 

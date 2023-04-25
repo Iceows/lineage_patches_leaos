@@ -1,6 +1,6 @@
-From 2e452d98d66641dac37fb34787fdf2d7df4ed16a Mon Sep 17 00:00:00 2001
+From 951be5bd10722123bb978510fee5a8fa9577da60 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Tue, 28 Mar 2023 14:53:23 +0200
+Date: Tue, 25 Apr 2023 08:08:29 +0200
 Subject: [PATCH] gmscompat: Spoof model, product and fingerprint with cust
  prop
 
@@ -8,22 +8,20 @@ Allows you to change the product, the model and the fingerprint during the Safet
 
 use severals properties : persist.sys.phh.safetyspoof, persist.sys.phh.safetyspoof.model, etc...
 
-Change-Id: I0c54b79fd97d0c7dd2eb57f981eee09adb3473b8
+Change-Id: Ieca64be0e37dd0f96667e7f01d8a5827e4ea482a
 ---
- .../internal/gmscompat/AttestationHooks.java  | 28 +++++++++++++++----
- 1 file changed, 22 insertions(+), 6 deletions(-)
+ .../internal/gmscompat/AttestationHooks.java  | 26 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
 diff --git a/core/java/com/android/internal/gmscompat/AttestationHooks.java b/core/java/com/android/internal/gmscompat/AttestationHooks.java
-index ef7a308a25bc..f4243c066f58 100644
+index ef7a308a25bc..89987eaa55f1 100644
 --- a/core/java/com/android/internal/gmscompat/AttestationHooks.java
 +++ b/core/java/com/android/internal/gmscompat/AttestationHooks.java
-@@ -27,6 +27,20 @@ import java.util.Arrays;
+@@ -27,6 +27,18 @@ import java.util.Arrays;
  
  /** @hide */
  public final class AttestationHooks {
 +
-+
-+            
 +    private static final boolean SAFETYSPOOF_ENABLE =
 +            android.os.SystemProperties.getBoolean("persist.sys.phh.safetyspoof", false);
 +    private static final String SAFETYSPOOF_MODEL =
@@ -34,11 +32,11 @@ index ef7a308a25bc..f4243c066f58 100644
 +            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.product", "marlin");
 +    private static final String SAFETYSPOOF_FINGERPRINT=
 +            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.fingerprint", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys");
-+                        
++
      private static final String TAG = "GmsCompat/Attestation";
  
      private static final String PACKAGE_GMS = "com.google.android.gms";
-@@ -71,12 +85,14 @@ public final class AttestationHooks {
+@@ -71,12 +83,14 @@ public final class AttestationHooks {
      }
  
      private static void spoofBuildGms() {
