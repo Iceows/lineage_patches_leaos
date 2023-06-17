@@ -1,19 +1,23 @@
-From 54b5e4762f80647769eeb204d5d5475cc8d552ef Mon Sep 17 00:00:00 2001
-From: Victor Bo <bvoid@yandex.ru>
-Date: Thu, 17 Dec 2020 14:39:31 -0500
-Subject: [PATCH 108/230] Avoid to hold wakelock for long time
+From e4673061e74902ef9086eaf3ee275f46d17dc96f Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 17 Jun 2023 11:24:50 +0200
+Subject: [PATCH]  Avoid to hold wakelock for long time
 
-  from
-  https://github.com/syberia-project/platform_frameworks_base/commit/4aae24bd8ba4f07cd58057ef4727f3622f676217
+Sometimes wakelock was hold for serveral minutes
+
+Similar to AlarmListener, here timeout mechanism is added.
+If more time is needed, the source is better to acquire wakelock by itself.
+
+Change-Id: I77cd1ca34962417373ccf59d6ead166ada268f5b
 ---
- .../android/server/AlarmManagerService.java   | 38 ++++++++++++++++++-
- 1 file changed, 36 insertions(+), 2 deletions(-)
+ .../android/server/AlarmManagerService.java   | 42 ++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 2 deletions(-)
 
 diff --git a/services/core/java/com/android/server/AlarmManagerService.java b/services/core/java/com/android/server/AlarmManagerService.java
-index 7cdcc01bc00..cd95ae145d6 100644
+index 7cbe0c8ba57e..017acbce876c 100644
 --- a/services/core/java/com/android/server/AlarmManagerService.java
 +++ b/services/core/java/com/android/server/AlarmManagerService.java
-@@ -4170,6 +4170,7 @@ class AlarmManagerService extends SystemService {
+@@ -4188,6 +4188,7 @@ class AlarmManagerService extends SystemService {
          public static final int CHARGING_STATUS_CHANGED = 6;
          public static final int REMOVE_FOR_STOPPED = 7;
          public static final int REMOVE_FOR_CANCELED = 8;
@@ -21,7 +25,7 @@ index 7cdcc01bc00..cd95ae145d6 100644
  
          AlarmHandler() {
              super(Looper.myLooper());
-@@ -4219,6 +4220,10 @@ class AlarmManagerService extends SystemService {
+@@ -4241,6 +4242,10 @@ class AlarmManagerService extends SystemService {
                      mDeliveryTracker.alarmTimedOut((IBinder) msg.obj);
                      break;
  
@@ -32,7 +36,7 @@ index 7cdcc01bc00..cd95ae145d6 100644
                  case REPORT_ALARMS_ACTIVE:
                      if (mLocalDeviceIdleController != null) {
                          mLocalDeviceIdleController.setAlarmsActive(msg.arg1 != 0);
-@@ -4690,8 +4695,12 @@ class AlarmManagerService extends SystemService {
+@@ -4712,8 +4717,12 @@ class AlarmManagerService extends SystemService {
          public void onSendFinished(PendingIntent pi, Intent intent, int resultCode,
                  String resultData, Bundle resultExtras) {
              synchronized (mLock) {
@@ -47,10 +51,11 @@ index 7cdcc01bc00..cd95ae145d6 100644
              }
          }
  
-@@ -4717,6 +4726,28 @@ class AlarmManagerService extends SystemService {
+@@ -4739,6 +4748,31 @@ class AlarmManagerService extends SystemService {
              }
          }
  
++
 +        /**
 +         * Timeout of a pendingIntent alarm delivery
 +         */
@@ -73,13 +78,16 @@ index 7cdcc01bc00..cd95ae145d6 100644
 +            }
 +        }
 +
++
++
          /**
           * Deliver an alarm and set up the post-delivery handling appropriately
           */
-@@ -4735,6 +4766,9 @@ class AlarmManagerService extends SystemService {
+@@ -4757,6 +4791,10 @@ class AlarmManagerService extends SystemService {
                                          Intent.EXTRA_ALARM_COUNT, alarm.count),
                                  mDeliveryTracker, mHandler, null,
-                                 allowWhileIdle ? mIdleOptions : null);
+                                 allowWhileIdle ? mIdleOptions : getAlarmOperationBundle(alarm));
++
 +                        mHandler.sendMessageDelayed(
 +                                mHandler.obtainMessage(AlarmHandler.PENDINGINTENT_TIMEOUT,
 +                                         alarm.operation), mConstants.LISTENER_TIMEOUT * 2);

@@ -1,0 +1,100 @@
+From cee3ced5a7807c836daded913be4da8448a58ebc Mon Sep 17 00:00:00 2001
+From: ChonDoit <thphantomblog@gmail.com>
+Date: Wed, 28 Dec 2022 01:28:31 +0000
+Subject: [PATCH] Call Samsung's ISehSysInputDev to report screen state to
+ touchscreen driver
+
+This fixes touchscreen not waking up on Galaxy F23
+---
+ services/core/Android.bp                      |  1 +
+ .../server/display/LocalDisplayAdapter.java   | 31 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/services/core/Android.bp b/services/core/Android.bp
+index 768f135819b..e1012496118 100644
+--- a/services/core/Android.bp
++++ b/services/core/Android.bp
+@@ -145,6 +145,7 @@ java_library_static {
+         "vendor.samsung.hardware.biometrics.fingerprint-V3.0-java",
+         "vendor.oppo.hardware.biometrics.fingerprint-V2.1-java",
+         "vendor.xiaomi.hardware.fingerprintextension-V1.0-java",
++        "vendor.samsung.hardware.sysinput-V1.2-java",
+     ],
+ }
+ 
+diff --git a/services/core/java/com/android/server/display/LocalDisplayAdapter.java b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
+index 2c08420af42..f0f7e0b010f 100644
+--- a/services/core/java/com/android/server/display/LocalDisplayAdapter.java
++++ b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
+@@ -29,6 +29,7 @@ import android.os.SystemProperties;
+ import android.os.Trace;
+ import android.util.LongSparseArray;
+ import android.util.Slog;
++import android.util.Log;
+ import android.util.SparseArray;
+ import android.util.Spline;
+ import android.view.Display;
+@@ -44,6 +45,8 @@ import com.android.server.LocalServices;
+ import com.android.server.lights.LightsManager;
+ import com.android.server.lights.LogicalLight;
+ 
++import vendor.samsung.hardware.sysinput.V1_1.ISehSysInputDev;
++
+ import java.io.PrintWriter;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+@@ -203,6 +206,8 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+         private Spline mNitsToHalBrightness;
+ 
+         private DisplayDeviceConfig mDisplayDeviceConfig;
++	private boolean triedSamsungHal = false;
++        private ISehSysInputDev samsungSysinput = null;
+ 
+         LocalDisplayDevice(IBinder displayToken, long physicalDisplayId,
+                 SurfaceControl.DisplayInfo info, SurfaceControl.DisplayConfig[] configs,
+@@ -683,16 +688,42 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+                             }
+                             mSidekickActive = false;
+                         }
++			if (!triedSamsungHal) {
++                            triedSamsungHal = true;
++                            try {
++                                samsungSysinput = ISehSysInputDev.getService();
++                            } catch(Throwable t) {}
++                        }
+                         final int mode = getPowerModeForState(state);
+                         Trace.traceBegin(Trace.TRACE_TAG_POWER, "setDisplayState("
+                                 + "id=" + physicalDisplayId
+                                 + ", state=" + Display.stateToString(state) + ")");
++
++			if (samsungSysinput != null) {
++                            try {
++                                Log.d("PHH", "setTspEnable 1, " + state + ", true");
++                                samsungSysinput.setTspEnable(1, state, true);
++                            } catch(Throwable t) {
++                                Log.d("PHH", "Failed settings tsp enable", t);
++                            }
++                        }
++			
+                         try {
+                             SurfaceControl.setDisplayPowerMode(token, mode);
+                             Trace.traceCounter(Trace.TRACE_TAG_POWER, "DisplayPowerMode", mode);
+                         } finally {
+                             Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                         }
++
++			if (samsungSysinput != null) {
++                            try {
++                                Log.d("PHH", "setTspEnable 1, " + state + ", false");
++                                samsungSysinput.setTspEnable(1, state, false);
++                            } catch(Throwable t) {
++                                Log.d("PHH", "Failed settings tsp enable", t);
++                            }
++                        }
++
+                         // If we're entering a suspended (but not OFF) power state and we
+                         // have a sidekick available, tell it now that it can take control.
+                         if (Display.isSuspendedState(state) && state != Display.STATE_OFF
+-- 
+2.34.1
+
