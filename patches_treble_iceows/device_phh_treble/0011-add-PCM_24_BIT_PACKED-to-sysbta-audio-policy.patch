@@ -1,0 +1,124 @@
+From 561d48c52cd1c2f65f4bd3120f199cf52fe8f37a Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Jul 2023 09:11:41 +0200
+Subject: [PATCH 2/2] add PCM_24_BIT_PACKED to sysbta audio policy
+
+Just add new format AUDIO_FORMAT_PCM_24_BIT_PACKED
+---
+ .../sysbta_audio_policy_configuration.xml     | 23 +++++++++++----
+ .../sysbta_audio_policy_configuration_7_0.xml | 29 +++++++++++++------
+ 2 files changed, 37 insertions(+), 15 deletions(-)
+
+diff --git a/bluetooth/audio/config/sysbta_audio_policy_configuration.xml b/bluetooth/audio/config/sysbta_audio_policy_configuration.xml
+index 79d1643..dcb4900 100644
+--- a/bluetooth/audio/config/sysbta_audio_policy_configuration.xml
++++ b/bluetooth/audio/config/sysbta_audio_policy_configuration.xml
+@@ -1,32 +1,43 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<!-- Bluetooth Audio HAL Audio Policy Configuration file -->
++<!-- sysbta Audio HAL Audio Policy Configuration file -->
+ <module name="sysbta" halVersion="2.0">
+     <mixPorts>
+         <!-- A2DP Audio Ports -->
+-        <mixPort name="a2dp output" role="source"/>
+-        <!-- Hearing AIDs Audio Ports -->
+-        <mixPort name="hearing aid output" role="source">
++        <mixPort name="a2dp output" role="source">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+-                     samplingRates="24000,16000"
++                     samplingRates="16000,24000,44100,48000,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </mixPort>
++        <!-- Hearing AIDs Audio Ports -->
++        <mixPort name="hearing aid output" role="source"/>
+     </mixPorts>
+     <devicePorts>
+-        <!-- A2DP Audio Ports -->
+         <devicePort tagName="BT A2DP Out" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                      samplingRates="44100,48000,88200,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,88200,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <devicePort tagName="BT A2DP Headphones" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                      samplingRates="44100,48000,88200,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <devicePort tagName="BT A2DP Speaker" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                      samplingRates="44100,48000,88200,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <!-- Hearing AIDs Audio Ports -->
+         <devicePort tagName="BT Hearing Aid Out" type="AUDIO_DEVICE_OUT_HEARING_AID" role="sink"/>
+diff --git a/bluetooth/audio/config/sysbta_audio_policy_configuration_7_0.xml b/bluetooth/audio/config/sysbta_audio_policy_configuration_7_0.xml
+index 47228b2..dcb4900 100644
+--- a/bluetooth/audio/config/sysbta_audio_policy_configuration_7_0.xml
++++ b/bluetooth/audio/config/sysbta_audio_policy_configuration_7_0.xml
+@@ -1,31 +1,42 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<!-- Bluetooth Audio HAL Audio Policy Configuration file -->
++<!-- sysbta Audio HAL Audio Policy Configuration file -->
+ <module name="sysbta" halVersion="2.0">
+     <mixPorts>
+         <!-- A2DP Audio Ports -->
+-        <mixPort name="a2dp output" role="source"/>
+-        <!-- Hearing AIDs Audio Ports -->
+-        <mixPort name="hearing aid output" role="source">
++        <mixPort name="a2dp output" role="source">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+-                     samplingRates="24000 16000"
++                     samplingRates="16000,24000,44100,48000,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </mixPort>
++        <!-- Hearing AIDs Audio Ports -->
++        <mixPort name="hearing aid output" role="source"/>
+     </mixPorts>
+     <devicePorts>
+-        <!-- A2DP Audio Ports -->
+         <devicePort tagName="BT A2DP Out" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+-                     samplingRates="44100 48000 88200 96000"
++                     samplingRates="44100,48000,88200,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,88200,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <devicePort tagName="BT A2DP Headphones" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+-                     samplingRates="44100 48000 88200 96000"
++                     samplingRates="44100,48000,88200,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <devicePort tagName="BT A2DP Speaker" type="AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER" role="sink">
+             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+-                     samplingRates="44100 48000 88200 96000"
++                     samplingRates="44100,48000,88200,96000"
++                     channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
++            <profile name="" format="AUDIO_FORMAT_PCM_24_BIT_PACKED"
++                     samplingRates="44100,48000,96000"
+                      channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+         </devicePort>
+         <!-- Hearing AIDs Audio Ports -->
+-- 
+2.25.1
+

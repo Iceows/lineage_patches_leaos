@@ -1,0 +1,90 @@
+From fc93312c52d67621eb6687360aa44428b2b56540 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 3 Jun 2023 19:22:57 +0200
+Subject: [PATCH] charger : fix kirin710-970 non blank issues
+
+start charger with system user to fix none blank issues on kirin 710/970 and change owner of sysfs backlight and led for all phone model
+---
+ charger.rc          | 20 +++++++++++++++++---
+ sepolicy/charger.te | 23 +++++++++++++++++------
+ 2 files changed, 34 insertions(+), 9 deletions(-)
+
+diff --git a/charger.rc b/charger.rc
+index b52e93b..1a90419 100644
+--- a/charger.rc
++++ b/charger.rc
+@@ -1,5 +1,5 @@
+ # Copyright (C) 2023 The TrebleDroid Project
+-#
++# V1.1 (release)
+ #
+ 
+ # Add vendor charger init
+@@ -7,11 +7,25 @@ import /vendor/etc/init/${ro.bootmode}/init.${ro.bootmode}.rc
+ 
+ service charger /system/bin/charger
+     class charger
+-    user root
+-    group system root shell graphics input wakelock
++    user system
++    group root system shell graphics input wakelock
+     capabilities SYS_BOOT
+     seclabel u:r:charger:s0
+ 
++on init
++    chown system system /sys/class/leds/lcd_backlight0/brightness
++    chmod 644 /sys/class/leds/lcd_backlight0/brightness
++    chown system system /sys/class/leds/red/brightness
++    chown system system /sys/class/leds/red/delay_off
++    chown system system /sys/class/leds/red/delay_on
++    chown system system /sys/class/leds/green/brightness
++    chown system system /sys/class/leds/green/delay_off
++    chown system system /sys/class/leds/green/delay_on
++    chown system system /sys/class/leds/blue/brightness
++    chown system system /sys/class/leds/blue/delay_off
++    chown system system /sys/class/leds/blue/delay_on
++
++
+ on charger && property:ro.hardware=mt*
+     write /sys/class/leds/lcd-backlight/trigger "backlight"
+     write /sys/class/android_usb/android0/enable 1
+diff --git a/sepolicy/charger.te b/sepolicy/charger.te
+index cbcb255..891ab94 100644
+--- a/sepolicy/charger.te
++++ b/sepolicy/charger.te
+@@ -1,15 +1,26 @@
+-# Allow charger to write to sysfs_backlight_attr (only for huawei)
+-attribute sysfs_backlight_attr;
+-allow charger sysfs_backlight_attr:file rw_file_perms;
++# Allow charger and init to read,write to sysfs_backlight_attr (only for huawei)
++type sysfs_backlight, sysfs_type;
++type sysfs_led, sysfs_type;
++allow charger sysfs_backlight:file { rw_file_perms setattr };
++allow charger sysfs_led:file { rw_file_perms setattr };
++allow init sysfs_backlight:file { rw_file_perms setattr };
++allow init sysfs_led:file { rw_file_perms setattr };
+ 
+-# Allow charger to write to sysfs_led_attr (only for huawei)
+-# attribute sysfs_led_attr;
+-# allow charger sysfs_led_attr:file rw_file_perms;
+ 
+ # Allow charger to read and write to sysfs_power
+ allow charger sysfs_power:file rw_file_perms;
+ allow charger sysfs_power:dir r_dir_perms;
+ allow charger sysfs_power:lnk_file read;
+ 
++# Debug (logcat wrapper)
++allow charger system_file:file { entrypoint };
++allow charger devpts:chr_file { open read write getattr ioctl};
++allow charger charger_exec:file { execute_no_trans };
++allow phhsu_daemon logcat_exec:file { entrypoint };
++allow phhsu_daemon self:capability { sys_nice };
++
++allow charger debugfs_tracing_debug:filesystem { mount };
++
++
+ # The system charger can write  powerctl properties
+ set_prop(charger, powerctl_prop)
+-- 
+2.25.1
+

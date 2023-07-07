@@ -1,0 +1,59 @@
+From 6ce3b8be980010e3064e8670584655a2aaeae8e1 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Jul 2023 10:11:59 +0200
+Subject: [PATCH] increase BT buffer to have multiple 16 frames
+
+increase BT buffer to have multiple 16 frames to fix this warning
+
+W AudioFlinger: HAL output buffer size is 441 frames but AudioMixer requires multiples of 16 frames
+I AudioFlinger: HAL output buffer size 441 frames, normal sink buffer size 896 frames
+-
+---
+ bluetooth/audio/hw/stream_apis.cc | 9 ++++++++-
+ bluetooth/audio/hw/stream_apis.h  | 9 +++++----
+ 2 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/bluetooth/audio/hw/stream_apis.cc b/bluetooth/audio/hw/stream_apis.cc
+index 1f449fc..de51661 100644
+--- a/bluetooth/audio/hw/stream_apis.cc
++++ b/bluetooth/audio/hw/stream_apis.cc
+@@ -692,7 +692,14 @@ static void out_update_source_metadata(
+ }
+ 
+ static size_t frame_count(size_t microseconds, uint32_t sample_rate) {
+-  return (microseconds * sample_rate) / 1000000;
++
++  size_t frames = (microseconds * sample_rate) / 1000000;
++
++  LOG(INFO) << __func__ << ": frame_count : microseconds=" << microseconds
++      << " - samples="  << sample_rate
++      << " - nb frames="  << frames;
++
++  return frames;
+ }
+ 
+ int adev_open_output_stream(struct audio_hw_device* dev,
+diff --git a/bluetooth/audio/hw/stream_apis.h b/bluetooth/audio/hw/stream_apis.h
+index 36dd589..7146e5c 100644
+--- a/bluetooth/audio/hw/stream_apis.h
++++ b/bluetooth/audio/hw/stream_apis.h
+@@ -28,11 +28,12 @@ constexpr unsigned int kBluetoothDefaultSampleRate = 44100;
+ constexpr audio_format_t kBluetoothDefaultAudioFormatBitsPerSample =
+     AUDIO_FORMAT_PCM_16_BIT;
+ 
+-constexpr unsigned int kBluetoothDefaultInputBufferMs = 20;
+-constexpr unsigned int kBluetoothDefaultInputStateTimeoutMs = 20;
++// Must be 16 multiple to avoid warning
++constexpr unsigned int kBluetoothDefaultInputBufferMs = 320;
++constexpr unsigned int kBluetoothDefaultInputStateTimeoutMs = 320;
+ 
+-constexpr unsigned int kBluetoothDefaultOutputBufferMs = 10;
+-constexpr unsigned int kBluetoothSpatializerOutputBufferMs = 10;
++constexpr unsigned int kBluetoothDefaultOutputBufferMs = 160;
++constexpr unsigned int kBluetoothSpatializerOutputBufferMs = 160;
+ 
+ constexpr audio_channel_mask_t kBluetoothDefaultOutputChannelModeMask =
+     AUDIO_CHANNEL_OUT_STEREO;
+-- 
+2.25.1
+
