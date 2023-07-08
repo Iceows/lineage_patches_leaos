@@ -1,0 +1,25 @@
+From af9bf75c275b4704c0cb739eaf6d3be9d12d5008 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Tue, 2 May 2023 09:31:43 +0200
+Subject: [PATCH 7/9] Change product_name to leaos
+
+---
+ generate.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/generate.sh b/generate.sh
+index 8654eeb..22c3a4b 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -86,7 +86,7 @@ $optional_base
+ $apps_script
+ $rom_script
+ 
+-PRODUCT_NAME := $target
++PRODUCT_NAME := LeaOS
+ PRODUCT_DEVICE := tdgsi_${arch}_$part
+ PRODUCT_BRAND := google
+ PRODUCT_SYSTEM_BRAND := google
+-- 
+2.25.1
+
