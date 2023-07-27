@@ -1,7 +1,7 @@
-From 95c87ecf16bf3360846f14e0c9a936d20594c0b2 Mon Sep 17 00:00:00 2001
+From e91e7f909ab55a1d824ff4c3ae9c4ccaeda00bc7 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Fri, 7 Jul 2023 19:55:33 +0200
-Subject: [PATCH 9/9] treble : add dynamic securize , and some extra  functions
+Date: Sat, 8 Jul 2023 21:11:42 +0200
+Subject: [PATCH 1/2] treble : add dynamic securize , and some extra  functions
 
 treble : add dynamic securize , and some extra  functions
 
@@ -13,14 +13,15 @@ treble : add dynamic securize , and some extra  functions
 - Add no stock apps (vendor)
 - Add Double Tape 2W (qin)
 - Remove gnss_watchlssd_thirdparty (agps)
+- Fix permission on rpc_sensor
 ---
  base.mk             |   1 +
  phh-on-data.sh      |  15 +++--
- phh-prop-handler.sh | 136 ++++++++++++++++++++++++++++++++++++++------
+ phh-prop-handler.sh | 132 ++++++++++++++++++++++++++++++++++++++------
  rw-system.sh        |  23 ++++----
  secure.sh           |  16 ++++++
- vndk.rc             |  37 ++++++++++--
- 6 files changed, 191 insertions(+), 37 deletions(-)
+ vndk.rc             |  37 +++++++++++--
+ 6 files changed, 187 insertions(+), 37 deletions(-)
  create mode 100644 secure.sh
 
 diff --git a/base.mk b/base.mk
@@ -77,7 +78,7 @@ index 472d16e..34ad54b 100644
      mount $minijailSrc /vendor/lib/libminijail_vendor.so
      mount $minijailSrc64 /system/lib64/vndk-28/libminijail.so
 diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
-index c976b49..24e0b77 100644
+index c976b49..7b54c0a 100644
 --- a/phh-prop-handler.sh
 +++ b/phh-prop-handler.sh
 @@ -81,6 +81,17 @@ if [ "$1" == "persist.sys.phh.asus.dt2w" ]; then
@@ -98,51 +99,32 @@ index c976b49..24e0b77 100644
  if [ "$1" == "persist.sys.phh.asus.usb.port" ]; then
          setprop persist.vendor.usb.controller.default "$prop_value"
  fi
-@@ -216,37 +227,128 @@ if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
+@@ -216,6 +227,110 @@ if [ "$1" == "persist.sys.phh.disable_soundvolume_effect" ];then
      exit
  fi
  
--if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
--    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
 +#securize
-+if [ "$1" == "persist.sys.phh.securize" ];then
-+    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
-         exit 1
-     fi
- 
--    if [[ "$prop_value" == 1 ]]; then
--        setprop persist.bluetooth.bluetooth_audio_hal.disabled false
--        setprop persist.bluetooth.a2dp_offload.disabled true
--        resetprop_phh ro.bluetooth.a2dp_offload.supported false
-+    if [[ "$prop_value" == "true" ]]; then
-+        mkdir -p /metadata/phh
-+        touch /metadata/phh/secure
++if [ "$1" == "persist.sys.phh.securize" ]; then
++    if [[ "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ ! -f /data/adb/phh/secure ]; then
 +        mkdir -p /data/adb/phh
-+        touch /data/adb/phh/secure
-     else
--        resetprop_phh --delete persist.bluetooth.bluetooth_audio_hal.disabled
--        resetprop_phh --delete persist.bluetooth.a2dp_offload.disabled
--        resetprop_phh --delete ro.bluetooth.a2dp_offload.supported
-+        rm /metadata/phh/secure
-+        rm /data/adb/phh/secure
-     fi
--    restartAudio
-     exit
- fi
- 
--if [ "$1" == "persist.sys.phh.securize" ];then
++        cp /system/phh/secure.sh /data/adb/phh/secure
++    fi
++    /system/bin/sh /data/adb/phh/secure
++    exit
++fi
++
 +#autorun
 +if [ "$1" == "persist.sys.phh.autorun" ]; then
-     if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
-         exit 1
-     fi
- 
--    if [[ "$prop_value" == "true" ]]; then
--        mkdir -p /metadata/phh
--        touch /metadata/phh/secure
++    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
++        exit 1
++    fi
++
 +    if [ ! -f /data/adb/phh/run ]; then
-         mkdir -p /data/adb/phh
--        touch /data/adb/phh/secure
++        mkdir -p /data/adb/phh
 +        touch /data/adb/phh/run
 +    fi
 +    /system/bin/sh /data/adb/phh/run
@@ -159,15 +141,13 @@ index c976b49..24e0b77 100644
 +        setprop ctl.stop logd
 +        setprop ctl.stop traced
 +        setprop ctl.stop traced_probes
-     else
--        rm /metadata/phh/secure
--        rm /data/adb/phh/secure
++    else
 +        setprop ctl.start traced_probes
 +        setprop ctl.start traced
 +        setprop ctl.start logd
-     fi
-     exit
- fi
++    fi
++    exit
++fi
 +
 +#restart_sysui
 +if [ "$1" == "sys.phh.restart_sysui" ]; then
@@ -227,23 +207,30 @@ index c976b49..24e0b77 100644
 +
 +
 +# disable audio_hal
-+if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
-+    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
-+        exit 1
-+    fi
-+
-+    if [[ "$prop_value" == 1 ]]; then
-+        setprop persist.bluetooth.bluetooth_audio_hal.disabled false
-+        setprop persist.bluetooth.a2dp_offload.disabled true
-+        resetprop_phh ro.bluetooth.a2dp_offload.supported false
-+    else
-+        resetprop_phh --delete persist.bluetooth.bluetooth_audio_hal.disabled
-+        resetprop_phh --delete persist.bluetooth.a2dp_offload.disabled
-+        resetprop_phh --delete ro.bluetooth.a2dp_offload.supported
-+    fi
-+    restartAudio
-+    exit
-+fi
+ if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
+     if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
+         exit 1
+@@ -233,20 +348,3 @@ if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
+     restartAudio
+     exit
+ fi
+-
+-if [ "$1" == "persist.sys.phh.securize" ];then
+-    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
+-        exit 1
+-    fi
+-
+-    if [[ "$prop_value" == "true" ]]; then
+-        mkdir -p /metadata/phh
+-        touch /metadata/phh/secure
+-        mkdir -p /data/adb/phh
+-        touch /data/adb/phh/secure
+-    else
+-        rm /metadata/phh/secure
+-        rm /data/adb/phh/secure
+-    fi
+-    exit
+-fi
 diff --git a/rw-system.sh b/rw-system.sh
 index 709fa1b..2ec8ec7 100644
 --- a/rw-system.sh
