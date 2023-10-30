@@ -1,0 +1,76 @@
+From 8f8190d2df1d8a12ad8a0d516b1f52cda9d57115 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 28 Oct 2023 10:56:47 +0200
+Subject: [PATCH 09/11] huawei: fix various pb
+
+Fix bug with :
+- gnss
+- audio custom
+- activity recognition
+- NFC
+---
+ rw-system.sh | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
+
+diff --git a/rw-system.sh b/rw-system.sh
+index a716c9b..2e5ca9e 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -573,10 +573,6 @@ if [ -f /vendor/bin/hw/vendor.samsung.hardware.miscpower@1.0-service ] && [ "$vn
+     mount -o bind /system/phh/empty /vendor/bin/hw/android.hardware.power@1.0-service
+ fi
+ 
+-if [ "$vndk" = 27 ] || [ "$vndk" = 26 ]; then
+-    mount -o bind /system/phh/libnfc-nci-oreo.conf /system/etc/libnfc-nci.conf
+-fi
+-
+ if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landroid/telephony/ims/feature/MmTelFeature -e Landroid/telephony/ims/feature/MMTelFeature; then
+     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
+ fi
+@@ -585,10 +581,6 @@ if getprop ro.hardware | grep -qF exynos; then
+     setprop debug.sf.latch_unsignaled 1
+ fi
+ 
+-if getprop ro.product.model | grep -qF ANE; then
+-    setprop debug.sf.latch_unsignaled 1
+-fi
+-
+ if getprop ro.vendor.product.device | grep -q -e nora -e rhannah; then
+     setprop debug.sf.latch_unsignaled 1
+ fi
+@@ -612,16 +604,25 @@ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/rosemary \
+     mount -o bind /system/phh/rosemary-excluded-input-devices.xml /system/etc/excluded-input-devices.xml
+ fi
+ 
++# Iceows patch - NFC NXP conf remove, you must set by specify model patch
++# remove gnss_watchlssd_thirdparty to avoid log spam
+ if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
+-    p=/product/etc/nfc/libnfc_nxp_*_*.conf
+-    mount -o bind "$p" /system/etc/libnfc-nxp.conf ||
+-        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
+ 
+-    p=/product/etc/nfc/libnfc_brcm_*_*.conf
+-    mount -o bind "$p" /system/etc/libnfc-brcm.conf ||
+-        mount -o bind /product/etc/libnfc-nxp.conf /system/etc/libnfc-nxp.conf || true
++    setprop debug.sf.latch_unsignaled 1
++
++    # Set proper /sdcard permissions to avoid dead storage
++    chown media_rw:media_rw /data/media/0
++    chmod 0770 /data/media/0
++
++    # Disable this watchlss extension to fix logspams and dead gps
++    mount -o bind /system/phh/empty /vendor/bin/gnss_watchlssd_thirdparty
++
++    # For audio_custom
++    chown system:system /sys/class/sensors/rpc_sensor/rpc_motion_req
+ 
+-    mount -o bind /system/phh/libnfc-nci-huawei.conf /system/etc/libnfc-nci.conf
++    # For activity reco
++    chmod 0644  /dev/ar
++    chown system:system /dev/ar
+ fi
+ 
+ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" -e ".*(SC-0[23]K|SCV3[89]).*" && [ "$vndk" -lt 28 ]; then
+-- 
+2.25.1
+

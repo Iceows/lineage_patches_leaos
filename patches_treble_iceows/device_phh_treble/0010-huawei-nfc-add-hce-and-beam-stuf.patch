@@ -1,0 +1,54 @@
+From 35e1ee92b300a5ef7ab0040fec29f91f833f46da Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 28 Oct 2023 10:57:49 +0200
+Subject: [PATCH 10/11] huawei: nfc add hce and beam stuf
+
+---
+ base.mk | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/base.mk b/base.mk
+index 5b725e4..a2feb16 100644
+--- a/base.mk
++++ b/base.mk
+@@ -6,7 +6,11 @@ PRODUCT_COPY_FILES := \
+ 	frameworks/native/data/etc/android.hardware.telephony.ims.xml:system/etc/permissions/android.hardware.telephony.ims.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
+ 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+-	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
++	frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
++	frameworks/native/data/etc/android.hardware.nfc.hcef.xml:system/etc/permissions/android.hardware.nfc.hcef.xml \
++	frameworks/native/data/etc/android.sofware.nfc.beam.xml:system/etc/permissions/android.sofware.nfc.beam.xml \
++	frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
++	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml
+ 
+ # Bluetooth Audio (System-side HAL, sysbta)
+ PRODUCT_PACKAGES += \
+@@ -41,7 +45,7 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+ 	ro.build.version.security_patch=$(PLATFORM_SECURITY_PATCH) \
+ 	ro.adb.secure=0 \
+ 	ro.logd.auditd=true \
+-	ro.logd.kernel=true \
++	ro.logd.kernel=true
+ 
+ #Huawei HiSuite (also other OEM custom programs I guess) it's of no use in AOSP builds
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+@@ -62,14 +66,7 @@ PRODUCT_COPY_FILES += \
+ 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
+ 	device/phh/treble/files/fake_audio_policy_volume.xml:system/etc/fake_audio_policy_volume.xml \
+ 
+-# NFC:
+-#   Provide default libnfc-nci.conf file for devices that does not have one in
+-#   vendor/etc
+-PRODUCT_COPY_FILES += \
+-	device/phh/treble/nfc/libnfc-nci.conf:system/phh/libnfc-nci-oreo.conf \
+-	device/phh/treble/nfc/libnfc-nci-huawei.conf:system/phh/libnfc-nci-huawei.conf
+-
+-# LineageOS build may need this to make NFC work
++# NFC Packages
+ PRODUCT_PACKAGES += \
+         NfcNci \
+ 
+-- 
+2.25.1
+

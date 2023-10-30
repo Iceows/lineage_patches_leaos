@@ -1,7 +1,7 @@
-From 5e25fbb31729736db1b3b768fb8c7e46d2a29862 Mon Sep 17 00:00:00 2001
+From f4d7f46d36e17e0463dee3b4b5c966b66ddc674b Mon Sep 17 00:00:00 2001
 From: Alberto Ponces <ponces26@gmail.com>
 Date: Sat, 3 Oct 2020 14:28:35 -0700
-Subject: [PATCH 3/9] board: Add broken duplicate rules flag
+Subject: [PATCH 03/11] board: Add broken duplicate rules flag
 
 This will prevent "overriding commands" errors.
 
