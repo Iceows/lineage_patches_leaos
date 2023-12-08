@@ -1,0 +1,22 @@
+From 0bc29f68609a0709203f07635b6e003cc0d46dcf Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 2 Dec 2023 15:44:31 +0100
+Subject: [PATCH] p/android-4.4: Change min LTS version
+
+Kernel OSS is 4.4.23 version, so change the min requirement to avoid warning on the boot
+
+Change-Id: Idefb43ba651fa0615bafb5169f8b5f6cbf93a8fc
+---
+ p/android-4.4/android-base-conditional.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/p/android-4.4/android-base-conditional.xml b/p/android-4.4/android-base-conditional.xml
+index 6d4a555..d12a538 100644
+--- a/p/android-4.4/android-base-conditional.xml
++++ b/p/android-4.4/android-base-conditional.xml
+@@ -1 +1 @@
+-<kernel minlts="4.4.302" />
++<kernel minlts="4.4.23" />
+-- 
+2.25.1
+
