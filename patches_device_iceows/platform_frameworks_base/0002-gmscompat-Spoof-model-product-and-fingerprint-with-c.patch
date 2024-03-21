@@ -1,0 +1,62 @@
+From 951be5bd10722123bb978510fee5a8fa9577da60 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Tue, 25 Apr 2023 08:08:29 +0200
+Subject: [PATCH] gmscompat: Spoof model, product and fingerprint with cust
+ prop
+
+Allows you to change the product, the model and the fingerprint during the Safetynet certification
+
+use severals properties : persist.sys.phh.safetyspoof, persist.sys.phh.safetyspoof.model, etc...
+
+Change-Id: Ieca64be0e37dd0f96667e7f01d8a5827e4ea482a
+---
+ .../internal/gmscompat/AttestationHooks.java  | 26 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 6 deletions(-)
+
+diff --git a/core/java/com/android/internal/gmscompat/AttestationHooks.java b/core/java/com/android/internal/gmscompat/AttestationHooks.java
+index ef7a308a25bc..89987eaa55f1 100644
+--- a/core/java/com/android/internal/gmscompat/AttestationHooks.java
++++ b/core/java/com/android/internal/gmscompat/AttestationHooks.java
+@@ -27,6 +27,18 @@ import java.util.Arrays;
+ 
+ /** @hide */
+ public final class AttestationHooks {
++
++    private static final boolean SAFETYSPOOF_ENABLE =
++            android.os.SystemProperties.getBoolean("persist.sys.phh.safetyspoof", false);
++    private static final String SAFETYSPOOF_MODEL =
++            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.model", "Pixel XL");
++    private static final String SAFETYSPOOF_DEVICE =
++            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.device", "marlin");
++    private static final String SAFETYSPOOF_PRODUCT =
++            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.product", "marlin");
++    private static final String SAFETYSPOOF_FINGERPRINT=
++            android.os.SystemProperties.get("persist.sys.phh.safetyspoof.fingerprint", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys");
++
+     private static final String TAG = "GmsCompat/Attestation";
+ 
+     private static final String PACKAGE_GMS = "com.google.android.gms";
+@@ -71,12 +83,14 @@ public final class AttestationHooks {
+     }
+ 
+     private static void spoofBuildGms() {
+-        // Alter model name and fingerprint to avoid hardware attestation enforcement
+-        setBuildField("FINGERPRINT", "google/marlin/marlin:7.1.2/NJH47F/4146041:user/release-keys");
+-        setBuildField("PRODUCT", "marlin");
+-        setBuildField("DEVICE", "marlin");
+-        setBuildField("MODEL", "Pixel XL");
+-        setVersionField("DEVICE_INITIAL_SDK_INT", Build.VERSION_CODES.N_MR1);
++        if (SAFETYSPOOF_ENABLE) {
++            // Alter model name and fingerprint to avoid hardware attestation enforcement
++            setBuildField("FINGERPRINT", SAFETYSPOOF_FINGERPRINT);
++            setBuildField("PRODUCT", SAFETYSPOOF_PRODUCT);
++            setBuildField("DEVICE", SAFETYSPOOF_DEVICE);
++            setBuildField("MODEL", SAFETYSPOOF_MODEL);
++            setVersionField("DEVICE_INITIAL_SDK_INT", Build.VERSION_CODES.N_MR1);
++        }
+     }
+ 
+     public static void initApplicationBeforeOnCreate(Application app) {
+-- 
+2.25.1
+
