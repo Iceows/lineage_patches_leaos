@@ -1,0 +1,192 @@
+From 50148e9075eb968cda28fc1f884b99cb36bff596 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 14 Mar 2024 19:16:08 +0100
+Subject: [PATCH 3/3] media: try to add item FM action adn fix bad fm audio
+ routing
+
+Change-Id: I89a0c309697380e0f6168ad0e2829b29faf3253a
+---
+ core/java/android/content/Intent.java         | 14 +++++++
+ core/java/android/os/IFmEventCallback.aidl    |  2 +-
+ media/java/android/media/AudioManager.java    | 13 ++++++
+ media/java/android/media/AudioSystem.java     |  2 +
+ .../java/com/android/server/HwFmService.java  | 41 ++++++++-----------
+ 5 files changed, 46 insertions(+), 26 deletions(-)
+
+diff --git a/core/java/android/content/Intent.java b/core/java/android/content/Intent.java
+index 809dc3c41188..26e03d0e9736 100644
+--- a/core/java/android/content/Intent.java
++++ b/core/java/android/content/Intent.java
+@@ -3648,6 +3648,20 @@ public class Intent implements Parcelable, Cloneable {
+     @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+     public static final String ACTION_HEADSET_PLUG = android.media.AudioManager.ACTION_HEADSET_PLUG;
+ 
++     /**
++     * Intents indicating the FM Rx switching on or off
++     * <p>The intent will have the following extra values:
++     * <ul>
++     *   <li><em>state</em> - 0 for switched off, 1 for switched on. </li>
++     * </ul>
++     * </ul>
++     * @hide
++     */
++
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String ACTION_FM = android.media.AudioManager.ACTION_FM;
++
++
+     /**
+      * <p>Broadcast Action: The user has switched on advanced settings in the settings app:</p>
+      * <ul>
+diff --git a/core/java/android/os/IFmEventCallback.aidl b/core/java/android/os/IFmEventCallback.aidl
+index bed10fba63d4..7a8faa59c1fe 100644
+--- a/core/java/android/os/IFmEventCallback.aidl
++++ b/core/java/android/os/IFmEventCallback.aidl
+@@ -11,6 +11,6 @@
+ package android.os;
+ 
+ /**{@hide}*/
+-interface IFmEventCallback {
++oneway interface IFmEventCallback {
+     void onEventCallback(int i, int i2, int i3);
+ }
+diff --git a/media/java/android/media/AudioManager.java b/media/java/android/media/AudioManager.java
+index 67efe3a55db7..d5f87204d416 100644
+--- a/media/java/android/media/AudioManager.java
++++ b/media/java/android/media/AudioManager.java
+@@ -335,6 +335,15 @@ public class AudioManager {
+     public static final String ACTION_HEADSET_PLUG =
+             "android.intent.action.HEADSET_PLUG";
+ 
++    /**
++     * Broadcast Action: A sticky broadcast indicating an FM source
++     *
++     */
++     
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String ACTION_FM =
++            "android.media.action.FM";
++            
+     /**
+      * Broadcast Action: A sticky broadcast indicating an HDMI cable was plugged or unplugged.
+      *
+@@ -394,6 +403,10 @@ public class AudioManager {
+     public static final int STREAM_SYSTEM_ENFORCED = AudioSystem.STREAM_SYSTEM_ENFORCED;
+     /** Used to identify the volume of audio streams for DTMF Tones */
+     public static final int STREAM_DTMF = AudioSystem.STREAM_DTMF;
++
++    /** Used to identify the volume of audio streams for FM */
++    public static final int STREAM_FM = AudioSystem.STREAM_FM;    
++    
+     /** @hide Used to identify the volume of audio streams exclusively transmitted through the
+      *        speaker (TTS) of the device */
+     @UnsupportedAppUsage
+diff --git a/media/java/android/media/AudioSystem.java b/media/java/android/media/AudioSystem.java
+index 7ccbe51bbd49..07ec71b2de11 100644
+--- a/media/java/android/media/AudioSystem.java
++++ b/media/java/android/media/AudioSystem.java
+@@ -108,6 +108,8 @@ public class AudioSystem
+     public static final int STREAM_ACCESSIBILITY = 10;
+     /** @hide Used to identify the volume of audio streams for virtual assistant */
+     public static final int STREAM_ASSISTANT = 11;
++    /** @hide Used to identify the volume of audio streams for Radio FM */
++    public static final int STREAM_FM = 12;
+     /**
+      * @hide
+      * @deprecated Use {@link #numStreamTypes() instead}
+diff --git a/services/java/com/android/server/HwFmService.java b/services/java/com/android/server/HwFmService.java
+index 48f7cba678f7..372d342c0d01 100644
+--- a/services/java/com/android/server/HwFmService.java
++++ b/services/java/com/android/server/HwFmService.java
+@@ -33,16 +33,15 @@ import java.lang.reflect.Method;
+ 
+ public class HwFmService extends IHwFmService.Stub {
+     private static final int EVENT_LISTEN = 1;
+-    private static final String FM_PERMISSION = "com.huawei.permission.ACCESS_FM";
+-    
+-     // Constants copied from AudioSystem
+-    private static final int DEVICE_OUT_FM = 1048576;
++    //private static final String FM_PERMISSION = "com.huawei.permission.ACCESS_FM";
++    private static final String FM_PERMISSION = "android.permission.MODIFY_AUDIO_SETTINGS";
++    // Constants copied from AudioSystem
++    private static final int DEVICE_OUT_FM              = 0x100000;
+     private static final int DEVICE_IN_WIRED_HEADSET    = 0x400000;
+     private static final int DEVICE_OUT_EARPIECE        = 0x1;
+     private static final int DEVICE_OUT_WIRED_HEADSET   = 0x4;
+     private static final int DEVICE_STATE_UNAVAILABLE   = 0;
+     private static final int DEVICE_STATE_AVAILABLE     = 1;
+-    
+     private static final int STD_BUF_SIZE = 128;
+     private static final String TAG = "HwFmService";
+     private Context mContext;
+@@ -59,9 +58,11 @@ public class HwFmService extends IHwFmService.Stub {
+     public HwFmService() {
+         Log.d(TAG, "HwFmService constructor");
+     }
+-    
++
++
+     /* force route function through AudioSystem - use reflection */
+     private void setDeviceConnectionStateOld(final int device, final int state, final String address) {
++        Log.d(TAG, "setDeviceConnectionState state = " + state);
+         try {
+             Class<?> audioSystem = Class.forName("android.media.AudioSystem");
+             Method setDeviceConnectionState = audioSystem.getMethod(
+@@ -72,7 +73,7 @@ public class HwFmService extends IHwFmService.Stub {
+             Log.e(TAG, "setDeviceConnectionState failed: " + e);
+         }
+     }
+-
++	
+     @Override // com.huawei.android.hardware.fmradio.IHwFmService
+     public int acquireFd(String path) {
+         Log.d(TAG, "acquireFd");
+@@ -216,25 +217,14 @@ public class HwFmService extends IHwFmService.Stub {
+ 
+     @Override // com.huawei.android.hardware.fmradio.IHwFmService
+     public void setFmDeviceConnectionState(int state) {
++        Log.d(HwFmService.TAG, "setFmDeviceConnectionState state: " + state);
+         this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
+-        /*        
+-	if (!checkPermission()) {
+-		return PERMISSION_DENIED;
+-	}*/
+-	/*
+-	if (!AudioSystem::isOutputDevice(device) && !AudioSystem::isInputDevice(device)) {
+-		return BAD_VALUE;
+-	}
+-	if (state != AudioSystem::DEVICE_STATE_AVAILABLE &&
+-	    state != AudioSystem::DEVICE_STATE_UNAVAILABLE) {
+-		return BAD_VALUE;
+-	}*/
+-    
+-        if (state == 0 && this.mIsFmConnected) {
+-            setDeviceConnectionStateOld(DEVICE_OUT_FM, DEVICE_STATE_UNAVAILABLE, "");
++
++        if (state == DEVICE_STATE_UNAVAILABLE && this.mIsFmConnected) {
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, state, "");
+             this.mIsFmConnected = false;
+-        } else if (state == 1 && (!this.mIsFmConnected)) {
+-            setDeviceConnectionStateOld(DEVICE_OUT_FM, DEVICE_STATE_AVAILABLE, "");
++        } else if (state == DEVICE_STATE_AVAILABLE && (!this.mIsFmConnected)) {
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, state, "");
+             this.mIsFmConnected = true;
+         }
+     }
+@@ -243,7 +233,7 @@ public class HwFmService extends IHwFmService.Stub {
+     public void startListner(final int fd, IFmEventCallback cb) {
+         this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
+         this.mCallback = cb;
+-        this.mThread = new Thread() { // from class: com.huawei.android.hardware.fmradio.HwFmService.1
++        this.mThread = new Thread() { 
+             @Override // java.lang.Thread, java.lang.Runnable
+             public void run() {
+                 byte[] buff = new byte[128];
+@@ -319,3 +309,4 @@ public class HwFmService extends IHwFmService.Stub {
+         }
+     }
+ }
++
+-- 
+2.25.1
+

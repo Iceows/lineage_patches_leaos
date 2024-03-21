@@ -1,0 +1,72 @@
+From 7d023b57c1ecb6ce9b97205259029f3b387ae6b0 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 18 Feb 2024 21:05:11 +0100
+Subject: [PATCH 2/3] service: fix out_device_fm issues
+
+Change-Id: I3d4330468d1917dc58e8de9acc96f65a7e00accd
+---
+ .../java/com/android/server/HwFmService.java  | 26 +++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/services/java/com/android/server/HwFmService.java b/services/java/com/android/server/HwFmService.java
+index 272b09f7d88b..48f7cba678f7 100644
+--- a/services/java/com/android/server/HwFmService.java
++++ b/services/java/com/android/server/HwFmService.java
+@@ -28,12 +28,21 @@ import android.os.IFmEventCallback;
+ import android.os.IHwFmService;  
+ 
+ import java.util.Arrays;
++import java.lang.reflect.Method;
+ 
+ 
+ public class HwFmService extends IHwFmService.Stub {
+     private static final int EVENT_LISTEN = 1;
+     private static final String FM_PERMISSION = "com.huawei.permission.ACCESS_FM";
++    
++     // Constants copied from AudioSystem
+     private static final int DEVICE_OUT_FM = 1048576;
++    private static final int DEVICE_IN_WIRED_HEADSET    = 0x400000;
++    private static final int DEVICE_OUT_EARPIECE        = 0x1;
++    private static final int DEVICE_OUT_WIRED_HEADSET   = 0x4;
++    private static final int DEVICE_STATE_UNAVAILABLE   = 0;
++    private static final int DEVICE_STATE_AVAILABLE     = 1;
++    
+     private static final int STD_BUF_SIZE = 128;
+     private static final String TAG = "HwFmService";
+     private Context mContext;
+@@ -50,6 +59,19 @@ public class HwFmService extends IHwFmService.Stub {
+     public HwFmService() {
+         Log.d(TAG, "HwFmService constructor");
+     }
++    
++    /* force route function through AudioSystem - use reflection */
++    private void setDeviceConnectionStateOld(final int device, final int state, final String address) {
++        try {
++            Class<?> audioSystem = Class.forName("android.media.AudioSystem");
++            Method setDeviceConnectionState = audioSystem.getMethod(
++                    "setDeviceConnectionState", int.class, int.class, String.class);
++
++            setDeviceConnectionState.invoke(audioSystem, device, state, address);
++        } catch (Exception e) {
++            Log.e(TAG, "setDeviceConnectionState failed: " + e);
++        }
++    }
+ 
+     @Override // com.huawei.android.hardware.fmradio.IHwFmService
+     public int acquireFd(String path) {
+@@ -209,10 +231,10 @@ public class HwFmService extends IHwFmService.Stub {
+ 	}*/
+     
+         if (state == 0 && this.mIsFmConnected) {
+-            AudioSystem.setDeviceConnectionState(DEVICE_OUT_FM, 0, "");
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, DEVICE_STATE_UNAVAILABLE, "");
+             this.mIsFmConnected = false;
+         } else if (state == 1 && (!this.mIsFmConnected)) {
+-            AudioSystem.setDeviceConnectionState(DEVICE_OUT_FM, 1, "");
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, DEVICE_STATE_AVAILABLE, "");
+             this.mIsFmConnected = true;
+         }
+     }
+-- 
+2.25.1
+
