@@ -1,0 +1,590 @@
+From 37373a1a0e651faffc602338a96cf443b296e4ec Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 23 Mar 2024 09:15:49 +0100
+Subject: [PATCH] kirin: add hw fm service
+
+Implement Huawei FM Service to use custom FM Radio
+
+Change-Id: Ia93c52615b1e14d3e6f70da6f9868b601cfebb0d
+---
+ core/java/android/content/Intent.java         |  14 +
+ core/java/android/os/IFmEventCallback.aidl    |  16 +
+ core/java/android/os/IHwFmService.aidl        |  39 +++
+ media/java/android/media/AudioManager.java    |  13 +
+ media/java/android/media/AudioSystem.java     |   2 +
+ .../com/android/server/FmReceiverJNI.java     |  76 +++++
+ .../java/com/android/server/HwFmService.java  | 312 ++++++++++++++++++
+ .../java/com/android/server/SystemServer.java |  10 +-
+ 8 files changed, 481 insertions(+), 1 deletion(-)
+ create mode 100644 core/java/android/os/IFmEventCallback.aidl
+ create mode 100644 core/java/android/os/IHwFmService.aidl
+ create mode 100644 services/java/com/android/server/FmReceiverJNI.java
+ create mode 100644 services/java/com/android/server/HwFmService.java
+
+diff --git a/core/java/android/content/Intent.java b/core/java/android/content/Intent.java
+index 809dc3c41188..26e03d0e9736 100644
+--- a/core/java/android/content/Intent.java
++++ b/core/java/android/content/Intent.java
+@@ -3648,6 +3648,20 @@ public class Intent implements Parcelable, Cloneable {
+     @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+     public static final String ACTION_HEADSET_PLUG = android.media.AudioManager.ACTION_HEADSET_PLUG;
+ 
++     /**
++     * Intents indicating the FM Rx switching on or off
++     * <p>The intent will have the following extra values:
++     * <ul>
++     *   <li><em>state</em> - 0 for switched off, 1 for switched on. </li>
++     * </ul>
++     * </ul>
++     * @hide
++     */
++
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String ACTION_FM = android.media.AudioManager.ACTION_FM;
++
++
+     /**
+      * <p>Broadcast Action: The user has switched on advanced settings in the settings app:</p>
+      * <ul>
+diff --git a/core/java/android/os/IFmEventCallback.aidl b/core/java/android/os/IFmEventCallback.aidl
+new file mode 100644
+index 000000000000..7a8faa59c1fe
+--- /dev/null
++++ b/core/java/android/os/IFmEventCallback.aidl
+@@ -0,0 +1,16 @@
++/*
++* aidl file :
++* frameworks/base/core/java/android/os/IHwFmService.aidl
++* This file contains definitions of functions which are
++* exposed by service.
++*
++* Author : Raphael Mounier (Iceows)
++*/
++
++
++package android.os;
++
++/**{@hide}*/
++oneway interface IFmEventCallback {
++    void onEventCallback(int i, int i2, int i3);
++}
+diff --git a/core/java/android/os/IHwFmService.aidl b/core/java/android/os/IHwFmService.aidl
+new file mode 100644
+index 000000000000..4a62d95c5c47
+--- /dev/null
++++ b/core/java/android/os/IHwFmService.aidl
+@@ -0,0 +1,39 @@
++/*
++* aidl file :
++* frameworks/base/core/java/android/os/IHwFmService.aidl
++* This file contains definitions of functions which are
++* exposed by service.
++*
++* Author : Raphael Mounier (Iceows)
++*/
++
++package android.os;
++import android.os.IFmEventCallback;
++
++
++/**{@hide}*/
++interface IHwFmService {
++    int acquireFd(String str);
++    int audioControl(int i, int i2, int i3);
++    int cancelSearch(int i);
++    int closeFd(int i);
++    int getAudioQuilty(int i, int i2);
++    int getBuffer(int i,out byte[] bArr, int i2);
++    int getControl(int i, int i2);
++    int getFreq(int i);
++    int getLowerBand(int i);
++    int getRSSI(int i);
++    int getRawRds(int i,out byte[] bArr, int i2);
++    int getUpperBand(int i);
++    int setBand(int i, int i2, int i3);
++    int setControl(int i, int i2, int i3);
++    void setFmDeviceConnectionState(int i);
++    int setFmRssiThresh(int i, int i2);
++    int setFmSnrThresh(int i, int i2);
++    int setFreq(int i, int i2);
++    int setMonoStereo(int i, int i2);
++    void setNotchFilter(boolean z);
++    void startListner(int i, IFmEventCallback iFmEventCallback);
++    int startSearch(int i, int i2);
++    void stopListner();
++}
+diff --git a/media/java/android/media/AudioManager.java b/media/java/android/media/AudioManager.java
+index 67efe3a55db7..87fac3594f1c 100644
+--- a/media/java/android/media/AudioManager.java
++++ b/media/java/android/media/AudioManager.java
+@@ -335,6 +335,15 @@ public class AudioManager {
+     public static final String ACTION_HEADSET_PLUG =
+             "android.intent.action.HEADSET_PLUG";
+ 
++    /**
++     * Broadcast Action: A sticky broadcast indicating an FM source
++     *
++     */
++
++    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
++    public static final String ACTION_FM =
++            "android.media.action.FM";
++
+     /**
+      * Broadcast Action: A sticky broadcast indicating an HDMI cable was plugged or unplugged.
+      *
+@@ -394,6 +403,10 @@ public class AudioManager {
+     public static final int STREAM_SYSTEM_ENFORCED = AudioSystem.STREAM_SYSTEM_ENFORCED;
+     /** Used to identify the volume of audio streams for DTMF Tones */
+     public static final int STREAM_DTMF = AudioSystem.STREAM_DTMF;
++
++    /** Used to identify the volume of audio streams for FM */
++    public static final int STREAM_FM = AudioSystem.STREAM_FM;
++
+     /** @hide Used to identify the volume of audio streams exclusively transmitted through the
+      *        speaker (TTS) of the device */
+     @UnsupportedAppUsage
+diff --git a/media/java/android/media/AudioSystem.java b/media/java/android/media/AudioSystem.java
+index 0134b2e23815..1d681f97e2a8 100644
+--- a/media/java/android/media/AudioSystem.java
++++ b/media/java/android/media/AudioSystem.java
+@@ -108,6 +108,8 @@ public class AudioSystem
+     public static final int STREAM_ACCESSIBILITY = 10;
+     /** @hide Used to identify the volume of audio streams for virtual assistant */
+     public static final int STREAM_ASSISTANT = 11;
++    /** @hide Used to identify the volume of audio streams for Radio FM */
++    public static final int STREAM_FM = 12;
+     /**
+      * @hide
+      * @deprecated Use {@link #numStreamTypes() instead}
+diff --git a/services/java/com/android/server/FmReceiverJNI.java b/services/java/com/android/server/FmReceiverJNI.java
+new file mode 100644
+index 000000000000..11169990062d
+--- /dev/null
++++ b/services/java/com/android/server/FmReceiverJNI.java
+@@ -0,0 +1,76 @@
++//
++// Copyright (C) 2024 The LineageOS Project
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++//
++// Author : Raphael Mounier (Iceows)
++//
++
++package com.android.server;
++
++class FmReceiverJNI {
++    static final int FM_JNI_FAILURE = -1;
++    static final int FM_JNI_SUCCESS = 0;
++
++    public static native int acquireFdNative(String str);
++
++    public static native int cancelSearchNative(int i);
++
++    public static native int closeFdNative(int i);
++
++    public static native int getAudioQuiltyNative(int i, int i2);
++
++    public static native int getBufferNative(int i, byte[] bArr, int i2);
++
++    public static native int getControlNative(int i, int i2);
++
++    public static native int getFreqNative(int i);
++
++    public static native int getLowerBandNative(int i);
++
++    public static native int getRSSINative(int i);
++
++    public static native int getRawRdsNative(int i, byte[] bArr, int i2);
++
++    public static native int setBandNative(int i, int i2, int i3);
++
++    public static native int setControlNative(int i, int i2, int i3);
++
++    public static native int setFmRssiThreshNative(int i, int i2);
++
++    public static native int setFmSnrThreshNative(int i, int i2);
++
++    public static native int setFreqNative(int i, int i2);
++
++    public static native int setMonoStereoNative(int i, int i2);
++
++    public static native int startSearchNative(int i, int i2);
++
++    FmReceiverJNI() {
++    }
++
++    static {
++        System.loadLibrary("fm_jni");
++    }
++
++    public static int audioControlNative(int fd, int control, int field) {
++        return 0;
++    }
++
++    public static int getUpperBandNative(int fd) {
++        return 0;
++    }
++
++    public static void setNotchFilterNative(boolean value) {
++    }
++}
+diff --git a/services/java/com/android/server/HwFmService.java b/services/java/com/android/server/HwFmService.java
+new file mode 100644
+index 000000000000..0c799d132938
+--- /dev/null
++++ b/services/java/com/android/server/HwFmService.java
+@@ -0,0 +1,312 @@
++//
++// Copyright (C) 2024 The LineageOS Project
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++//
++// Author : Raphael Mounier (Iceows)
++//
++
++package com.android.server;
++
++import android.content.Context;
++import android.media.AudioSystem;
++
++import android.os.Binder;
++import android.os.RemoteException;
++import android.util.Log;
++import android.os.IFmEventCallback;
++import android.os.IHwFmService;
++
++import java.util.Arrays;
++import java.lang.reflect.Method;
++
++
++public class HwFmService extends IHwFmService.Stub {
++    private static final int EVENT_LISTEN = 1;
++    //private static final String FM_PERMISSION = "com.huawei.permission.ACCESS_FM";
++    private static final String FM_PERMISSION = "android.permission.MODIFY_AUDIO_SETTINGS";
++    // Constants copied from AudioSystem
++    private static final int DEVICE_OUT_FM              = 0x100000;
++    private static final int DEVICE_IN_WIRED_HEADSET    = 0x400000;
++    private static final int DEVICE_OUT_EARPIECE        = 0x1;
++    private static final int DEVICE_OUT_WIRED_HEADSET   = 0x4;
++    private static final int DEVICE_STATE_UNAVAILABLE   = 0;
++    private static final int DEVICE_STATE_AVAILABLE     = 1;
++    private static final int STD_BUF_SIZE = 128;
++    private static final String TAG = "HwFmService";
++    private Context mContext;
++    private boolean mIsFmConnected = false;
++    private int mUid = -1;
++    private Thread mThread = null;
++    private IFmEventCallback mCallback = null;
++
++    public HwFmService(Context context) {
++        Log.d(TAG, "HwFmService constructor context");
++        this.mContext = context;
++    }
++
++    public HwFmService() {
++        Log.d(TAG, "HwFmService constructor");
++    }
++
++
++    /* force route function through AudioSystem - use reflection */
++    private void setDeviceConnectionStateOld(final int device, final int state, final String address) {
++        Log.d(TAG, "setDeviceConnectionState state = " + state);
++        try {
++            Class<?> audioSystem = Class.forName("android.media.AudioSystem");
++            Method setDeviceConnectionState = audioSystem.getMethod(
++                    "setDeviceConnectionState", int.class, int.class, String.class);
++
++            setDeviceConnectionState.invoke(audioSystem, device, state, address);
++        } catch (Exception e) {
++            Log.e(TAG, "setDeviceConnectionState failed: " + e);
++        }
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int acquireFd(String path) {
++        Log.d(TAG, "acquireFd");
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        int uid = Binder.getCallingUid();
++        Log.d(TAG, "acquireFd uid = " + uid);
++        if (uid != this.mUid && this.mUid != -1) {
++            Log.d(TAG, "support only one client now");
++            return -1;
++        }
++        int fd = FmReceiverJNI.acquireFdNative(path);
++        if (fd != -1) {
++            this.mUid = uid;
++        }
++        return fd;
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int audioControl(int fd, int control, int field) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.audioControlNative(fd, control, field);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int cancelSearch(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.cancelSearchNative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int closeFd(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        int uid = Binder.getCallingUid();
++        if (uid != this.mUid) {
++            Log.d(TAG, "can not close fd");
++            return -1;
++        }
++        this.mUid = -1;
++        return FmReceiverJNI.closeFdNative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getFreq(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getFreqNative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setFreq(int fd, int freq) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.setFreqNative(fd, freq);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getControl(int fd, int id) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getControlNative(fd, id);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setControl(int fd, int id, int value) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        int uid = Binder.getCallingUid();
++        if (uid != this.mUid) {
++            return -1;
++        }
++        return FmReceiverJNI.setControlNative(fd, id, value);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int startSearch(int fd, int dir) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.startSearchNative(fd, dir);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getBuffer(int fd, byte[] buff, int index) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getBufferNative(fd, buff, index);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getRSSI(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getRSSINative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setBand(int fd, int low, int high) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.setBandNative(fd, low, high);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getLowerBand(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getLowerBandNative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getUpperBand(int fd) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getUpperBandNative(fd);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setMonoStereo(int fd, int val) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.setMonoStereoNative(fd, val);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getRawRds(int fd, byte[] buff, int count) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getRawRdsNative(fd, buff, count);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public void setNotchFilter(boolean value) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        FmReceiverJNI.setNotchFilterNative(value);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int getAudioQuilty(int fd, int value) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.getAudioQuiltyNative(fd, value);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setFmSnrThresh(int fd, int value) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.setFmSnrThreshNative(fd, value);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public int setFmRssiThresh(int fd, int value) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        return FmReceiverJNI.setFmRssiThreshNative(fd, value);
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public void setFmDeviceConnectionState(int state) {
++        Log.d(HwFmService.TAG, "setFmDeviceConnectionState state: " + state);
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++
++        if (state == DEVICE_STATE_UNAVAILABLE && this.mIsFmConnected) {
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, state, "");
++            this.mIsFmConnected = false;
++        } else if (state == DEVICE_STATE_AVAILABLE && (!this.mIsFmConnected)) {
++            setDeviceConnectionStateOld(DEVICE_OUT_FM, state, "");
++            this.mIsFmConnected = true;
++        }
++    }
++
++    @Override // com.android.server.IHwFmService
++    public void startListner(final int fd, IFmEventCallback cb) {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        this.mCallback = cb;
++        this.mThread = new Thread() {
++            @Override // java.lang.Thread, java.lang.Runnable
++            public void run() {
++                byte[] buff = new byte[128];
++                Log.d(HwFmService.TAG, "Starting listener " + fd);
++                while (!Thread.currentThread().isInterrupted()) {
++                    try {
++                        Arrays.fill(buff, (byte) 0);
++                        int eventCount = HwFmService.this.getBuffer(fd, buff, 1);
++                        Log.d(HwFmService.TAG, "Received event. Count: " + eventCount);
++                        if (HwFmService.this.mCallback != null) {
++                            for (int index = 0; index < eventCount; index++) {
++                                Log.d(HwFmService.TAG, "Received <" + ((int) buff[index]) + ">");
++                                switch (buff[index]) {
++                                    case 1:
++                                    case 2:
++                                        HwFmService.this.mCallback.onEventCallback(buff[index], HwFmService.this.getFreq(fd), -1);
++                                        break;
++                                    case 3:
++                                    case 4:
++                                    case 5:
++                                    case 6:
++                                    case 7:
++                                    default:
++                                        HwFmService.this.mCallback.onEventCallback(buff[index], -1, -1);
++                                        break;
++                                    case 8:
++                                    case 11:
++                                    case 13:
++                                        HwFmService.this.mCallback.onEventCallback(buff[index], 0, -1);
++                                        break;
++                                    case 9:
++                                    case 10:
++                                    case 12:
++                                        HwFmService.this.mCallback.onEventCallback(buff[index], 1, -1);
++                                        break;
++                                }
++                            }
++                        }
++                    } catch (RuntimeException ex) {
++                        Log.d(HwFmService.TAG, ex.toString());
++                        Thread.currentThread().interrupt();
++                    } catch (Exception ex2) {
++                        Log.d(HwFmService.TAG, "RunningThread InterruptedException ex = " + ex2);
++                        Thread.currentThread().interrupt();
++                        try {
++                            if (HwFmService.this.mCallback != null) {
++                                Log.d(HwFmService.TAG, "mCallback is not null");
++                                HwFmService.this.mCallback.onEventCallback(2, -1, -1);
++                            } else {
++                                Log.d(HwFmService.TAG, "mCallback == null");
++                            }
++                        } catch (RemoteException rx) {
++                            Log.d(HwFmService.TAG, "RunningThread InterruptedException for callback = " + rx);
++                        }
++                    }
++                }
++            }
++        };
++        this.mThread.start();
++    }
++
++    @Override // com.huawei.android.hardware.fmradio.IHwFmService
++    public void stopListner() {
++        this.mContext.enforceCallingOrSelfPermission(FM_PERMISSION, "need FM permission");
++        int uid = Binder.getCallingUid();
++        if (uid != this.mUid) {
++            return;
++        }
++        this.mCallback = null;
++        Log.d(TAG, "stopping the Listener\n");
++        if (this.mThread != null) {
++            this.mThread.interrupt();
++        }
++    }
++}
++
+diff --git a/services/java/com/android/server/SystemServer.java b/services/java/com/android/server/SystemServer.java
+index aa6918451fc1..2deb4a9f7372 100644
+--- a/services/java/com/android/server/SystemServer.java
++++ b/services/java/com/android/server/SystemServer.java
+@@ -2223,7 +2223,7 @@ public final class SystemServer implements Dumpable {
+                 Slog.e(TAG, "Failure starting HardwarePropertiesManagerService", e);
+             }
+             t.traceEnd();
+-          
++
+             if (!isWatch) {
+                 t.traceBegin("StartTwilightService");
+                 mSystemServiceManager.startService(TwilightService.class);
+@@ -2295,6 +2295,14 @@ public final class SystemServer implements Dumpable {
+             }
+             t.traceEnd();
+ 
++            t.traceBegin("Starting FMRadio Huawei Service");
++            try {
++                ServiceManager.addService("hwfm_service", new HwFmService(context));
++            } catch (Throwable e) {
++                reportWtf("sFailure starting FMRadio Huawei Service", e);
++            }
++            t.traceEnd();
++
+             t.traceBegin("RuntimeService");
+             try {
+                 ServiceManager.addService("runtime", new RuntimeService(context));
+-- 
+2.25.1
+
