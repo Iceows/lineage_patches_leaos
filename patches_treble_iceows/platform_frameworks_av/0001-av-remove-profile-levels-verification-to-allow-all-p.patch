@@ -1,0 +1,29 @@
+From 4feb150b24d3e37b896eeb698d8a78fe165bc64e Mon Sep 17 00:00:00 2001
+From: Iceows <mounierr07@gmail.com>
+Date: Tue, 4 Feb 2025 20:01:43 +0100
+Subject: [PATCH 1/2] av: remove profile levels verification to allow all
+ profile and level
+
+Change-Id: I8f6e2c1ab802ddf069ce3258dde6c1a345d82d9a
+---
+ media/libstagefright/MediaCodecList.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/media/libstagefright/MediaCodecList.cpp b/media/libstagefright/MediaCodecList.cpp
+index a3040f4f7d..1102b7c85e 100644
+--- a/media/libstagefright/MediaCodecList.cpp
++++ b/media/libstagefright/MediaCodecList.cpp
+@@ -527,6 +527,10 @@ bool MediaCodecList::codecHandlesFormat(const char *mime, sp<MediaCodecInfo> inf
+             }
+ 
+             if (it == profileLevels.end()) {
++                if (profile==8) {
++                    ALOGW("OMX Hisi - Codec support force profile %d with level %d", profile, level);
++                    return true;
++		}
+                 ALOGV("Codec does not support profile %d with level %d", profile, level);
+                 return false;
+             }
+-- 
+2.25.1
+

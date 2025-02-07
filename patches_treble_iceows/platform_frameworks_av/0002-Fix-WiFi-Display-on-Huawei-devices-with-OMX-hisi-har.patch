@@ -1,0 +1,30 @@
+From dc1eb6b00908a97ea0b6cc697e6036a9b82c6474 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 6 Feb 2025 11:40:36 +0100
+Subject: [PATCH 2/2] Fix WiFi Display on Huawei devices with OMX hisi hardware
+ coder/encoder
+
+Change-Id: Id336ebbe9079459dff8465dc1cfc6b108065af72
+---
+ media/libstagefright/ACodec.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index 52c4c0f523..a23005c7bf 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -4561,9 +4561,9 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
+     if (msg->findInt32("intra-refresh-mode", &intraRefreshMode)) {
+         err = setCyclicIntraMacroblockRefresh(msg, intraRefreshMode);
+         if (err != OK) {
+-            ALOGE("Setting intra macroblock refresh mode (%d) failed: 0x%x",
++            ALOGI("Setting intra macroblock refresh mode (%d) failed: 0x%x, just ignoring...",
+                     err, intraRefreshMode);
+-            return err;
++            //return err;
+         }
+     }
+ 
+-- 
+2.25.1
+
