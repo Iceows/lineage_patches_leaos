@@ -1,0 +1,26 @@
+From 659f32f00f1207176a2fec3457913ebc71b672fe Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Mon, 31 Mar 2025 13:35:16 +0200
+Subject: [PATCH] Remove Camera2 and and Gcam Go to product package
+
+Change-Id: Ic51f5d714b1948932f363c91bf2019ced47753f0
+---
+ target/product/handheld_product.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/target/product/handheld_product.mk b/target/product/handheld_product.mk
+index c5ddfbd85..8415b455b 100644
+--- a/target/product/handheld_product.mk
++++ b/target/product/handheld_product.mk
+@@ -36,7 +36,7 @@ PRODUCT_PACKAGES += \
+ 
+ ifneq ($(PRODUCT_NO_CAMERA),true)
+ PRODUCT_PACKAGES += \
+-    Camera2
++    GcamGo
+ endif
+ 
+ ifeq ($(LINEAGE_BUILD),)
+-- 
+2.25.1
+
