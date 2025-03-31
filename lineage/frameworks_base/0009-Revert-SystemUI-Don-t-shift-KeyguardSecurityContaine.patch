@@ -1,27 +1,24 @@
-From a4b75b995be55a518e8bc2c661ea6875ce5e15a8 Mon Sep 17 00:00:00 2001
-From: Victor Bo <bvoid@yandex.ru>
-Date: Sat, 20 Feb 2021 02:24:35 -0500
-Subject: [PATCH 09/14] Revert "SystemUI: Don't shift KeyguardSecurityContainer
+From cfe465d54520cd2fa9d7b8d69cf5c597ebbb9f71 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Mon, 31 Mar 2025 13:14:04 +0200
+Subject: [PATCH] Revert "SystemUI: Don't shift KeyguardSecurityContainer  when
+ FOD isn't available"
+
+[PATCH 09/14] Revert "SystemUI: Don't shift KeyguardSecurityContainer
  when FOD isn't available"
 
 This reverts commit d73dedec31d9b1234beeb146e799691651d08c75.
+
+Change-Id: I175398441c5818e63ba188a28dab832e5ceb9912
 ---
- .../android/keyguard/KeyguardSecurityContainer.java | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ .../android/keyguard/KeyguardSecurityContainer.java   | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java b/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java
-index bace9324ac9..3905d5f5df1 100644
+index 27aef8089a8..4cf8c830a34 100644
 --- a/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java
 +++ b/packages/SystemUI/src/com/android/keyguard/KeyguardSecurityContainer.java
-@@ -33,7 +33,6 @@ import android.app.AlertDialog;
- import android.app.admin.DevicePolicyManager;
- import android.content.Context;
- import android.content.Intent;
--import android.content.pm.PackageManager;
- import android.content.res.ColorStateList;
- import android.graphics.Insets;
- import android.graphics.Rect;
-@@ -80,8 +79,6 @@ import com.android.systemui.shared.system.SysUiStatsLog;
+@@ -81,8 +81,6 @@ import com.android.systemui.statusbar.policy.DeviceProvisionedController;
  import com.android.systemui.statusbar.policy.KeyguardStateController;
  import com.android.systemui.util.InjectionInflationController;
  
@@ -30,7 +27,7 @@ index bace9324ac9..3905d5f5df1 100644
  import java.util.List;
  
  public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSecurityView {
-@@ -127,7 +124,6 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
+@@ -128,7 +126,6 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
      private InjectionInflationController mInjectionInflationController;
      private boolean mSwipeUpToRetry;
      private AdminSecondaryLockScreenController mSecondaryLockScreenController;
@@ -38,18 +35,17 @@ index bace9324ac9..3905d5f5df1 100644
  
      private final ViewConfiguration mViewConfiguration;
      private final SpringAnimation mSpringAnimation;
-@@ -265,10 +261,6 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
-         mKeyguardStateController = Dependency.get(KeyguardStateController.class);
-         mSecondaryLockScreenController = new AdminSecondaryLockScreenController(context, this,
+@@ -269,9 +266,6 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
                  mUpdateMonitor, mCallback, new Handler(Looper.myLooper()));
--
+         mDeviceProvisionedController = Dependency.get(DeviceProvisionedController.class);
+ 
 -        PackageManager packageManager = mContext.getPackageManager();
 -        mHasFod = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) &&
 -                packageManager.hasSystemFeature(LineageContextConstants.Features.FOD);
      }
  
      public void setSecurityCallback(SecurityCallback callback) {
-@@ -525,9 +517,8 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
+@@ -528,9 +522,8 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
  
          // Consume bottom insets because we're setting the padding locally (for IME and navbar.)
          int inset;
@@ -57,10 +53,10 @@ index bace9324ac9..3905d5f5df1 100644
 -                getResources().getDimensionPixelSize(
 -                        R.dimen.kg_security_container_min_bottom_margin) : 0;
 +        int minBottomMargin = getResources().getDimensionPixelSize(
-+                R.dimen.kg_security_container_min_bottom_margin);
++            R.dimen.kg_security_container_min_bottom_margin);
  
          if (sNewInsetsMode == NEW_INSETS_MODE_FULL) {
              int bottomInset = insets.getInsetsIgnoringVisibility(systemBars()).bottom;
 -- 
-2.30.2
+2.25.1
 
