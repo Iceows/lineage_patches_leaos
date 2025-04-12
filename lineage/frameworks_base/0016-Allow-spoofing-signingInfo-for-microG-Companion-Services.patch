@@ -1,0 +1,39 @@
+From f3f5c2063007de9a8b746a8788f3bcab6b6ac261 Mon Sep 17 00:00:00 2001
+From: Lanchon <lanchon@gmail.com>
+Date: Thu, 30 Jan 2025 14:50:12 -0300
+Subject: [PATCH] Allow spoofing signingInfo for microG Companion/Services
+
+- Spoof PackageInfo signingInfo + signatures so that
+  G suite apps do not complain anymore.
+
+Change-Id: I86f182c9e1d18b0e997803842577a90ef740cfd1
+Signed-off-by: althafvly <althafvly@gmail.com>
+Signed-off-by: Lanchon <lanchon@gmail.com>
+---
+ .../com/android/server/pm/PackageManagerService.java | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/services/core/java/com/android/server/pm/PackageManagerService.java b/services/core/java/com/android/server/pm/PackageManagerService.java
+index 9c71a29af1070..801b20cc7997b 100644
+--- a/services/core/java/com/android/server/pm/PackageManagerService.java
++++ b/services/core/java/com/android/server/pm/PackageManagerService.java
+@@ -4529,6 +4529,18 @@ private PackageInfo generatePackageInfo(PackageSetting ps, int flags, int userId
+ 
+             generateFakeSignature(p).ifPresent(fakeSignature -> {
+                 packageInfo.signatures = new Signature[]{fakeSignature};
++                    try {
++                    packageInfo.signingInfo = new SigningInfo(
++                            new SigningDetails(
++                                    packageInfo.signatures,
++                                    SigningDetails.SignatureSchemeVersion.SIGNING_BLOCK_V3,
++                                    PackageParser.toSigningKeys(packageInfo.signatures),
++                                    null
++                            )
++                    );
++                } catch (CertificateException e) {
++                    Slog.e(TAG, "Caught an exception when creating signing keys: ", e);
++                }
+             });
+ 
+             return packageInfo;
+
