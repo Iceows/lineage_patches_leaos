@@ -1,0 +1,25 @@
+From 9667db1c5b777e81b4f86e51f14b938c42ef6e4c Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 18 Oct 2025 15:47:57 +0200
+Subject: [PATCH] huawei: add additional gralloc 10 usage bits need by L1 DRM
+ Widevine emui12
+
+---
+ board-base.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/board-base.mk b/board-base.mk
+index b45ca3c..5bb6178 100644
+--- a/board-base.mk
++++ b/board-base.mk
+@@ -13,3 +13,7 @@ BUILD_BROKEN_DUP_RULES := true
+ BOARD_ROOT_EXTRA_SYMLINKS := $(filter-out $(BOARD_ROOT_EXTRA_SYMLINKS),/mnt/vendor/persist:/persist)
+ 
+ TARGET_NO_KERNEL_OVERRIDE := true
++
++# Graphics
++TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x4000000
++
+-- 
+2.25.1
+
