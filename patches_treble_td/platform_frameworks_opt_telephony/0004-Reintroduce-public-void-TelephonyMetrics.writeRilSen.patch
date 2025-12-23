@@ -1,7 +1,7 @@
-From 95a58ef03af0c974050e338f36b25aa4ac535a38 Mon Sep 17 00:00:00 2001
+From ae6f6a49cda558ed8838f0d621a31195da61c95d Mon Sep 17 00:00:00 2001
 From: ironydelerium <42721860+ironydelerium@users.noreply.github.com>
 Date: Fri, 31 Dec 2021 02:20:28 -0800
-Subject: [PATCH 4/7] Reintroduce 'public void
+Subject: [PATCH 04/12] Reintroduce 'public void
  TelephonyMetrics.writeRilSendSms(int, int, int, int)'. (#8)
 
 The MediaTek IMS package for Android Q, at the very least (likely for the rest, too)
@@ -13,7 +13,6 @@ in a MethodNotFoundException being raised in com.mediatek.ims, crashing it.
 Fixes https://github.com/phhusson/treble_experimentations/issues/2125.
 
 Co-authored-by: Sarah Vandomelen <sarah@sightworks.com>
-Change-Id: I9b42dc0fe83aeb2952f066e48282bad6ed89e473
 ---
  .../telephony/metrics/TelephonyMetrics.java         | 13 +++++++++++++
  1 file changed, 13 insertions(+)

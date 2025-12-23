@@ -1,7 +1,7 @@
-From d62d49e8cc9922bfee4d0cfa7a46b4cad73f2209 Mon Sep 17 00:00:00 2001
+From 2ba31e1149bb21c5d70218019ff6ac918762e437 Mon Sep 17 00:00:00 2001
 From: Alberto Ponces <ponces26@gmail.com>
 Date: Tue, 2 Feb 2021 10:20:51 +0000
-Subject: [PATCH 19/40] Fix Wakelock issue
+Subject: [PATCH 19/55] Fix Wakelock issue
 
 Prevent SystemUI crash due to "WakeLock under-locked Doze" (issue #12) by only releasing a wakelock that was not already released
 ---
@@ -9,12 +9,12 @@ Prevent SystemUI crash due to "WakeLock under-locked Doze" (issue #12) by only r
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java b/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
-index f320d071b54f..9f98937c2a06 100644
+index 6128feee8116..b60905b39e32 100644
 --- a/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
 +++ b/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
-@@ -123,7 +123,9 @@ public interface WakeLock {
-                 } else {
-                     mActiveClients.put(why, count - 1);
+@@ -143,7 +143,9 @@ public interface WakeLock {
+                 if (logger != null) {
+                     logger.logRelease(inner, why, count);
                  }
 -                inner.release();
 +                if (inner.isHeld()) {

@@ -1,4 +1,4 @@
-From 15e59be158a3305a17e14cc18883d323d2afc54b Mon Sep 17 00:00:00 2001
+From c5f52eca99d67d2e11960580c85626464ca7f679 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Thu, 29 Sep 2022 11:27:57 +0000
 Subject: [PATCH 13/21] Revert "Use the default top clock margin on h800
@@ -11,7 +11,7 @@ and 2a254b4d479029aec46f79a0ed14ffab6d0424bc.
  1 file changed, 3 insertions(+)
 
 diff --git a/packages/SystemUI/res/values-h800dp/dimens.xml b/packages/SystemUI/res/values-h800dp/dimens.xml
-index 3a71994e07e2..4b9bce0eda99 100644
+index 829ef98956c5..8ee3cc1944f2 100644
 --- a/packages/SystemUI/res/values-h800dp/dimens.xml
 +++ b/packages/SystemUI/res/values-h800dp/dimens.xml
 @@ -15,6 +15,9 @@
@@ -21,9 +21,9 @@ index 3a71994e07e2..4b9bce0eda99 100644
 +    <!-- Minimum margin between clock and top of screen or ambient indication -->
 +    <dimen name="keyguard_clock_top_margin">38dp</dimen>
 +
-     <!-- With the large clock, move up slightly from the center -->
-     <dimen name="keyguard_large_clock_top_margin">-112dp</dimen>
- 
+     <!-- Margin above the ambient indication container -->
+     <dimen name="ambient_indication_container_margin_top">20dp</dimen>
+ </resources>
 -- 
 2.34.1
 

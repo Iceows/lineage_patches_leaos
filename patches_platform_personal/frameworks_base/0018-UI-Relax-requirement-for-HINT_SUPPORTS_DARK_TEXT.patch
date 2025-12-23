@@ -1,4 +1,4 @@
-From fe8362152cdb0a17376ffedb37030cc57d14b375 Mon Sep 17 00:00:00 2001
+From c5ea7ade62fd90f88ff8fc9ca43ad3abfd67a974 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Tue, 29 Jun 2021 22:57:01 +0000
 Subject: [PATCH 18/21] UI: Relax requirement for HINT_SUPPORTS_DARK_TEXT
@@ -11,14 +11,14 @@ Change-Id: I5ccd85b3df12e53746a4ac6cbc37ba8d11f6c336
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/java/android/app/WallpaperColors.java b/core/java/android/app/WallpaperColors.java
-index a34a50c4b7b0..028f77fb21b0 100644
+index 5f5a7dfe24c6..1adce321012b 100644
 --- a/core/java/android/app/WallpaperColors.java
 +++ b/core/java/android/app/WallpaperColors.java
-@@ -580,7 +580,7 @@ public final class WallpaperColors implements Parcelable {
+@@ -593,7 +593,7 @@ public final class WallpaperColors implements Parcelable {
  
          int hints = 0;
          double meanLuminance = totalLuminance / pixels.length;
--        if (meanLuminance > BRIGHT_IMAGE_MEAN_LUMINANCE && darkPixels < maxDarkPixels) {
+-        if (meanLuminance > BRIGHT_IMAGE_MEAN_LUMINANCE && darkPixels <= maxDarkPixels) {
 +        if (meanLuminance > BRIGHT_IMAGE_MEAN_LUMINANCE) {
              hints |= HINT_SUPPORTS_DARK_TEXT;
          }

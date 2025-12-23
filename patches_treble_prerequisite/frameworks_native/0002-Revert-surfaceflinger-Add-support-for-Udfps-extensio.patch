@@ -1,10 +1,10 @@
-From 274dbe335d658a429bdd3b266b94d739dc77bedd Mon Sep 17 00:00:00 2001
+From 9428b1b39a473592423f2d2f7812cf3815a68b86 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Wed, 11 Jan 2023 11:59:35 +0000
+Date: Mon, 20 Nov 2023 22:00:23 +0800
 Subject: [PATCH 2/2] Revert "surfaceflinger: Add support for Udfps extension
  lib"
 
-This reverts commit 76874f54f1fa7517361fd1817044a5d0bbfa9ade.
+This reverts commit 8655d06e960235c0f9ad079be3541fee2a0359f7.
 ---
  .../CompositionEngine/Android.bp              | 14 +--------
  .../compositionengine/UdfpsExtension.h        | 29 -------------------
@@ -15,10 +15,10 @@ This reverts commit 76874f54f1fa7517361fd1817044a5d0bbfa9ade.
  delete mode 100644 services/surfaceflinger/CompositionEngine/src/UdfpsExtension.cpp
 
 diff --git a/services/surfaceflinger/CompositionEngine/Android.bp b/services/surfaceflinger/CompositionEngine/Android.bp
-index abc3478313..11a9e19db8 100644
+index cdec4abdba..f3a0186e3e 100644
 --- a/services/surfaceflinger/CompositionEngine/Android.bp
 +++ b/services/surfaceflinger/CompositionEngine/Android.bp
-@@ -59,10 +59,7 @@ cc_defaults {
+@@ -61,10 +61,7 @@ cc_defaults {
  
  cc_library {
      name: "libcompositionengine",
@@ -30,7 +30,7 @@ index abc3478313..11a9e19db8 100644
      srcs: [
          "src/planner/CachedSet.cpp",
          "src/planner/Flattener.cpp",
-@@ -84,7 +81,6 @@ cc_library {
+@@ -86,7 +83,6 @@ cc_library {
          "src/OutputLayer.cpp",
          "src/OutputLayerCompositionState.cpp",
          "src/RenderSurface.cpp",
@@ -38,7 +38,7 @@ index abc3478313..11a9e19db8 100644
      ],
      local_include_dirs: ["include"],
      export_include_dirs: ["include"],
-@@ -113,14 +109,6 @@ cc_library {
+@@ -115,14 +111,6 @@ cc_library {
      export_include_dirs: ["include"],
  }
  
@@ -89,7 +89,7 @@ index 4306cb4a02..0000000000
 -
 -#endif /* __UDFPS_EXTENSION__H__ */
 diff --git a/services/surfaceflinger/CompositionEngine/src/OutputLayer.cpp b/services/surfaceflinger/CompositionEngine/src/OutputLayer.cpp
-index 2129dfed29..1bb9d0eb63 100644
+index a314553dd2..0ac0ecb727 100644
 --- a/services/surfaceflinger/CompositionEngine/src/OutputLayer.cpp
 +++ b/services/surfaceflinger/CompositionEngine/src/OutputLayer.cpp
 @@ -19,7 +19,6 @@
@@ -100,7 +100,7 @@ index 2129dfed29..1bb9d0eb63 100644
  #include <compositionengine/impl/HwcBufferCache.h>
  #include <compositionengine/impl/OutputCompositionState.h>
  #include <compositionengine/impl/OutputLayer.h>
-@@ -442,17 +441,7 @@ void OutputLayer::writeOutputDependentGeometryStateToHWC(HWC2::Layer* hwcLayer,
+@@ -449,17 +448,7 @@ void OutputLayer::writeOutputDependentGeometryStateToHWC(HWC2::Layer* hwcLayer,
                sourceCrop.bottom, to_string(error).c_str(), static_cast<int32_t>(error));
      }
  
@@ -153,5 +153,5 @@ index 2d9d086dd2..0000000000
 -}
 -#endif
 -- 
-2.25.1
+2.34.1
 

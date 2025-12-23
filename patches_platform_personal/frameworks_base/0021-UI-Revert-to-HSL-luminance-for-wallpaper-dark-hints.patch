@@ -1,4 +1,4 @@
-From 9732bf6c88d489f587e62d9f6b382e876295cbd6 Mon Sep 17 00:00:00 2001
+From 0b60c899a62048d807f69c9617ef7560d69bfc01 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Fri, 30 Sep 2022 16:02:16 +0000
 Subject: [PATCH 21/21] UI: Revert to HSL luminance for wallpaper dark hints
@@ -11,10 +11,10 @@ Change-Id: Ie5663bdf518b4ef93d6deb634e707a32d052ac55
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/core/java/android/app/WallpaperColors.java b/core/java/android/app/WallpaperColors.java
-index 028f77fb21b0..63ccf961a2d8 100644
+index 1adce321012b..477dbc827672 100644
 --- a/core/java/android/app/WallpaperColors.java
 +++ b/core/java/android/app/WallpaperColors.java
-@@ -555,15 +555,15 @@ public final class WallpaperColors implements Parcelable {
+@@ -568,15 +568,15 @@ public final class WallpaperColors implements Parcelable {
          float[] tmpHsl = new float[3];
          for (int i = 0; i < pixels.length; i++) {
              int pixelColor = pixels[i];
@@ -33,7 +33,7 @@ index 028f77fb21b0..63ccf961a2d8 100644
  
              // Make sure we don't have a dark pixel mass that will
              // make text illegible.
-@@ -575,7 +575,7 @@ public final class WallpaperColors implements Parcelable {
+@@ -588,7 +588,7 @@ public final class WallpaperColors implements Parcelable {
                      pixels[i] = Color.RED;
                  }
              }
