@@ -1,0 +1,28 @@
+From e89114c796f670e667cb5be2b024cad1d340b6c3 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 28 Dec 2025 10:11:29 +0100
+Subject: [PATCH 1/2] Allow priv app to write device config
+
+Fix error in the logcat
+
+Change-Id: I55a484d0683c269e137eb51a9e8e896cf2bdc451
+---
+ core/res/AndroidManifest.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index 14cb052b121f..178dcbcbf7ed 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -4194,7 +4194,7 @@
+     <!-- @SystemApi @TestApi @hide Allows an application to modify config settings.
+     <p>Not for use by third-party applications. -->
+     <permission android:name="android.permission.WRITE_DEVICE_CONFIG"
+-        android:protectionLevel="signature|verifier|configurator"/>
++        android:protectionLevel="signature|privileged|verifier|configurator"/>
+ 
+     <!-- @SystemApi @TestApi @hide Allows an application to modify only allowlisted settings.
+     <p>Not for use by third-party applications. -->
+-- 
+2.25.1
+

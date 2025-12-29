@@ -1,0 +1,32 @@
+From 989db0bcc64a8c3ca4293d00e96907bff13731b4 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 25 Dec 2025 18:04:36 +0100
+Subject: [PATCH] media: codec remove profile levels verification
+
+Change-Id: I31d656990546d3b8211bc83a5c169ac0046899ec
+---
+ media/libstagefright/MediaCodecList.cpp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/media/libstagefright/MediaCodecList.cpp b/media/libstagefright/MediaCodecList.cpp
+index 4ad3276743..22b6f82f32 100644
+--- a/media/libstagefright/MediaCodecList.cpp
++++ b/media/libstagefright/MediaCodecList.cpp
+@@ -535,8 +535,12 @@ bool MediaCodecList::codecHandlesFormat(
+             }
+ 
+             if (it == profileLevels.end()) {
+-                ALOGV("Codec does not support profile %d", profile);
+-                return false;
++                 if (profile==8) {
++                     ALOGW("OMX Hisi - Codec support force profile %d", profile);
++                     return true;
++                 }
++                 ALOGV("Codec does not support profile %d", profile);
++                 return false;
+             }
+         }
+     }
+-- 
+2.25.1
+

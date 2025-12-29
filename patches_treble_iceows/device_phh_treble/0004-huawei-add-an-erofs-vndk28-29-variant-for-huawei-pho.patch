@@ -1,0 +1,43 @@
+From 63b22e63c60df1ffeb6d752d2aaa69690bb690e4 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 25 Dec 2025 18:46:31 +0100
+Subject: [PATCH 04/18] huawei: add an erofs vndk28-29 variant for huawei phone
+
+---
+ erofs-vndk.mk | 6 ++++++
+ generate.sh   | 6 ++++++
+ 2 files changed, 12 insertions(+)
+ create mode 100644 erofs-vndk.mk
+
+diff --git a/erofs-vndk.mk b/erofs-vndk.mk
+new file mode 100644
+index 0000000..354084f
+--- /dev/null
++++ b/erofs-vndk.mk
+@@ -0,0 +1,6 @@
++#EROFS
++LINEAGE_EXTRAVERSION := -EROFS
++GSI_FILE_SYSTEM_TYPE := erofs
++BOARD_EROFS_COMPRESSOR := lz4
++
++PRODUCT_EXTRA_VNDK_VERSIONS := 28 29
+diff --git a/generate.sh b/generate.sh
+index 6f876a3..f75b73b 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -56,6 +56,12 @@ for part in a ab;do
+ 					apps_name="vanilla old"
+ 					optional_base='include device/phh/treble/old-vndk.mk'
+ 				fi
++				if [ "$apps" == "erofs" ];then
++					apps_suffix="e"
++					apps_script=''
++					apps_name="erofs"
++					optional_base='include device/phh/treble/erofs-vndk.mk'
++				fi
+ 				if [ "$arch" == "arm" ];then
+ 					vndk="vndk-binder32.mk"
+ 				fi
+-- 
+2.25.1
+

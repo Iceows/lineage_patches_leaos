@@ -1,0 +1,21 @@
+From d26f46af05bf3af18e54fcb9e561ef346ea0c71f Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 19 Jul 2024 21:06:24 +0200
+Subject: [PATCH 11/18] lineage: add extra vendor with release keys
+
+---
+ lineage.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/lineage.mk b/lineage.mk
+index 172bb01..9892cfa 100644
+--- a/lineage.mk
++++ b/lineage.mk
+@@ -1,3 +1,4 @@
+ $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+ -include vendor/lineage/build/core/config.mk
+ -include vendor/lineage/build/core/apicheck.mk
++$(call inherit-product-if-exists, vendor/extra/product.mk)
+-- 
+2.25.1
+

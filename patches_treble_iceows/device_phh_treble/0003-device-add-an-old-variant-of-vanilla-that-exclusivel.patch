@@ -1,0 +1,56 @@
+From 196b2d91cc4d9f177d62a8ae52401cc4d5337eaa Mon Sep 17 00:00:00 2001
+From: Iceows <mounierr07@gmail.com>
+Date: Mon, 17 Nov 2025 19:49:27 +0100
+Subject: [PATCH 03/18] device: add an old variant of vanilla that exclusively
+ include
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+… not newer vndk, to reduce size
+
+Target is Pixel 1, with 2GB system partition
+
+Co-Authored-By: Pierre-Hugues HUSSON <phh@phh.me>
+---
+ generate.sh | 8 +++++++-
+ old-vndk.mk | 1 +
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+ create mode 100644 old-vndk.mk
+
+diff --git a/generate.sh b/generate.sh
+index 0bd6556..6f876a3 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -15,7 +15,7 @@ fi
+ echo 'PRODUCT_MAKEFILES := \' > AndroidProducts.mk
+ 
+ for part in a ab;do
+-	for apps in vanilla gapps foss gapps-go;do
++	for apps in vanilla gapps foss gapps-go old;do
+ 		for arch in arm64 arm a64;do
+ 			for su in yes no;do
+ 				apps_suffix=""
+@@ -50,6 +50,12 @@ for part in a ab;do
+ 					apps_script=''
+ 					apps_name="vanilla"
+ 				fi
++				if [ "$apps" == "old" ];then
++					apps_suffix="y"
++					apps_script=''
++					apps_name="vanilla old"
++					optional_base='include device/phh/treble/old-vndk.mk'
++				fi
+ 				if [ "$arch" == "arm" ];then
+ 					vndk="vndk-binder32.mk"
+ 				fi
+diff --git a/old-vndk.mk b/old-vndk.mk
+new file mode 100644
+index 0000000..522b81b
+--- /dev/null
++++ b/old-vndk.mk
+@@ -0,0 +1 @@
++PRODUCT_EXTRA_VNDK_VERSIONS := 28 29
+-- 
+2.25.1
+

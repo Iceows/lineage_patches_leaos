@@ -1,0 +1,55 @@
+From 861903cdbe00d8382899e54a6408b954b10f192d Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 28 Dec 2025 17:51:03 +0100
+Subject: [PATCH 2/2] Allow 128bits SHA1 IPSec keys. This is required to
+
+ implement VoLTE with this API
+
+Change-Id: I9cc1b1844027c13d62a375570bff0cc8395e88d2
+---
+ core/java/android/net/Ikev2VpnProfile.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/core/java/android/net/Ikev2VpnProfile.java b/core/java/android/net/Ikev2VpnProfile.java
+index 74775a820620..f8a2d0ce70fb 100644
+--- a/core/java/android/net/Ikev2VpnProfile.java
++++ b/core/java/android/net/Ikev2VpnProfile.java
+@@ -20,6 +20,7 @@ import static android.net.IpSecAlgorithm.AUTH_AES_CMAC;
+ import static android.net.IpSecAlgorithm.AUTH_AES_XCBC;
+ import static android.net.IpSecAlgorithm.AUTH_CRYPT_AES_GCM;
+ import static android.net.IpSecAlgorithm.AUTH_CRYPT_CHACHA20_POLY1305;
++import static android.net.IpSecAlgorithm.AUTH_HMAC_SHA1;
+ import static android.net.IpSecAlgorithm.AUTH_HMAC_SHA256;
+ import static android.net.IpSecAlgorithm.AUTH_HMAC_SHA384;
+ import static android.net.IpSecAlgorithm.AUTH_HMAC_SHA512;
+@@ -103,6 +104,7 @@ public final class Ikev2VpnProfile extends PlatformVpnProfile {
+         final List<String> algorithms = new ArrayList<>();
+         addAlgorithmIfSupported(algorithms, CRYPT_AES_CBC);
+         addAlgorithmIfSupported(algorithms, CRYPT_AES_CTR);
++        addAlgorithmIfSupported(algorithms, AUTH_HMAC_SHA1);
+         addAlgorithmIfSupported(algorithms, AUTH_HMAC_SHA256);
+         addAlgorithmIfSupported(algorithms, AUTH_HMAC_SHA384);
+         addAlgorithmIfSupported(algorithms, AUTH_HMAC_SHA512);
+@@ -249,8 +251,7 @@ public final class Ikev2VpnProfile extends PlatformVpnProfile {
+      */
+     private static void validateAllowedAlgorithms(@NonNull List<String> algorithmNames) {
+         // First, make sure no insecure algorithms were proposed.
+-        if (algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_MD5)
+-                || algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA1)) {
++        if (algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_MD5)) {
+             throw new IllegalArgumentException("Algorithm not supported for IKEv2 VPN profiles");
+         }
+ 
+@@ -278,7 +279,8 @@ public final class Ikev2VpnProfile extends PlatformVpnProfile {
+      */
+     public static boolean hasNormalModeAlgorithms(@NonNull List<String> algorithmNames) {
+         final boolean hasCrypt = algorithmNames.contains(IpSecAlgorithm.CRYPT_AES_CBC);
+-        final boolean hasAuth = algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA256)
++        final boolean hasAuth = algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA1)
++                || algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA256)
+                 || algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA384)
+                 || algorithmNames.contains(IpSecAlgorithm.AUTH_HMAC_SHA512);
+ 
+-- 
+2.25.1
+

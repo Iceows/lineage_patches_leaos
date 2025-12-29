@@ -1,0 +1,36 @@
+From 597b466b2cd230df62bea2ebc628392ed5eb59b9 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 26 Dec 2025 09:55:42 +0100
+Subject: [PATCH 05/18] huawei: add GApps to erofs and vanilia vndk28-29
+ variant
+
+---
+ generate.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/generate.sh b/generate.sh
+index f75b73b..9a06427 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -52,14 +52,14 @@ for part in a ab;do
+ 				fi
+ 				if [ "$apps" == "old" ];then
+ 					apps_suffix="y"
+-					apps_script=''
+-					apps_name="vanilla old"
++					apps_script='$(call inherit-product, vendor/gapps/'$baseArch'/'$baseArch'-vendor.mk)'
++					apps_name="vanilla old with GApps"
+ 					optional_base='include device/phh/treble/old-vndk.mk'
+ 				fi
+ 				if [ "$apps" == "erofs" ];then
+ 					apps_suffix="e"
+-					apps_script=''
+-					apps_name="erofs"
++					apps_script='$(call inherit-product, vendor/gapps/'$baseArch'/'$baseArch'-vendor.mk)'
++					apps_name="erofs with GApps"
+ 					optional_base='include device/phh/treble/erofs-vndk.mk'
+ 				fi
+ 				if [ "$arch" == "arm" ];then
+-- 
+2.25.1
+

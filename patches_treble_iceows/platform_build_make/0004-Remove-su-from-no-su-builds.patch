@@ -1,0 +1,32 @@
+From 8323c47deebc8463d5e358c8405b1dc8a9eb3771 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 28 Dec 2025 18:22:05 +0100
+Subject: [PATCH 4/4] Remove su from no-su builds
+
+Change-Id: I221c98df663848e3e0e51504aa7238651090273a
+---
+ target/product/base_system.mk | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/target/product/base_system.mk b/target/product/base_system.mk
+index ba239a2a4a..88ae4bfe5f 100644
+--- a/target/product/base_system.mk
++++ b/target/product/base_system.mk
+@@ -412,10 +412,10 @@ PRODUCT_PACKAGES_DEBUG := \
+     unwind_reg_info \
+     unwind_symbols \
+ 
+-ifeq ($(LINEAGE_BUILD),)
+-PRODUCT_PACKAGES_DEBUG += \
+-    su
+-endif
++# ifeq ($(LINEAGE_BUILD),)
++# PRODUCT_PACKAGES_DEBUG += \
++#     su
++# endif
+ 
+ # The set of packages whose code can be loaded by the system server.
+ PRODUCT_SYSTEM_SERVER_APPS += \
+-- 
+2.25.1
+

@@ -1,0 +1,27 @@
+From 53f175b871bd923e5210467ec42b3fb80dea8b7d Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 27 Dec 2025 10:48:28 +0100
+Subject: [PATCH 15/18] huawei: add extra folder for TEE DRM Modem and logging
+
+---
+ board-base.mk | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/board-base.mk b/board-base.mk
+index f409c8a..66c0483 100644
+--- a/board-base.mk
++++ b/board-base.mk
+@@ -6,9 +6,8 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/phh/treble/bluetooth/inclu
+ TARGET_EXFAT_DRIVER := exfat
+ DEVICE_FRAMEWORK_MANIFEST_FILE := device/phh/treble/framework_manifest.xml
+ 
+-BOARD_ROOT_EXTRA_FOLDERS += bt_firmware sec_storage efs persist
++BOARD_ROOT_EXTRA_FOLDERS += sec_storage res splash2 preavs modem_log bt_firmware efs persist
+ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+-
+ BOARD_ROOT_EXTRA_SYMLINKS := $(filter-out $(BOARD_ROOT_EXTRA_SYMLINKS),/mnt/vendor/persist:/persist)
+ 
+ TARGET_NO_KERNEL_OVERRIDE := true
+-- 
+2.25.1
+

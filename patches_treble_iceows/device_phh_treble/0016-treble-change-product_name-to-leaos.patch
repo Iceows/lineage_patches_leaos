@@ -1,0 +1,25 @@
+From a9c9ed2c1cd99d6deea8ba2c03e61bd00c212a76 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 28 Dec 2025 14:53:56 +0100
+Subject: [PATCH 16/18] treble: change product_name to leaos
+
+---
+ generate.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/generate.sh b/generate.sh
+index 9a06427..5f0df55 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -97,7 +97,7 @@ $optional_base
+ $apps_script
+ $rom_script
+ 
+-PRODUCT_NAME := $target
++PRODUCT_NAME := LeaOS
+ PRODUCT_DEVICE := tdgsi_${arch}_$part
+ PRODUCT_BRAND := google
+ PRODUCT_SYSTEM_BRAND := google
+-- 
+2.25.1
+

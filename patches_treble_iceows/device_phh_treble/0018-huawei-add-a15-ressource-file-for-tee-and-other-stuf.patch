@@ -1,0 +1,29 @@
+From 8fbfea70af1e8f3e96765adb8bf5bdadbab6c48a Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 27 Dec 2025 10:03:54 +0100
+Subject: [PATCH 18/18] huawei: add a15 ressource file for tee and other stuff
+
+---
+ base.mk | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/base.mk b/base.mk
+index e07ca52..315488d 100644
+--- a/base.mk
++++ b/base.mk
+@@ -65,6 +65,12 @@ PRODUCT_COPY_FILES += \
+ 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:system/etc/usb_audio_policy_configuration.xml \
+ 	device/phh/treble/files/fake_audio_policy_volume.xml:system/etc/fake_audio_policy_volume.xml \
+ 
++# Huawei EMUI ressource for iaware and tee
++PRODUCT_COPY_FILES += \
++    device/phh/treble/files/init.emui.huawei.iaware.a15.rc:system/etc/init/init.emui.huawei.iaware.a15.rc \
++    device/phh/treble/files/init.emui.huawei.os.a15.rc:system/etc/init/init.emui.huawei.os.a15.rc \
++    device/phh/treble/files/init.emui.huawei.os.common.rc:system/etc/init/init.emui.huawei.os.common.rc
++
+ # NFC (Huawei):
+ #   Default libnfc-nci.conf file for devices that does not have one
+ #   in vendor/etc or in /odm/etc/ need copy it in post install
+-- 
+2.25.1
+
