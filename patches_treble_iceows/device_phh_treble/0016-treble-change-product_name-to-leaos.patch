@@ -1,7 +1,7 @@
-From a9c9ed2c1cd99d6deea8ba2c03e61bd00c212a76 Mon Sep 17 00:00:00 2001
+From c9b266b83e01fbabf5f02e8669afa58ebe9f5f63 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sun, 28 Dec 2025 14:53:56 +0100
-Subject: [PATCH 16/18] treble: change product_name to leaos
+Subject: [PATCH 16/19] treble: change product_name to leaos
 
 ---
  generate.sh | 2 +-

@@ -1,7 +1,7 @@
-From 196b2d91cc4d9f177d62a8ae52401cc4d5337eaa Mon Sep 17 00:00:00 2001
+From e20172c6d1037a095ecc66b74c7f998f8abcc600 Mon Sep 17 00:00:00 2001
 From: Iceows <mounierr07@gmail.com>
 Date: Mon, 17 Nov 2025 19:49:27 +0100
-Subject: [PATCH 03/18] device: add an old variant of vanilla that exclusively
+Subject: [PATCH 03/19] device: add an old variant of vanilla that exclusively
  include
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8

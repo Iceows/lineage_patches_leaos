@@ -1,7 +1,7 @@
-From d26f46af05bf3af18e54fcb9e561ef346ea0c71f Mon Sep 17 00:00:00 2001
+From be57bd10c68958a3c2bb0d9efc3074c57f87f918 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Fri, 19 Jul 2024 21:06:24 +0200
-Subject: [PATCH 11/18] lineage: add extra vendor with release keys
+Subject: [PATCH 11/19] lineage: add extra vendor with release keys
 
 ---
  lineage.mk | 1 +

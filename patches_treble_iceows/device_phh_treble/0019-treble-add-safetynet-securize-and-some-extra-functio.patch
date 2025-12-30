@@ -1,0 +1,270 @@
+From aff83306da217e15c4b9c4e7e7128cbb8922eb87 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Tue, 30 Dec 2025 13:30:06 +0100
+Subject: [PATCH 19/19] treble : add safetynet securize , and some extra
+ functions
+
+- Add SafetyNet/Play Integrity securize
+- Add Autorun
+- Add NoLog
+- Add Restart sysui
+- Add Dump Logs
+- Add no stock apps (vendor)
+---
+ base.mk             |   2 +
+ iceows-securize.sh  |  19 +++++++++
+ phh-on-data.sh      |   6 +++
+ phh-prop-handler.sh | 101 ++++++++++++++++++++++++++++++++++++++++++++
+ phh-securize.sh     |  38 +++++++++++++++++
+ vndk.rc             |  18 ++++++++
+ 6 files changed, 184 insertions(+)
+ create mode 100644 iceows-securize.sh
+ create mode 100644 phh-securize.sh
+
+diff --git a/base.mk b/base.mk
+index 315488d..bbf3336 100644
+--- a/base.mk
++++ b/base.mk
+@@ -88,6 +88,7 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
+ 
+ PRODUCT_COPY_FILES += \
++	device/phh/treble/iceows-securize.sh:system/phh/iceows-securize.sh \
+ 	device/phh/treble/empty:system/phh/empty \
+ 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
+ 
+@@ -183,6 +184,7 @@ PRODUCT_PACKAGES += \
+ 	resetprop_phh
+ 
+ PRODUCT_COPY_FILES += \
++	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+ 	device/phh/treble/files/ota.sh:system/bin/ota.sh \
+ 
+ PRODUCT_COPY_FILES += \
+diff --git a/iceows-securize.sh b/iceows-securize.sh
+new file mode 100644
+index 0000000..5d1d066
+--- /dev/null
++++ b/iceows-securize.sh
+@@ -0,0 +1,19 @@
++#!/system/bin/sh
++
++(getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
++    [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
++done
++
++resetprop_phh ro.build.tags release-keys
++resetprop_phh ro.boot.vbmeta.device_state locked
++resetprop_phh ro.boot.verifiedbootstate green
++resetprop_phh ro.boot.flash.locked 1
++resetprop_phh ro.boot.veritymode enforcing
++resetprop_phh ro.boot.warranty_bit 0
++resetprop_phh ro.warranty_bit 0
++resetprop_phh ro.debuggable 0
++resetprop_phh ro.secure 1
++resetprop_phh ro.build.type user
++resetprop_phh ro.build.selinux 0
++resetprop_phh ro.adb.secure 1
++setprop ctl.restart adbd
+diff --git a/phh-on-data.sh b/phh-on-data.sh
+index 472d16e..1c8b887 100644
+--- a/phh-on-data.sh
++++ b/phh-on-data.sh
+@@ -13,6 +13,12 @@ if getprop persist.sys.phh.caf.media_profile |grep -q true;then
+     setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
+ fi
+ 
++if getprop persist.sys.phh.no_stock_apps |grep -q true; then
++	for part in odm vendor; do
++		mount /mnt/phh/empty_dir/ /$part/overlay
++		mount /mnt/phh/empty_dir/ /$part/app
++	done
++fi
+ 
+ minijailSrc=/system/system_ext/apex/com.android.vndk.v28/lib/libminijail.so
+ minijailSrc64=/system/system_ext/apex/com.android.vndk.v28/lib64/libminijail.so
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index e187466..202b51a 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -281,3 +281,104 @@ if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
+     restartAudio
+     exit
+ fi
++
++#monosim
++if [ "$1" == "persist.sys.phh.monosim" ]; then
++    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ "$prop_value" == "true" ]; then
++		resetprop_phh persist.radio.multisim.config single
++		resetprop_phh persist.dsds.enabled false
++		resetprop_phh persist.radio.modem.cap 09995
++
++		resetprop_phh ro.config.modem_number 1
++		resetprop_phh ro.config.client_number 1
++
++		resetprop_phh ro.multi.rild false
++		resetprop_phh persist.odm.dsds.enabled false
++		resetprop_phh ro.odm.multi.rild false
++
++	else
++		resetprop_phh persist.radio.multisim.config dsds
++		resetprop_phh persist.dsds.enabled true
++		resetprop_phh persist.radio.modem.cap 09A9D
++
++		resetprop_phh ro.multi.rild true
++		resetprop_phh persist.odm.dsds.enabled true
++		resetprop_phh ro.odm.multi.rild true
++    fi
++    exit
++fi
++
++
++#securize
++if [ "$1" == "persist.sys.phh.securize" ]; then
++    if [[ "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [ ! -f /data/adb/phh/secure ]; then
++        mkdir -p /data/adb/phh
++        cp /system/phh/iceows-securize.sh /data/adb/phh/secure
++    fi
++    /system/bin/sh /data/adb/phh/secure
++    exit
++fi
++
++#autorun
++if [ "$1" == "persist.sys.phh.autorun" ]; then
++    if [[ "$prop_value" != "true" && "$prop_value" != "false" ]]; then
++        exit 1
++    fi
++
++    if [ ! -f /data/adb/phh/run ]; then
++        mkdir -p /data/adb/phh
++        touch /data/adb/phh/run
++    fi
++    /system/bin/sh /data/adb/phh/run
++    exit
++fi
++
++#nolog
++if [ "$1" == "persist.sys.phh.nolog" ]; then
++    if [[ "$prop_value" != "false" && "$prop_value" != "true" ]]; then
++        exit 1
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        setprop ctl.stop logd
++        setprop ctl.stop traced
++        setprop ctl.stop traced_probes
++    else
++        setprop ctl.start traced_probes
++        setprop ctl.start traced
++        setprop ctl.start logd
++    fi
++    exit
++fi
++
++#restart_sysui
++if [ "$1" == "sys.phh.restart_sysui" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        pkill systemui
++    fi
++    exit
++fi
++
++#dump_logs
++if [ "$1" == "sys.phh.dump_logs" ]; then
++    if [[ "$prop_value" = "false" && "$prop_value" != "true" ]]; then
++        exit
++    fi
++
++    if [[ "$prop_value" == "true" ]]; then
++        logcat -b all -d > /sdcard/logs.txt
++    fi
++    exit
++fi
+diff --git a/phh-securize.sh b/phh-securize.sh
+new file mode 100644
+index 0000000..80b46d7
+--- /dev/null
++++ b/phh-securize.sh
+@@ -0,0 +1,38 @@
++#!/system/bin/sh
++
++if [ -e /system/bin/magisk ]
++then
++    # remove bind-mount of phh-su overriding /system/bin/su -> ./magisk
++    umount -l /system/bin/magisk
++    # we need to modify the real system partition
++    MAGISK_MIRROR="$(magisk --path)/.magisk/mirror"
++    SYSTEM=$MAGISK_MIRROR/system
++    MOUNTPOINT_LIST="$MAGISK_MIRROR/system_root $MAGISK_MIRROR/system"
++else
++    SYSTEM=/system
++    MOUNTPOINT_LIST="/system /"
++fi
++
++# remove bind-mount of phh-su (preventing $SYSTEM/xbin/su to be removed)
++umount -l /system/xbin/su
++
++for MOUNTPOINT in $MOUNTPOINT_LIST
++do
++    [ -d $MOUNTPOINT ] && mountpoint -q $MOUNTPOINT && break
++done
++
++mount -o remount,rw $MOUNTPOINT
++remount
++
++touch $SYSTEM/phh/secure
++rm $SYSTEM/xbin/su
++rm $SYSTEM/bin/phh-su
++rm $SYSTEM/etc/init/su.rc
++rm $SYSTEM/bin/phh-securize.sh
++rm -Rf $SYSTEM/{app,priv-app}/me.phh.superuser/
++rm -Rf /data/su || true
++mount -o remount,ro $MOUNTPOINT
++sync
++mkdir /metadata/phh
++touch /metadata/phh/secure
++reboot
+diff --git a/vndk.rc b/vndk.rc
+index 6bd3950..12b6bdf 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -70,6 +70,24 @@ on property:ro.sf.lcd_density=*
+ on property:persist.bluetooth.system_audio_hal.enabled=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.bluetooth.system_audio_hal.enabled"
+ 
++on property:persist.sys.phh.monosim=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.monosim"
++ 
++on property:persist.sys.phh.securize=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.securize"
++
++on property:persist.sys.phh.autorun=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.autorun"
++
++on property:persist.sys.phh.nolog=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.nolog"
++
++on property:sys.phh.restart_sysui=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "sys.phh.restart_sysui"
++
++on property:sys.phh.dump_logs=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "sys.phh.dump_logs"
++
+ on property:init.svc.ril-proxy=stopped && property:persist.sys.phh.restart_ril=true
+     start ril-proxy
+ 
+-- 
+2.25.1
+

@@ -1,7 +1,7 @@
-From 8793695f6312ee093435422a933b13994452462d Mon Sep 17 00:00:00 2001
+From b3c314e1fb3697b8291e803f11618a721d1c3b02 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 27 Dec 2025 09:57:38 +0100
-Subject: [PATCH 17/18] huawei: add nfc and nfc.hce stuff
+Subject: [PATCH 17/19] huawei: add nfc and nfc.hce stuff
 
 ---
  base.mk      | 18 ++++++++++--------

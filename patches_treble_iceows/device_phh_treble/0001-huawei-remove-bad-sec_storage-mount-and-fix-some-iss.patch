@@ -1,7 +1,7 @@
-From be09325cdfc460ebd2ebaa9151cd78708fcfec81 Mon Sep 17 00:00:00 2001
+From e73d91ecca7c5d5ded22f94c9cc786c9b0cbee99 Mon Sep 17 00:00:00 2001
 From: Iceows <mounierr07@gmail.com>
 Date: Mon, 17 Nov 2025 19:44:31 +0100
-Subject: [PATCH 01/18] huawei: remove bad sec_storage mount and fix some
+Subject: [PATCH 01/19] huawei: remove bad sec_storage mount and fix some
  issues with ......
 
 huawei: remove bad sec_storage mount and fix some issues with media, rpc motions sensor and ar

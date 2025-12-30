@@ -1,7 +1,7 @@
-From 63b22e63c60df1ffeb6d752d2aaa69690bb690e4 Mon Sep 17 00:00:00 2001
+From 77ca5951a5f835b1a4dd28f36cd6c5e8346a4882 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 25 Dec 2025 18:46:31 +0100
-Subject: [PATCH 04/18] huawei: add an erofs vndk28-29 variant for huawei phone
+Subject: [PATCH 04/19] huawei: add an erofs vndk28-29 variant for huawei phone
 
 ---
  erofs-vndk.mk | 6 ++++++

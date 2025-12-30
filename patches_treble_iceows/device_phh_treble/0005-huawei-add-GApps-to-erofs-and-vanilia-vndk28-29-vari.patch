@@ -1,7 +1,7 @@
-From 597b466b2cd230df62bea2ebc628392ed5eb59b9 Mon Sep 17 00:00:00 2001
+From f8b2192b911c0c118a537e37faddeb0544ff108d Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Fri, 26 Dec 2025 09:55:42 +0100
-Subject: [PATCH 05/18] huawei: add GApps to erofs and vanilia vndk28-29
+Subject: [PATCH 05/19] huawei: add GApps to erofs and vanilia vndk28-29
  variant
 
 ---

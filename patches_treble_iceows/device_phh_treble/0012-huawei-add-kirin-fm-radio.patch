@@ -1,7 +1,7 @@
-From c2ae5f4f07c3c6eab81af5711b6c3d7840d39f4d Mon Sep 17 00:00:00 2001
+From a3b94546c4cf7a3d9b937abcb9e088ca17986df3 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Wed, 24 Dec 2025 15:48:51 +0100
-Subject: [PATCH 12/18] huawei: add kirin fm radio
+Subject: [PATCH 12/19] huawei: add kirin fm radio
 
 ---
  base.mk            | 6 ++++++

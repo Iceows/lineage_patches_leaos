@@ -1,7 +1,7 @@
-From 913e921030cd13a3e37c021b9b59eb3e5e95f3a4 Mon Sep 17 00:00:00 2001
+From 8584341ffb9bc17599cf41dfbb2d6b4a5665ee3c Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 27 Dec 2025 10:25:11 +0100
-Subject: [PATCH 13/18] huawei: update sepolicy rules
+Subject: [PATCH 13/19] huawei: update sepolicy rules
 
 ---
  sepolicy/file_contexts |   5 +

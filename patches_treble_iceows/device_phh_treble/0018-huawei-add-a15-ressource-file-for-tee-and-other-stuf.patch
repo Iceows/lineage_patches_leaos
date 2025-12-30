@@ -1,7 +1,7 @@
-From 8fbfea70af1e8f3e96765adb8bf5bdadbab6c48a Mon Sep 17 00:00:00 2001
+From 7c2311cf93da2520fb2df1bae2292e4399c569fa Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 27 Dec 2025 10:03:54 +0100
-Subject: [PATCH 18/18] huawei: add a15 ressource file for tee and other stuff
+Subject: [PATCH 18/19] huawei: add a15 ressource file for tee and other stuff
 
 ---
  base.mk | 6 ++++++
