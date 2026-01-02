@@ -1,4 +1,4 @@
-From 0edb343ea86b1b5145c2ecbaefe2de67c539db39 Mon Sep 17 00:00:00 2001
+From 37b7898203f9f76cbdff0dfaf19dee5466251ab3 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 25 Dec 2025 10:16:33 +0100
 Subject: [PATCH 2/4] Add GcamGo and LatinIME to product package

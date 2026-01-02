@@ -1,9 +1,9 @@
-From 8323c47deebc8463d5e358c8405b1dc8a9eb3771 Mon Sep 17 00:00:00 2001
+From 5c5bba6c3c0585e0ce817371aeebd530ed26dc0b Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Sun, 28 Dec 2025 18:22:05 +0100
+Date: Fri, 2 Jan 2026 18:16:56 +0100
 Subject: [PATCH 4/4] Remove su from no-su builds
 
-Change-Id: I221c98df663848e3e0e51504aa7238651090273a
+Change-Id: I897acc4f19f28c1d11e61eb42eda20d10dae47f7
 ---
  target/product/base_system.mk | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
