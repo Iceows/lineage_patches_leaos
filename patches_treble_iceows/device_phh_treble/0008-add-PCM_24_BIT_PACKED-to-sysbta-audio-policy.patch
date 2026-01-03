@@ -1,7 +1,7 @@
-From 7b7d44f5a6079490c82d59051408d8a20106cbaf Mon Sep 17 00:00:00 2001
+From 6239b1fd41f149110f877d561f3309cb24ec26c4 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 6 Jul 2023 09:11:41 +0200
-Subject: [PATCH 08/19] add PCM_24_BIT_PACKED to sysbta audio policy
+Subject: [PATCH 08/22] add PCM_24_BIT_PACKED to sysbta audio policy
 
 Just add new format AUDIO_FORMAT_PCM_24_BIT_PACKED
 ---

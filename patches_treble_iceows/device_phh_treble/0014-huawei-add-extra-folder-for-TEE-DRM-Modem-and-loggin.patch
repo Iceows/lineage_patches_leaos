@@ -1,7 +1,7 @@
-From 6961a53ab43fd722994c0936c1b658ed1b6b4350 Mon Sep 17 00:00:00 2001
+From 06630c4ae4b4fabf2dfea53508ffcf5017bcc4c3 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 27 Dec 2025 10:48:28 +0100
-Subject: [PATCH 15/19] huawei: add extra folder for TEE DRM Modem and logging
+Subject: [PATCH 14/22] huawei: add extra folder for TEE DRM Modem and logging
 
 ---
  board-base.mk | 3 +--

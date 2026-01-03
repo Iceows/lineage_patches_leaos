@@ -1,0 +1,43 @@
+From a6ae6c927aea0d3c4db760020541e3adb6747bb1 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 2 Jan 2026 18:59:14 +0100
+Subject: [PATCH 21/22] treble: add more properties in iceows securize script
+
+Co-Authored-By: Pierre-Hugues HUSSON <phh@phh.me>
+---
+ iceows-securize.sh | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/iceows-securize.sh b/iceows-securize.sh
+index 5d1d066..502ccd3 100644
+--- a/iceows-securize.sh
++++ b/iceows-securize.sh
+@@ -4,6 +4,17 @@
+     [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
+ done
+ 
++resetprop_phh ro.build.host android-build
++resetprop_phh ro.product.build.tags release-keys
++resetprop_phh ro.system.build.tags release-keys
++resetprop_phh ro.system_ext.build.tags release-keys
++resetprop_phh ro.vendor.build.tags release-keys
++resetprop_phh ro.build.type user
++resetprop_phh ro.product.build.type user
++resetprop_phh ro.system.build.type user
++resetprop_phh ro.system_ext.build.type user
++resetprop_phh ro.vendor.build.type user
++resetprop_phh ro.build.user nobody
+ resetprop_phh ro.build.tags release-keys
+ resetprop_phh ro.boot.vbmeta.device_state locked
+ resetprop_phh ro.boot.verifiedbootstate green
+@@ -14,6 +25,6 @@ resetprop_phh ro.warranty_bit 0
+ resetprop_phh ro.debuggable 0
+ resetprop_phh ro.secure 1
+ resetprop_phh ro.build.type user
+-resetprop_phh ro.build.selinux 0
++resetprop_phh --delete ro.build.selinux
+ resetprop_phh ro.adb.secure 1
+ setprop ctl.restart adbd
+-- 
+2.25.1
+

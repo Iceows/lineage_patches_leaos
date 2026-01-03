@@ -1,7 +1,8 @@
-From 7d2763d2f4d2e1310d71a504a54b520fb0941183 Mon Sep 17 00:00:00 2001
+From 5160d45826a5412192f22791e9776185385de997 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Tue, 30 Dec 2025 20:16:27 +0100
-Subject: [PATCH] huawei: remove old make and add also non gapps for old device
+Subject: [PATCH 19/22] huawei: remove old make and add also non gapps for old
+ device
 
 ---
  generate.sh | 25 ++++++++++---------------

@@ -1,0 +1,25 @@
+From 920f4af7f4fe2dfa2e743b0a371e9eca0982600f Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 2 Jan 2026 18:22:45 +0100
+Subject: [PATCH 20/22] Add persist.sys.phh.adb_secure to set adb secure
+
+Co-Authored-By: Pierre-Hugues HUSSON <phh@phh.me>
+---
+ vndk.rc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/vndk.rc b/vndk.rc
+index 12b6bdf..81278a2 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -126,3 +126,7 @@ service watchdogd-gsi /system/bin/watchdogd 10 20
+     class core
+     oneshot
+     seclabel u:r:watchdogd:s0
++
++on property:persist.sys.phh.adb_secure=1
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/resetprop_phh ro.adb.secure 1
++    restart adbd
+-- 
+2.25.1
+

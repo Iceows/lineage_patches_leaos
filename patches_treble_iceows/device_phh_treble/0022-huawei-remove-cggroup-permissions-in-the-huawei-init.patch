@@ -1,0 +1,48 @@
+From 62bfde67c6009dffece26be8b16d2ab474b3c9b7 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 3 Jan 2026 16:39:34 +0100
+Subject: [PATCH 22/22] huawei: remove cggroup permissions in the huawei init
+ rc
+
+Phone now can be shutdown now
+---
+ files/init.emui.huawei.os.a15.rc | 23 -----------------------
+ 1 file changed, 23 deletions(-)
+
+diff --git a/files/init.emui.huawei.os.a15.rc b/files/init.emui.huawei.os.a15.rc
+index f38227e..c2f5225 100644
+--- a/files/init.emui.huawei.os.a15.rc
++++ b/files/init.emui.huawei.os.a15.rc
+@@ -29,29 +29,6 @@ on boot
+     chmod 775 /data/log/bt
+ #teeos
+     mkdir /data/log/tee 0770 root system
+-# Create cgroup for pids
+-    mount tmpfs none /sys/fs/cgroup mode=0750,uid=0,gid=1000
+-    mkdir /sys/fs/cgroup/pids 0750 root system
+-    mount cgroup none /sys/fs/cgroup/pids pids
+-    mkdir /sys/fs/cgroup/pids/unconfirm_app 0750 root system
+-    chown root system /sys/fs/cgroup/pids/unconfirm_app/cgroup.procs
+-    chmod 0660 /sys/fs/cgroup/pids/unconfirm_app/cgroup.procs
+-    chown root system /sys/fs/cgroup/pids/unconfirm_app/tasks
+-    chmod 0660 /sys/fs/cgroup/pids/unconfirm_app/tasks
+-    chown root system /sys/fs/cgroup/pids/unconfirm_app/pids.group_limit
+-    chmod 0660 /sys/fs/cgroup/pids/unconfirm_app/pids.group_limit
+-    chown root system /sys/fs/cgroup/pids/unconfirm_app/cgroup.event_control
+-    chmod 0220 /sys/fs/cgroup/pids/unconfirm_app/cgroup.event_control
+-    chmod 0220 /sys/fs/cgroup/pids/cgroup.event_control
+-    mkdir /sys/fs/cgroup/pids/daemon_proc 0750 root system
+-    chown root system /sys/fs/cgroup/pids/daemon_proc/cgroup.procs
+-    chmod 0660 /sys/fs/cgroup/pids/daemon_proc/cgroup.procs
+-    chown root system /sys/fs/cgroup/pids/daemon_proc/tasks
+-    chmod 0660 /sys/fs/cgroup/pids/daemon_proc/tasks
+-    chown root system /sys/fs/cgroup/pids/daemon_proc/pids.group_limit
+-    chmod 0660 /sys/fs/cgroup/pids/daemon_proc/pids.group_limit
+-    chown root system /sys/fs/cgroup/pids/daemon_proc/cgroup.event_control
+-    chmod 0220 /sys/fs/cgroup/pids/daemon_proc/cgroup.event_control
+ 
+ #audio
+     chmod 0660 /dev/nxp_smartpa_dev
+-- 
+2.25.1
+

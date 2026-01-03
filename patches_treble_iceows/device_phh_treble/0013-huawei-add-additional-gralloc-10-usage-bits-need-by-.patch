@@ -1,7 +1,7 @@
-From e987c54d4186116597512d23b441ac9e6fa381f5 Mon Sep 17 00:00:00 2001
+From cd208df019a91b41879d38368d8fddc2e034b335 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 27 Dec 2025 10:24:27 +0100
-Subject: [PATCH 14/19] huawei: add additional gralloc 10 usage bits need by L1
+Subject: [PATCH 13/22] huawei: add additional gralloc 10 usage bits need by L1
  DRM Widevine emui12
 
 ---

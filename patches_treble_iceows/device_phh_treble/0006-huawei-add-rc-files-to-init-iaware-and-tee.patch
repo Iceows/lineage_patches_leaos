@@ -1,7 +1,7 @@
-From 017d1a3ef4abcef8eff41ff4547ec046757b6313 Mon Sep 17 00:00:00 2001
+From 9dcabbf2ff87d6ead78a1cd867104bded037882a Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 25 Dec 2025 18:44:57 +0100
-Subject: [PATCH 06/19] huawei: add rc files to init iaware and tee
+Subject: [PATCH 06/22] huawei: add rc files to init iaware and tee
 
 ---
  files/init.emui.huawei.iaware.a15.rc | 116 +++++++++++++++++++

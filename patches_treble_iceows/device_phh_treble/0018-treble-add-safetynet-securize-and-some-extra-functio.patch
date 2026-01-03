@@ -1,7 +1,7 @@
-From aff83306da217e15c4b9c4e7e7128cbb8922eb87 Mon Sep 17 00:00:00 2001
+From 6abe0c75c764c99f569f23a4cf38ca6b39f6e054 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Tue, 30 Dec 2025 13:30:06 +0100
-Subject: [PATCH 19/19] treble : add safetynet securize , and some extra
+Subject: [PATCH 18/22] treble : add safetynet securize , and some extra
  functions
 
 - Add SafetyNet/Play Integrity securize
