@@ -1,7 +1,7 @@
-From c550d97788ed8638b5d284d0b6e32aa65453bc01 Mon Sep 17 00:00:00 2001
+From 4cd6ca678462e067cfc7e2e9396b7ac95248036a Mon Sep 17 00:00:00 2001
 From: Iceows <mounierr07@gmail.com>
 Date: Wed, 6 Aug 2025 06:40:44 +0200
-Subject: [PATCH] huawei: fix TEE storage
+Subject: [PATCH 17/21] huawei: fix TEE storage
 
 secure_storage in EMUI have dedicated partition
 ---
@@ -54,5 +54,5 @@ index 05d7f38..c689e75 100644
  
  has_hostapd=false
 -- 
-2.34.1
+2.25.1
 

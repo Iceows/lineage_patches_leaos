@@ -1,19 +1,19 @@
-From 6e8d33a52dc483bbf662c61eefca614991645af0 Mon Sep 17 00:00:00 2001
+From 24c7479f2aacb3ca03f058fd6d71d59a0f766ffc Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Tue, 18 Oct 2022 20:59:36 +0200
-Subject: [PATCH 13/13] NXP-NFC AOSP add specific permissions
+Date: Fri, 9 Jan 2026 21:16:46 +0100
+Subject: [PATCH] Add nfc beam permission
 
-Patch the AOSP frameworks/native definitions to add specific permissions
+Change-Id: I343f0ce82102dafc185b86e09bcffe78bcba7ca7
 ---
- data/etc/android.sofware.nfc.beam.xml | 20 ++++++++++++++++++++
+ data/etc/android.software.nfc.beam.xml | 20 ++++++++++++++++++++
  1 file changed, 20 insertions(+)
- create mode 100644 data/etc/android.sofware.nfc.beam.xml
+ create mode 100644 data/etc/android.software.nfc.beam.xml
 
-diff --git a/data/etc/android.sofware.nfc.beam.xml b/data/etc/android.sofware.nfc.beam.xml
+diff --git a/data/etc/android.software.nfc.beam.xml b/data/etc/android.software.nfc.beam.xml
 new file mode 100644
-index 0000000000..b0a5e7ea73
+index 0000000000..ef79121421
 --- /dev/null
-+++ b/data/etc/android.sofware.nfc.beam.xml
++++ b/data/etc/android.software.nfc.beam.xml
 @@ -0,0 +1,20 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<!-- Copyright (C) 2013 The Android Open Source Project
@@ -33,7 +33,7 @@ index 0000000000..b0a5e7ea73
 +
 +<!-- This feature indicates that the device supports P2P -->
 +<permissions>
-+    <feature name="android.sofware.nfc.beam" />
++    <feature name="android.software.nfc.beam" />
 +</permissions>
 -- 
 2.25.1

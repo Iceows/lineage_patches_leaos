@@ -1,7 +1,7 @@
-From bd71f8d0cdd715a2f5613d1ca580b1c8d9eeefdd Mon Sep 17 00:00:00 2001
+From 24dcb11767d3db58f1b1157df24d1300f569a6b7 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 28 Oct 2023 10:57:49 +0200
-Subject: [PATCH 10/14] huawei: nfc add hce and beam stuf
+Subject: [PATCH 10/21] huawei: nfc add hce and beam stuf
 
 ---
  base.mk | 17 +++++++----------

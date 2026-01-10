@@ -1,7 +1,7 @@
-From d3f447ae2dbe78886389adf27dbe877e4ce7f6ac Mon Sep 17 00:00:00 2001
+From 07dcb9b7e0474d75873e41f6e0e151894d2b3e53 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 3 Jun 2023 19:22:57 +0200
-Subject: [PATCH 01/14] charger : fix kirin710-970 non blank issues
+Subject: [PATCH 01/21] charger : fix kirin710-970 non blank issues
 
 start charger with system user to fix none blank issues on kirin 710/970 and change owner of sysfs backlight and led for all phone model
 ---

@@ -1,0 +1,313 @@
+From d1a550d722f242c01093702aaa1943a41564bbf6 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 9 Jan 2026 18:51:39 +0100
+Subject: [PATCH 20/21] huawei: add a15 ressource file for tee and other stuff
+
+---
+ base.mk                              |   8 +-
+ files/init.emui.huawei.iaware.a15.rc | 116 +++++++++++++++++++++++
+ files/init.emui.huawei.os.a15.rc     | 136 +++++++++++++++++++++++++++
+ files/init.emui.huawei.os.common.rc  |   3 +
+ 4 files changed, 262 insertions(+), 1 deletion(-)
+ create mode 100644 files/init.emui.huawei.iaware.a15.rc
+ create mode 100644 files/init.emui.huawei.os.a15.rc
+ create mode 100644 files/init.emui.huawei.os.common.rc
+
+diff --git a/base.mk b/base.mk
+index b61e32f..cd4856a 100644
+--- a/base.mk
++++ b/base.mk
+@@ -8,10 +8,16 @@ PRODUCT_COPY_FILES := \
+ 	frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+ 	frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
+ 	frameworks/native/data/etc/android.hardware.nfc.hcef.xml:system/etc/permissions/android.hardware.nfc.hcef.xml \
+-	frameworks/native/data/etc/android.sofware.nfc.beam.xml:system/etc/permissions/android.sofware.nfc.beam.xml \
++	frameworks/native/data/etc/android.software.nfc.beam.xml:system/etc/permissions/android.sofware.nfc.beam.xml \
+ 	frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
+ 	frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml
+ 
++# Huawei EMUI ressource for iaware and tee
++PRODUCT_COPY_FILES += \
++    device/phh/treble/files/init.emui.huawei.iaware.a15.rc:system/etc/init/init.emui.huawei.iaware.a15.rc \
++    device/phh/treble/files/init.emui.huawei.os.a15.rc:system/etc/init/init.emui.huawei.os.a15.rc \
++    device/phh/treble/files/init.emui.huawei.os.common.rc:system/etc/init/init.emui.huawei.os.common.rc
++
+ # Bluetooth Audio (System-side HAL, sysbta)
+ PRODUCT_PACKAGES += \
+     audio.sysbta.default \
+diff --git a/files/init.emui.huawei.iaware.a15.rc b/files/init.emui.huawei.iaware.a15.rc
+new file mode 100644
+index 0000000..13e1835
+--- /dev/null
++++ b/files/init.emui.huawei.iaware.a15.rc
+@@ -0,0 +1,116 @@
++# for iAware
++on boot
++    mkdir /data/log/iaware/
++    chown root system /data/log/iaware/
++    chmod 770 /data/log/iaware/
++on init
++    mkdir /dev/stune/boost
++    mkdir /dev/stune/system-background
++    mkdir /dev/stune/key-background
++    chown system system /dev/stune/boost
++    chown system system /dev/stune/system-background
++    chown system system /dev/stune/key-background
++    chown system system /dev/stune/boost/tasks
++    chown system system /dev/stune/system-background/tasks
++    chown system system /dev/stune/key-background/tasks
++    chmod 0664 /dev/stune/boost/tasks
++    chmod 0664 /dev/stune/system-background/tasks
++    chmod 0664 /dev/stune/key-background/tasks
++
++    chown system system /dev/stune/schedtune.boost
++    chown system system /dev/stune/foreground/schedtune.boost
++    chown system system /dev/stune/top-app/schedtune.boost
++    chown system system /dev/stune/boost/schedtune.boost
++    chown system system /dev/stune/background/schedtune.boost
++    chown system system /dev/stune/system-background/schedtune.boost
++    chown system system /dev/stune/key-background/schedtune.boost
++    chmod 0664 /dev/stune/schedtune.boost
++    chmod 0664 /dev/stune/foreground/schedtune.boost
++    chmod 0664 /dev/stune/top-app/schedtune.boost
++    chmod 0664 /dev/stune/boost/schedtune.boost
++    chmod 0664 /dev/stune/background/schedtune.boost
++    chmod 0664 /dev/stune/system-background/schedtune.boost
++    chmod 0664 /dev/stune/key-background/schedtune.boost
++
++# sets up initial iolimit
++    mkdir /dev/iolimit
++    mount cgroup none /dev/iolimit iolimit
++    mkdir /dev/iolimit/iocontrol
++    mkdir /dev/iolimit/heavyio
++
++    chown system system /dev/iolimit
++    chown system system /dev/iolimit/iocontrol
++    chown system system /dev/iolimit/heavyio
++
++    chown system system /dev/iolimit/tasks
++    chown system system /dev/iolimit/iocontrol/tasks
++    chown system system /dev/iolimit/heavyio/tasks
++
++    chmod 0644 /dev/iolimit/tasks
++    chmod 0644 /dev/iolimit/iocontrol/tasks
++    chmod 0644 /dev/iolimit/heavyio/tasks
++
++    chmod 0644 /dev/iolimit/cgroup.procs
++    chmod 0644 /dev/iolimit/iocontrol/cgroup.procs
++    chmod 0644 /dev/iolimit/heavyio/cgroup.procs
++
++    write /dev/iolimit/iocontrol/iolimit.read_limit 3145728
++    write /dev/iolimit/iocontrol/iolimit.write_limit 3145728
++    write /dev/iolimit/iocontrol/iolimit.switching 0
++
++    write /dev/iolimit/heavyio/iolimit.read_limit 1048576
++    write /dev/iolimit/heavyio/iolimit.write_limit 1048576
++    write /dev/iolimit/heavyio/iolimit.switching 0
++
++# sets up initial blkio for ActivityManger
++    mkdir /dev/blkio
++    mount cgroup none /dev/blkio blkio
++
++    mkdir /dev/blkio/foreground
++    mkdir /dev/blkio/background
++    mkdir /dev/blkio/system-background
++    mkdir /dev/blkio/key-background
++    mkdir /dev/blkio/top-app
++
++    chown system system /dev/blkio
++    chown system system /dev/blkio/foreground
++    chown system system /dev/blkio/background
++    chown system system /dev/blkio/system-background
++    chown system system /dev/blkio/key-background
++    chown system system /dev/blkio/top-app
++
++    chown system system /dev/blkio/tasks
++    chown system system /dev/blkio/foreground/tasks
++    chown system system /dev/blkio/background/tasks
++    chown system system /dev/blkio/system-background/tasks
++    chown system system /dev/blkio/key-background/tasks
++    chown system system /dev/blkio/top-app/tasks
++
++    chmod 0664 /dev/blkio/tasks
++    chmod 0664 /dev/blkio/foreground/tasks
++    chmod 0664 /dev/blkio/background/tasks
++    chmod 0664 /dev/blkio/system-background/tasks
++    chmod 0664 /dev/blkio/key-background/tasks
++    chmod 0664 /dev/blkio/top-app/tasks
++
++# key-background is for key background tasks
++    mkdir /dev/cpuset/key-background
++    write /dev/cpuset/key-background/cpus 0-7
++    write /dev/cpuset/key-background/mems 0
++    chown system system /dev/cpuset/key-background
++    chown system system /dev/cpuset/key-background/tasks
++    chmod 0664 /dev/cpuset/key-background/tasks
++
++# boost group is for key thread
++    mkdir /dev/cpuset/boost
++    write /dev/cpuset/boost/cpus 0-7
++    write /dev/cpuset/boost/mems 0
++    chown system system /dev/cpuset/boost
++    chown system system /dev/cpuset/boost/tasks
++    chmod 0664 /dev/cpuset/boost/tasks
++
++# iaware main switch
++on property:ro.config.enable_iaware=true
++    setprop persist.sys.enable_iaware true
++on property:ro.config.enable_iaware=false
++    setprop persist.sys.enable_iaware false
+diff --git a/files/init.emui.huawei.os.a15.rc b/files/init.emui.huawei.os.a15.rc
+new file mode 100644
+index 0000000..c2f5225
+--- /dev/null
++++ b/files/init.emui.huawei.os.a15.rc
+@@ -0,0 +1,136 @@
++on early-init
++    setprop persist.service.hdb.enable true
++
++on init
++    # for inotify watch to /dev/bus/usb
++    mkdir /dev/bus 0755 root root
++    mkdir /dev/bus/usb 0755 root root
++    mkdir /dev/bus/usb/001 0755 root root
++    mkdir /dev/bus/usb/002 0755 root root
++
++# mount secure storage partition for teeos
++    mount ext4 /dev/block/by-name/secure_storage /sec_storage nosuid nodev noatime wait crypt discard,auto_da_alloc,mblk_io_submit,data=journal,context=u:object_r:teecd_data_file:s0
++    chown root root /sec_storage
++    chmod 600 /sec_storage
++
++#for connectivity
++on boot
++    setprop ro.connectivity.chiptype ${ro.boot.odm.conn.chiptype}
++    setprop ro.connectivity.sub_chiptype ${ro.boot.odm.conn.schiptype}
++
++    mkdir /data/misc/hwpush
++    chmod 0770 /data/misc/hwpush
++    chown system system /data/misc/hwpush
++    restorecon_recursive /data/misc/hwpush
++
++#bluetooth
++    mkdir /data/log/bt
++    chown bluetooth bluetooth /data/log/bt
++    chmod 775 /data/log/bt
++#teeos
++    mkdir /data/log/tee 0770 root system
++
++#audio
++    chmod 0660 /dev/nxp_smartpa_dev
++    chown media media /dev/nxp_smartpa_dev
++
++#for VCE lite
++on property:ro.board.boardid=6978
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_lite.xml
++on property:ro.board.boardid=6982
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_lite.xml
++on property:ro.board.boardid=6979
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_lite.xml
++on property:ro.board.boardid=6989
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_lite.xml
++#for VCE pro
++on property:ro.board.boardid=6971
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6973
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6974
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6972
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6975
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6976
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6977
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6981
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6983
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++on property:ro.board.boardid=6980
++    setprop media.settings.xml /odm/etc/media_profiles_V1_0_pro.xml
++
++#fingersense
++on property:persist.sys.fingersense=1
++    write /sys/devices/platform/huawei_sensor/set_fingersense_enable 1
++    write /sys/touchscreen/roi_enable 1
++on property:persist.sys.fingersense=0
++    write /sys/devices/platform/huawei_sensor/set_fingersense_enable 0
++    write /sys/touchscreen/roi_enable 0
++
++on property:runtime.mmitest.isrunning=true
++    write /sys/devices/platform/huawei_sensor/set_fingersense_enable 0
++    write /sys/touchscreen/roi_enable 0
++on property:runtime.mmitest.isrunning=false
++    write /sys/devices/platform/huawei_sensor/set_fingersense_enable 1
++    write /sys/touchscreen/roi_enable 1
++
++
++on post-fs-data
++
++    mkdir /data/systemfeature
++    chmod 770 /data/systemfeature
++    chown system system /data/systemfeature
++    restorecon_recursive /data/systemfeature
++
++    mkdir /data/systemfeature/systemfeature
++    chmod 770 /data/systemfeature/systemfeature
++    chown system system /data/systemfeature/systemfeature
++    restorecon_recursive /data/systemfeature/systemfeature
++
++    mkdir /data/misc/hwpki
++    chmod 770 /data/misc/hwpki
++    chown system system /data/misc/hwpki
++    restorecon_recursive /data/misc/hwpki
++
++    mkdir /data/misc/hsm
++    chmod 0770 /data/misc/hsm
++    chown system system /data/misc/hsm
++    restorecon_recursive /data/misc/hsm
++
++    mkdir /data/sec_storage_data 0700 system system
++    restorecon /data/sec_storage_data
++    mkdir /data/sec_storage_data_users 0700 system system
++    restorecon /data/sec_storage_data_users
++
++
++on property:ro.runmode=factory
++    chown system system /sys/class/devfreq/ddrfreq_up_threshold/max_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq_up_threshold/max_freq
++    chown system system /sys/class/devfreq/ddrfreq_up_threshold/min_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq_up_threshold/min_freq
++    chown system system /sys/class/devfreq/ddrfreq_latency/max_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq_latency/max_freq
++    chown system system /sys/class/devfreq/ddrfreq_latency/min_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq_latency/min_freq
++    chown system system /sys/class/devfreq/ddrfreq/max_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq/max_freq
++    chown system system /sys/class/devfreq/ddrfreq/min_freq
++    chmod 0660 /sys/class/devfreq/ddrfreq/min_freq
++
++    chown system system /sys/kernel/debug/clock/test_one_clock/disable
++    chown system system /sys/kernel/debug/clock/test_one_clock/enable
++
++#for sensorhub log
++on property:persist.sys.huawei.debug.on=0
++    chown system system /sys/class/sensors/sensorhub_dump
++    chmod 0660 /sys/class/sensors/sensorhub_dump
++
++on property:persist.sys.huawei.debug.on=1
++    chown system system /sys/class/sensors/sensorhub_dump
++    chmod 0664 /sys/class/sensors/sensorhub_dump
+diff --git a/files/init.emui.huawei.os.common.rc b/files/init.emui.huawei.os.common.rc
+new file mode 100644
+index 0000000..e8718ae
+--- /dev/null
++++ b/files/init.emui.huawei.os.common.rc
+@@ -0,0 +1,3 @@
++
++on boot
++    setprop hilog.tag I
+-- 
+2.25.1
+

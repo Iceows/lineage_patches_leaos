@@ -1,7 +1,7 @@
-From b39d1890288faf60e2311a7358cb0400afddd58e Mon Sep 17 00:00:00 2001
+From 2b5b8879385861c4df07e1fee13ff2b043665889 Mon Sep 17 00:00:00 2001
 From: Iceows <mounierr07@gmail.com>
 Date: Tue, 6 Jun 2023 07:22:28 +0200
-Subject: [PATCH 06/14] selinux : huawei - add selinux denied rules on EMUI 9.1
+Subject: [PATCH 06/21] selinux : huawei - add selinux denied rules on EMUI 9.1
 
 Allows you to pass almost all the selinux rules on a Huawei phone under EMUI 9selinux :  huawei - add selinux denied rules on EMUI 9.1
 ---

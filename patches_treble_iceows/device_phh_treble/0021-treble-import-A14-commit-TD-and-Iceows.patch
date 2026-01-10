@@ -1,0 +1,488 @@
+From 202e213834e9039f6660356392b9eef1674a8af4 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 9 Jan 2026 18:56:45 +0100
+Subject: [PATCH 21/21] treble : import A14 commit (TD and Iceows)
+
+---
+ base.mk             |   1 +
+ iceows-securize.sh  |  30 ++++++++
+ phh-prop-handler.sh |  33 +++++++--
+ rw-system.sh        | 174 +++++++++++++++++---------------------------
+ vndk.rc             |  34 +++++++--
+ 5 files changed, 154 insertions(+), 118 deletions(-)
+ create mode 100644 iceows-securize.sh
+
+diff --git a/base.mk b/base.mk
+index cd4856a..d9f0819 100644
+--- a/base.mk
++++ b/base.mk
+@@ -84,6 +84,7 @@ PRODUCT_COPY_FILES += \
+ 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
+ 
+ PRODUCT_COPY_FILES += \
++	device/phh/treble/iceows-securize.sh:system/phh/iceows-securize.sh \
+ 	device/phh/treble/empty:system/phh/empty \
+ 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
+ 
+diff --git a/iceows-securize.sh b/iceows-securize.sh
+new file mode 100644
+index 0000000..502ccd3
+--- /dev/null
++++ b/iceows-securize.sh
+@@ -0,0 +1,30 @@
++#!/system/bin/sh
++
++(getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
++    [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
++done
++
++resetprop_phh ro.build.host android-build
++resetprop_phh ro.product.build.tags release-keys
++resetprop_phh ro.system.build.tags release-keys
++resetprop_phh ro.system_ext.build.tags release-keys
++resetprop_phh ro.vendor.build.tags release-keys
++resetprop_phh ro.build.type user
++resetprop_phh ro.product.build.type user
++resetprop_phh ro.system.build.type user
++resetprop_phh ro.system_ext.build.type user
++resetprop_phh ro.vendor.build.type user
++resetprop_phh ro.build.user nobody
++resetprop_phh ro.build.tags release-keys
++resetprop_phh ro.boot.vbmeta.device_state locked
++resetprop_phh ro.boot.verifiedbootstate green
++resetprop_phh ro.boot.flash.locked 1
++resetprop_phh ro.boot.veritymode enforcing
++resetprop_phh ro.boot.warranty_bit 0
++resetprop_phh ro.warranty_bit 0
++resetprop_phh ro.debuggable 0
++resetprop_phh ro.secure 1
++resetprop_phh ro.build.type user
++resetprop_phh --delete ro.build.selinux
++resetprop_phh ro.adb.secure 1
++setprop ctl.restart adbd
+diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
+index 104f8f0..202b51a 100644
+--- a/phh-prop-handler.sh
++++ b/phh-prop-handler.sh
+@@ -122,8 +122,30 @@ if [ "$1" == "persist.sys.phh.oppo.usbotg" ]; then
+     if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
+         exit 1
+     fi
++    if [ -e /sys/class/power_supply/usb/otg_switch ]; then
++        echo "$prop_value" >/sys/class/power_supply/usb/otg_switch
++    else
++        echo "$prop_value" >/sys/class/oplus_chg/usb/otg_switch
++    fi
++    exit
++fi
++
++if [ "$1" == "persist.sys.phh.transsion.usbotg" ]; then
++    if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
++        exit 1
++    fi
++    OTG_PATH=$(find /sys/ -path *tran_battery/OTG_CTL)
++    if [ -n "$OTG_PATH" ]; then
++        echo "$prop_value" >$OTG_PATH
++    fi
++    exit
++fi
+ 
+-    echo "$prop_value" >/sys/class/power_supply/usb/otg_switch
++if [ "$1" == "persist.sys.phh.transsion.dt2w" ]; then
++    if [[ "$prop_value" != "1" && "$prop_value" != "2" ]]; then
++        exit 1
++    fi
++    echo cc${prop_value} > /proc/gesture_function
+     exit
+ fi
+ 
+@@ -208,6 +230,8 @@ if [ "$1" == "persist.sys.phh.backlight.scale" ];then
+             setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+         elif [ -f /sys/class/backlight/panel0-backlight/max_brightness ];then
+             setprop persist.sys.qcom-brightness "$(cat /sys/class/backlight/panel0-backlight/max_brightness)"
++        elif [ -f /sys/class/backlight/sprd_backlight/max_brightness ];then
++            setprop persist.sys.qcom-brightness "$(cat /sys/class/backlight/sprd_backlight/max_brightness)"
+         fi
+     else
+         setprop persist.sys.qcom-brightness -1
+@@ -251,14 +275,13 @@ if [ "$1" == "persist.bluetooth.system_audio_hal.enabled" ]; then
+         resetprop_phh ro.bluetooth.a2dp_offload.supported false
+     else
+         resetprop_phh --delete persist.bluetooth.bluetooth_audio_hal.disabled
+-        resetprop_phh persist.bluetooth.a2dp_offload.disabled
+-        resetprop_phh ro.bluetooth.a2dp_offload.supported
++        resetprop_phh --delete persist.bluetooth.a2dp_offload.disabled
++        resetprop_phh --delete ro.bluetooth.a2dp_offload.supported
+     fi
+     restartAudio
+     exit
+ fi
+ 
+-
+ #monosim
+ if [ "$1" == "persist.sys.phh.monosim" ]; then
+     if [[ "$prop_value" != "false" && "$prop_value" != "true" ]]; then
+@@ -298,7 +321,7 @@ if [ "$1" == "persist.sys.phh.securize" ]; then
+ 
+     if [ ! -f /data/adb/phh/secure ]; then
+         mkdir -p /data/adb/phh
+-        cp /system/phh/secure.sh /data/adb/phh/secure
++        cp /system/phh/iceows-securize.sh /data/adb/phh/secure
+     fi
+     /system/bin/sh /data/adb/phh/secure
+     exit
+diff --git a/rw-system.sh b/rw-system.sh
+index c689e75..1e133c2 100644
+--- a/rw-system.sh
++++ b/rw-system.sh
+@@ -84,14 +84,19 @@ fixSPL() {
+     spl="$(getSPL "$img" spl)"
+     setprop ro.keymaster.xxx.release "${Arelease}"
+     setprop ro.keymaster.xxx.security_patch "$spl"
+-	if [ -z "$Arelease" ] || [ -z "$spl" ];then
+-		return 0
+-	fi
++    if [ -z "$Arelease" ] || [ -z "$spl" ];then
++        return 0
++    fi
+     # Some devices will want true vbmeta_state and verifiedbootstate
+     # Setup those properties redirect for "keymaster" prop redirects
+     setprop ro.keymaster.xxx.vbmeta_state unlocked
+     setprop ro.keymaster.xxx.verifiedbootstate orange
+ 
++    if getprop ro.vendor.build.fingerprint |grep -q -i samsung/j6lte;then
++        setprop debug.phh.props.ter@3.0-service keymaster
++        setprop debug.phh.props.mcDriverDaemon keymaster
++    fi
++
+     # Found on Cubot Pocket 3: trustkernel work only on stock model name or AOSP GSI model name
+     if [ -f /vendor/bin/hw/android.hardware.keymaster@4.1-service.trustkernel ] && [ -f /proc/tkcore/tkcore_log ];then
+         setprop debug.phh.props.teed keymaster
+@@ -190,12 +195,6 @@ changeKeylayout() {
+         chmod 0644 ${mpk}/uinput* ${mpk}/msm8953*
+     fi
+ 
+-    if getprop ro.vendor.build.fingerprint |grep -iq -e samsung/a10sxx;then
+-        mkdir -p /data/vendor/mcRegistry
+-        chown system /data/vendor/mcRegistry
+-        chmod 755 /data/vendor/mcRegistry
+-    fi
+-
+     if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/renoir; then
+         mpk="/mnt/phh/keylayout"
+         cp /system/phh/daisy-buttonJack.kl ${mpk}/lahaina-shimaidp-snd-card_Button_Jack.kl
+@@ -203,6 +202,12 @@ changeKeylayout() {
+         changed=true
+     fi
+ 
++    if getprop ro.vendor.build.fingerprint |grep -iq -e samsung/a10sxx;then
++        mkdir -p /data/vendor/mcRegistry
++        chown system /data/vendor/mcRegistry
++        chmod 755 /data/vendor/mcRegistry
++    fi
++
+     if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
+         cp /system/phh/oneplus6-synaptics_s3320.kl /mnt/phh/keylayout/synaptics_s3320.kl
+         chmod 0644 /mnt/phh/keylayout/synaptics_s3320.kl
+@@ -291,7 +296,7 @@ changeKeylayout() {
+         changed=true
+     fi
+ 
+-    if getprop ro.vendor.build.fingerprint | grep -q -i -e Blackview/BV9500Plus;then
++    if getprop ro.vendor.build.fingerprint | grep -q -i -e Blackview/BV9500Plus -e Ulefone/Armor_9 -e Blackview/BV9800;then
+         cp /system/phh/bv9500plus-mtk-kpd.kl /mnt/phh/keylayout/mtk-kpd.kl
+         chmod 0644 /mnt/phh/keylayout/mtk-kpd.kl
+         changed=true
+@@ -318,14 +323,18 @@ changeKeylayout() {
+           changed=true
+     fi
+ 
+-    if getprop ro.vendor.build.fingerprint |grep -iq tecno/kd7;then
+-        # Enable dt2w
+-        echo cc1 > /proc/gesture_function
++    if grep -qE ^cc: /proc/gesture_state;then
+         cp /system/phh/tecno-touchpanel.kl /mnt/phh/keylayout/mtk-tpd.kl
+         chmod 0644 /mnt/phh/keylayout/mtk-tpd.kl
+         changed=true
+     fi
+ 
++    if getprop ro.vendor.build.fingerprint | grep -q -e nubia/NX669; then
++        cp /system/phh/nubia-nubia_goodix_ts.kl /mnt/phh/keylayout/nubia_goodix_ts.kl
++        chmod 0644 /mnt/phh/keylayout/nubia_goodix_ts.kl
++        changed=true
++    fi
++
+     if [ "$changed" = true ]; then
+         mount -o bind /mnt/phh/keylayout /system/usr/keylayout
+         restorecon -R /system/usr/keylayout
+@@ -448,7 +457,7 @@ if getprop ro.vendor.build.fingerprint | grep -q -i \
+     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
+     -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
+     -e xiaomi/lavender -e xiaomi/olive -e xiaomi/olivelite -e xiaomi/pine \
+-    -e Redmi/lancelot -e Redmi/galahad -e POCO/evergreen; then
++    -e POCO/evergreen; then
+     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
+ fi
+ 
+@@ -597,6 +606,23 @@ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/merlin; then
+     setprop debug.sf.enable_hwc_vds 0
+ fi
+ 
++if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/lancelot -e Redmi/galahad; then
++    setprop debug.renderengine.backend skiaglthreaded
++    setprop debug.sf.use_phase_offsets_as_durations 1
++    setprop debug.sf.late.sf.duration 27600000
++    setprop debug.sf.late.app.duration 20000000
++    setprop debug.sf.early.sf.duration 27600000
++    setprop debug.sf.early.app.duration 20000000
++    setprop debug.sf.earlyGl.sf.duration 27600000
++    setprop debug.sf.earlyGl.app.duration 20000000
++    setprop debug.sf.hwc.min.duration 17000000
++    setprop debug.sf.disable_client_composition_cache 1
++    setprop debug.sf.predict_hwc_composition_strategy 0
++    setprop debug.stagefright.c2inputsurface -1
++    setprop media.stagefright.thumbnail.prefer_hw_codecs true
++    setprop ro.surface_flinger.enable_frame_rate_override false
++fi
++
+ if getprop ro.vendor.build.fingerprint | grep -iq -e Redmi/rosemary \
+     -e Redmi/secret -e Redmi/maltose; then
+     setprop debug.sf.latch_unsignaled 1
+@@ -609,7 +635,6 @@ fi
+ # Iceows patch - NFC NXP conf remove, you must set by specify model patch
+ # remove gnss_watchlssd_thirdparty to avoid log spam
+ if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
+-
+     setprop debug.sf.latch_unsignaled 1
+ 
+     # Set proper /sdcard permissions to avoid dead storage
+@@ -735,6 +760,9 @@ if getprop ro.vendor.build.fingerprint | grep -q -e nubia/NX669; then
+     umount /vendor/etc/audio
+     sku="$(getprop ro.boot.product.vendor.sku)"
+     mount /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
++    chmod 0666 /sys/kernel/lcd_enhance/hbm_state
++    # Disable back panel touch (which would hide keyboard if accidentally touched)
++    setprop persist.sys.phh.evgrab nubia_sar0_channel0
+ fi
+ 
+ # For ZF8, the "best" audio policy isn't the one for QSSI
+@@ -745,69 +773,22 @@ if getprop ro.vendor.build.fingerprint |grep -q -e /ASUS_I006D:;then
+ fi
+ 
+ setprop ctl.stop console
+-dmesg -n 1
+ copyprop() {
+     p="$(getprop "$2")"
+     if [ "$p" ]; then
+         resetprop_phh "$1" "$(getprop "$2")"
+     fi
+ }
+-if [ -f /system/phh/secure ] || [ -f /metadata/phh/secure ] || [ -f /data/adb/phh/secure ];then
+-    copyprop ro.build.device ro.vendor.build.device
+-    copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
+-    copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
+-    copyprop ro.build.fingerprint ro.vendor.build.fingerprint
+-    copyprop ro.build.device ro.vendor.product.device
+-    copyprop ro.product.system.device ro.vendor.product.device
+-    copyprop ro.product.device ro.vendor.product.device
+-    copyprop ro.product.system.device ro.product.vendor.device
+-    copyprop ro.product.device ro.product.vendor.device
+-    copyprop ro.product.system.name ro.vendor.product.name
+-    copyprop ro.product.name ro.vendor.product.name
+-    copyprop ro.product.system.name ro.product.vendor.device
+-    copyprop ro.product.name ro.product.vendor.device
+-    copyprop ro.system.product.brand ro.vendor.product.brand
+-    copyprop ro.product.brand ro.vendor.product.brand
+-    copyprop ro.product.system.model ro.vendor.product.model
+-    copyprop ro.product.model ro.vendor.product.model
+-    copyprop ro.product.system.model ro.product.vendor.model
+-    copyprop ro.product.model ro.product.vendor.model
+-    copyprop ro.build.product ro.vendor.product.model
+-    copyprop ro.build.product ro.product.vendor.model
+-    copyprop ro.system.product.manufacturer ro.vendor.product.manufacturer
+-    copyprop ro.product.manufacturer ro.vendor.product.manufacturer
+-    copyprop ro.system.product.manufacturer ro.product.vendor.manufacturer
+-    copyprop ro.product.manufacturer ro.product.vendor.manufacturer
+-    (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
+-        [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
+-    done
+ 
+-    resetprop_phh ro.build.tags release-keys
+-    resetprop_phh ro.boot.vbmeta.device_state locked
+-    resetprop_phh ro.boot.verifiedbootstate green
+-    resetprop_phh ro.boot.flash.locked 1
+-    resetprop_phh ro.boot.veritymode enforcing
+-    resetprop_phh ro.boot.warranty_bit 0
+-    resetprop_phh ro.warranty_bit 0
+-    resetprop_phh ro.secure 1
+-    resetprop_phh ro.build.type user
+-    resetprop_phh ro.build.selinux 0
+-
+-    # Hide system/xbin/su
+-    mount /mnt/phh/empty_dir /system/xbin
+-    mount /mnt/phh/empty_dir /system/app/me.phh.superuser
+-    mount /system/phh/empty /system/xbin/phh-su
+-else
+-    mkdir /mnt/phh/xbin
+-    chmod 0755 /mnt/phh/xbin
+-    chcon u:object_r:system_file:s0 /mnt/phh/xbin
++mkdir /mnt/phh/xbin
++chmod 0755 /mnt/phh/xbin
++chcon u:object_r:system_file:s0 /mnt/phh/xbin
+ 
+-    #phh-su will bind over this empty file to make a real su
+-    touch /mnt/phh/xbin/su
+-    chcon u:object_r:system_file:s0 /mnt/phh/xbin/su
++#phh-su will bind over this empty file to make a real su
++touch /mnt/phh/xbin/su
++chcon u:object_r:system_file:s0 /mnt/phh/xbin/su
+ 
+-    mount -o bind /mnt/phh/xbin /system/xbin
+-fi
++mount -o bind /mnt/phh/xbin /system/xbin
+ 
+ for abi in "" 64;do
+     f=/vendor/lib$abi/libstagefright_foundation.so
+@@ -832,44 +813,8 @@ if [ -c /dev/dsm ];then
+     chmod 0660 /dev/dsm
+ 
+     # The presence of /dev/dsm indicates that we have a teecd,
+-    # which needs /sec_storage and /data/sec_storage_data
+-
+-    mkdir -p /data/sec_storage_data
+-    chown system:system /data/sec_storage_data
+-    chmod /data/sec_storage_data 0700 
+-    chcon -R u:object_r:system_data_file:s0 /data/sec_storage_data
+-    
+-    mkdir -p /data/sec_storage_data_users
+-    chown system:system /data/sec_storage_data_users
+-    chmod /data/sec_storage_data_users 0700
+-    chcon -R u:object_r:system_data_file:s0 /data/sec_storage_data_users
+-
+-    if mount | grep -q " on /sec_storage " ; then
+-        # /sec_storage is already mounted by the vendor, don't try to create and mount it
+-        # ourselves. However, some devices have /sec_storage owned by root, which means that
+-        # the fingerprint daemon (running as system) cannot access it.
+-    else
+-        # No /sec_storage provided by vendor like stock
+-        mount -t ext4 -o rw /dev/block/by-name/secure_storage /sec_storage/ 
+-    fi
+-    chown root root /sec_storage
+-    chmod 0600 /sec_storage  
+-fi
++    # which needs /sec_storage and /data/sec_storage_data provide by init.huawei.os.a15.rc
+ 
+-has_hostapd=false
+-for i in odm oem vendor product;do
+-    if grep -qF android.hardware.wifi.hostapd /$i/etc/vintf/manifest.xml;then
+-        has_hostapd=true
+-    fi
+-    for j in /$i/etc/vintf/manifest/*;do
+-        if grep -qF android.hardware.wifi.hostapd $j;then
+-            has_hostapd=true
+-        fi
+-    done
+-done
+-
+-if [ "$has_hostapd" = false ];then
+-    setprop persist.sys.phh.system_hostapd true
+ fi
+ 
+ #Weird /odm/phone.prop Huawei stuff
+@@ -1145,7 +1090,7 @@ setprop debug.phh.props.omposer-service vendor
+ 
+ # On those Unisoc chips, Android's bluetooth stack will try to send a LE_EXTENDED_SCAN command, which isn't actually supported
+ # The support of that command inherits from a "le vendor version". Force this at 0 to disable the use of that command
+-if getprop ro.vendor.gnsschip |grep -q marlin3lite;then
++if getprop ro.vendor.gnsschip |grep -q -e marlin3 -e marlin3lite || getprop ro.board.platform |grep -q msm8996;then
+     setprop persist.sys.bt.max_vendor_cap 0
+ fi
+ 
+@@ -1183,6 +1128,21 @@ fi
+ resetprop_phh ro.config.media_vol_steps 25
+ resetprop_phh ro.config.media_vol_default 8
+ 
++# Force disable Sunlight Reading Mode to prevent weird color issues
++if getprop ro.vendor.build.fingerprint | grep -iq -e xiaomi/renoir; then
++    resetprop_phh ro.vendor.sre.enable false
++fi
++
++# brightness fix for platform ums512 And ums9230
++if getprop ro.board.platform |grep -iq -e ums512 -e ums9230;then
++    setprop persist.sys.qcom-brightness "$(cat /sys/class/backlight/sprd_backlight/max_brightness)"
++fi
++
++# Fix for non-AMOLED Transsion devices where brightness would be dimmer than usual
++if [ -n "$(getprop ro.vendor.transsion.backlight_12bit)" ];then
++    setprop ro.vendor.transsion.backlight_hal.optimization $(getprop ro.vendor.transsion.backlight_12bit)
++fi
++
+ # Fix default orientation on Rebecco K70
+ if getprop ro.vendor.build.fingerprint | grep -iq -e Rebecco/K70_ROW; then
+     resetprop_phh ro.surface_flinger.primary_display_orientation ORIENTATION_0
+diff --git a/vndk.rc b/vndk.rc
+index 96d4694..9a333ad 100644
+--- a/vndk.rc
++++ b/vndk.rc
+@@ -1,14 +1,14 @@
+ on post-fs
+-	exec - root -- /system/bin/vndk-detect
+-	exec - root -- /system/bin/rw-system.sh
+-	mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
+-        setprop ro.vndk.version ${persist.sys.vndk}
++    exec - root -- /system/bin/vndk-detect
++    exec - root -- /system/bin/rw-system.sh
++    mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
++    setprop ro.vndk.version ${persist.sys.vndk}
+ 
+ on property:vold.decrypt=trigger_restart_framework
+-	exec - root -- /system/bin/phh-on-data.sh
++    exec - root -- /system/bin/phh-on-data.sh
+ 
+ on early-boot
+-	exec - root -- /system/bin/phh-on-data.sh
++    exec - root -- /system/bin/phh-on-data.sh
+ 
+ service phh_on_boot /system/bin/phh-on-boot.sh
+     oneshot
+@@ -37,6 +37,12 @@ on property:persist.sys.phh.oppo.gaming_mode=*
+ on property:persist.sys.phh.oppo.usbotg=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.usbotg"
+ 
++on property:persist.sys.phh.transsion.usbotg=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.transsion.usbotg"
++
++on property:persist.sys.phh.transsion.dt2w=*
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.transsion.dt2w"
++
+ on property:persist.sys.phh.xiaomi.dt2w=*
+     exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.xiaomi.dt2w"
+ 
+@@ -106,8 +112,24 @@ on property:sys.phh.uninstall-ota=true
+ on property:ro.vendor.radio.default_network=*
+     setprop ro.telephony.default_network ${ro.vendor.radio.default_network}
+ 
++on property:persist.sys.phh.force_display_5g=1
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/resetprop_phh ro.telephony.default_network 33,33
++
++on property:persist.sys.phh.ims.floss=true
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/resetprop_phh ro.telephony.iwlan_operation_mode AP-assisted
++
++on property:persist.sys.phh.enable_sf_gl_backpressure=*
++    setprop debug.sf.enable_gl_backpressure ${persist.sys.phh.enable_sf_gl_backpressure}
++
++on property:persist.sys.phh.dynamic_fps=*
++    setprop ro.surface_flinger.use_content_detection_for_refresh_rate ${persist.sys.phh.dynamic_fps}
++
+ # Set watchdog timer to 30 seconds and pet it every 10 seconds to get a 20 second margin
+ service watchdogd-gsi /system/bin/watchdogd 10 20
+     class core
+     oneshot
+     seclabel u:r:watchdogd:s0
++
++on property:persist.sys.phh.adb_secure=1
++    exec u:r:phhsu_daemon:s0 root -- /system/bin/resetprop_phh ro.adb.secure 1
++    restart adbd
+-- 
+2.25.1
+

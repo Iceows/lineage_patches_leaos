@@ -1,7 +1,7 @@
-From 45ff9f2b3c98a37c969f19f1fe5b4e49b21a91e8 Mon Sep 17 00:00:00 2001
+From 2a2a336016dfebe48c2483bfb76697353d198100 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Tue, 2 May 2023 08:54:45 +0200
-Subject: [PATCH 05/14] Add bootctl for vold
+Subject: [PATCH 05/21] Add bootctl for vold
 
 Allows checkpoint commands to check A/B update status
 ---

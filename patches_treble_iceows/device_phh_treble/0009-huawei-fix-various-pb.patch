@@ -1,7 +1,7 @@
-From 88663167ca5fa766febcb54d2124a8b34313a78d Mon Sep 17 00:00:00 2001
+From f57a3caa5cb4badd9646586e0eb02bb015deb0cb Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sat, 28 Oct 2023 10:56:47 +0200
-Subject: [PATCH 09/14] huawei: fix various pb
+Subject: [PATCH 09/21] huawei: fix various pb
 
 Fix bug with :
 - gnss
@@ -13,7 +13,7 @@ Fix bug with :
  1 file changed, 16 insertions(+), 15 deletions(-)
 
 diff --git a/rw-system.sh b/rw-system.sh
-index ddd1735..bc2c142 100644
+index 52ec66b..05d7f38 100644
 --- a/rw-system.sh
 +++ b/rw-system.sh
 @@ -575,10 +575,6 @@ if [ -f /vendor/bin/hw/vendor.samsung.hardware.miscpower@1.0-service ] && [ "$vn

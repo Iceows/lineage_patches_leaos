@@ -1,7 +1,7 @@
-From 1627a68e841f8dade017a9415351e197c0faf615 Mon Sep 17 00:00:00 2001
+From a699a22e5863c906e404e3114c7fd4f93f4b43ed Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 5 Dec 2024 10:22:06 +0100
-Subject: [PATCH 2/3] vowifi: add iwlan package and config ovelay
+Subject: [PATCH 15/21] vowifi: add iwlan package and config ovelay
 
 ---
  base.mk                                                | 5 ++++-
