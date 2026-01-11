@@ -1,0 +1,31 @@
+From fea8a47822cc65a08ac8e816edb74a1335381751 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 11 Jan 2026 11:23:56 +0100
+Subject: [PATCH] Always build with release keys
+
+Instead of test-keys or dev-keys
+
+Change-Id: I665b71753ad619a81b5deb2b12e253138f1bfe04
+---
+ core/sysprop.mk | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/sysprop.mk b/core/sysprop.mk
+index 5ff93a13e..6a5b0aea4 100644
+--- a/core/sysprop.mk
++++ b/core/sysprop.mk
+@@ -160,9 +160,9 @@ endif
+ # Both of these tags will be removed and replaced with "release-keys"
+ # when the target-files is signed in a post-build step.
+ ifeq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/make/target/product/security/testkey)
+-BUILD_KEYS := test-keys
++BUILD_KEYS := release-keys
+ else
+-BUILD_KEYS := dev-keys
++BUILD_KEYS := release-keys
+ endif
+ BUILD_VERSION_TAGS += $(BUILD_KEYS)
+ BUILD_VERSION_TAGS := $(subst $(space),$(comma),$(sort $(BUILD_VERSION_TAGS)))
+-- 
+2.25.1
+

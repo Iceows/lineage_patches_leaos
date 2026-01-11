@@ -1,15 +1,15 @@
-From 202e213834e9039f6660356392b9eef1674a8af4 Mon Sep 17 00:00:00 2001
+From b95dea832aa012058a7573d57a12541d6f654c94 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
-Date: Fri, 9 Jan 2026 18:56:45 +0100
-Subject: [PATCH 21/21] treble : import A14 commit (TD and Iceows)
+Date: Sun, 11 Jan 2026 11:49:44 +0100
+Subject: [PATCH] treble : import A14 commit (TD and Iceows)
 
 ---
  base.mk             |   1 +
- iceows-securize.sh  |  30 ++++++++
+ iceows-securize.sh  |  34 +++++++++
  phh-prop-handler.sh |  33 +++++++--
  rw-system.sh        | 174 +++++++++++++++++---------------------------
  vndk.rc             |  34 +++++++--
- 5 files changed, 154 insertions(+), 118 deletions(-)
+ 5 files changed, 158 insertions(+), 118 deletions(-)
  create mode 100644 iceows-securize.sh
 
 diff --git a/base.mk b/base.mk
@@ -26,10 +26,10 @@ index cd4856a..d9f0819 100644
  
 diff --git a/iceows-securize.sh b/iceows-securize.sh
 new file mode 100644
-index 0000000..502ccd3
+index 0000000..2cd7a28
 --- /dev/null
 +++ b/iceows-securize.sh
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,34 @@
 +#!/system/bin/sh
 +
 +(getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
@@ -59,6 +59,10 @@ index 0000000..502ccd3
 +resetprop_phh ro.build.type user
 +resetprop_phh --delete ro.build.selinux
 +resetprop_phh ro.adb.secure 1
++
++resetprop_phh --delete ro.lineage.version
++resetprop_phh --delete ro.modversion
++
 +setprop ctl.restart adbd
 diff --git a/phh-prop-handler.sh b/phh-prop-handler.sh
 index 104f8f0..202b51a 100644
