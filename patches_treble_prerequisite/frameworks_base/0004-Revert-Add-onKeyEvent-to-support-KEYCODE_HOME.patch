@@ -1,0 +1,72 @@
+From 69cb87c6cf11ba507f4125cdced26b7b6d3a6ce5 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sat, 17 Jan 2026 17:39:10 +0100
+Subject: [PATCH 2/2] Revert "Add onKeyEvent, to support KEYCODE_HOME"
+
+This reverts commit 584f15c8f746e70d2a01808cf7c410250d9ff421.
+---
+ .../systemui/shared/recents/ISystemUiProxy.aidl  |  8 ++------
+ .../systemui/recents/OverviewProxyService.java   | 16 ++++------------
+ 2 files changed, 6 insertions(+), 18 deletions(-)
+
+diff --git a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+index 00ae65e7fb05..d07ba6ab645b 100644
+--- a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
++++ b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+@@ -102,7 +102,7 @@ interface ISystemUiProxy {
+     oneway void expandNotificationPanel() = 29;
+ 
+     /**
+-     * Notifies SystemUI of KEYCODE_BACK, sending a ACTION_DOWN followed by ACTION_UP.
++     * Notifies SystemUI to invoke Back.
+      */
+     oneway void onBackPressed() = 44;
+ 
+@@ -147,9 +147,5 @@ interface ISystemUiProxy {
+      */
+     oneway void onStatusBarTrackpadEvent(in MotionEvent event) = 52;
+ 
+-     * Notifies SystemUI of a KeyEvent of the specified type (e.g. KEYCODE_BACK, KEYCODE_HOME).
+-     */
+-    oneway void onKeyEvent(int keycode) = 60;
+-
+-    // Next id = 61
++    // Next id = 54
+ }
+diff --git a/packages/SystemUI/src/com/android/systemui/recents/OverviewProxyService.java b/packages/SystemUI/src/com/android/systemui/recents/OverviewProxyService.java
+index de95a239754c..a585472e9c2b 100644
+--- a/packages/SystemUI/src/com/android/systemui/recents/OverviewProxyService.java
++++ b/packages/SystemUI/src/com/android/systemui/recents/OverviewProxyService.java
+@@ -19,7 +19,6 @@ package com.android.systemui.recents;
+ import static android.content.Intent.ACTION_PACKAGE_ADDED;
+ import static android.content.Intent.EXTRA_CHANGED_COMPONENT_NAME_LIST;
+ import static android.content.pm.PackageManager.MATCH_SYSTEM_ONLY;
+-import static android.view.KeyEvent.KEYCODE_BACK;
+ import static android.view.MotionEvent.ACTION_CANCEL;
+ import static android.view.MotionEvent.ACTION_DOWN;
+ import static android.view.MotionEvent.ACTION_UP;
+@@ -253,17 +252,10 @@ public class OverviewProxyService implements CallbackController<OverviewProxyLis
+ 
+         @Override
+         public void onBackPressed() {
+-            onKeyEvent(KEYCODE_BACK);
+-        }
+-
+-        @Override
+-        public void onKeyEvent(int keycode) {
+-            verifyCallerAndClearCallingIdentityPostMain(
+-                    "onKeyEvent " + KeyEvent.keyCodeToString(keycode),
+-                    () -> {
+-                        sendEvent(KeyEvent.ACTION_DOWN, keycode);
+-                        sendEvent(KeyEvent.ACTION_UP, keycode);
+-                    });
++            verifyCallerAndClearCallingIdentityPostMain("onBackPressed", () -> {
++                sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
++                sendEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK);
++            });
+         }
+ 
+         @Override
+-- 
+2.25.1
+
