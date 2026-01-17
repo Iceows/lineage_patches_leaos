@@ -1,0 +1,39 @@
+From e43a0f31b176b3fc736d501360ba4f5e91c9c49a Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Thu, 15 Jan 2026 11:54:05 +0100
+Subject: [PATCH] update huawei overlay to enable nightmode in kirin710 device
+
+---
+ Huawei/kirin710/MAR/res/values/config.xml | 2 +-
+ Huawei/kirin710/POT/res/values/config.xml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Huawei/kirin710/MAR/res/values/config.xml b/Huawei/kirin710/MAR/res/values/config.xml
+index bbbe9d3..c192af1 100644
+--- a/Huawei/kirin710/MAR/res/values/config.xml
++++ b/Huawei/kirin710/MAR/res/values/config.xml
+@@ -171,7 +171,7 @@
+ 
+     <!-- Boolean indicating whether the HWC setColorTransform function can be performed efficiently
+          in hardware. -->
+-    <bool name="config_setColorTransformAccelerated">false</bool>
++    <bool name="config_setColorTransformAccelerated">true</bool>
+ 
+     <!-- Flag specifying whether VoLTE is available on device -->
+     <bool name="config_device_volte_available">true</bool>
+diff --git a/Huawei/kirin710/POT/res/values/config.xml b/Huawei/kirin710/POT/res/values/config.xml
+index 1999202..52b5c17 100644
+--- a/Huawei/kirin710/POT/res/values/config.xml
++++ b/Huawei/kirin710/POT/res/values/config.xml
+@@ -172,7 +172,7 @@
+ 
+     <!-- Boolean indicating whether the HWC setColorTransform function can be performed efficiently
+          in hardware. -->
+-    <bool name="config_setColorTransformAccelerated">false</bool>
++    <bool name="config_setColorTransformAccelerated">true</bool>
+ 
+     <!-- Flag specifying whether VoLTE is available on device -->
+     <bool name="config_device_volte_available">true</bool>
+-- 
+2.25.1
+
