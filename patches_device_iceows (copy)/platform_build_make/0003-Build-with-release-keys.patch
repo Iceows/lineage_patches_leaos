@@ -1,0 +1,38 @@
+From 200542909972347d2b059fd9bd60ff71811e22ad Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Fri, 2 Jan 2026 18:16:45 +0100
+Subject: [PATCH 3/4] Build with release keys
+
+Build with release keys instead of test-keys or dev-keys
+
+Change-Id: Idb3dc0b4001d4ab1fc57434af19cfd72e3013025
+---
+ core/sysprop.mk | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/sysprop.mk b/core/sysprop.mk
+index f913d11743..db71fc9034 100644
+--- a/core/sysprop.mk
++++ b/core/sysprop.mk
+@@ -178,9 +178,9 @@ endif
+ # Both of these tags will be removed and replaced with "release-keys"
+ # when the target-files is signed in a post-build step.
+ ifeq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/make/target/product/security/testkey)
+-BUILD_KEYS := test-keys
++BUILD_KEYS := release-keys
+ else
+-BUILD_KEYS := dev-keys
++BUILD_KEYS := release-keys
+ endif
+ BUILD_VERSION_TAGS += $(BUILD_KEYS)
+ BUILD_VERSION_TAGS := $(subst $(space),$(comma),$(sort $(BUILD_VERSION_TAGS)))
+@@ -577,4 +577,4 @@ ALL_INSTALLED_BUILD_PROP_FILES := \
+ # $1 installed file path, e.g. out/target/product/vsoc_x86_64/system/build.prop
+ define is-build-prop
+ $(if $(findstring $1,$(ALL_INSTALLED_BUILD_PROP_FILES)),Y)
+-endef
+\ No newline at end of file
++endef
+-- 
+2.25.1
+
