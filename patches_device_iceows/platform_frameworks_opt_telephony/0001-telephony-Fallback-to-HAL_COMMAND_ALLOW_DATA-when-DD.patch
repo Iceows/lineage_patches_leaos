@@ -1,0 +1,32 @@
+From 2750712f2250ef65ef5c122f7eb641f82b9c13a4 Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 26 Apr 2026 15:07:32 +0200
+Subject: [PATCH 1/2] telephony: Fallback to HAL_COMMAND_ALLOW_DATA when DDS
+ switch fails
+
+SET_PREFERRED_DATA_MODEM is not supported on some kirin emui10 devices v1.4 ril hal and returns RADIO_NOT_AVAILABLE error msg, when that happens, fallback to ALLOW_DATA.
+
+Change-Id: I5b3bc552bfbdee739c33a8411cbb49501dbdc467
+---
+ .../com/android/internal/telephony/data/PhoneSwitcher.java   | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/java/com/android/internal/telephony/data/PhoneSwitcher.java b/src/java/com/android/internal/telephony/data/PhoneSwitcher.java
+index 411186c7b2..d7a175affe 100644
+--- a/src/java/com/android/internal/telephony/data/PhoneSwitcher.java
++++ b/src/java/com/android/internal/telephony/data/PhoneSwitcher.java
+@@ -1812,6 +1812,11 @@ public class PhoneSwitcher extends Handler {
+                     hold the retry until sim gets ready */
+                     log("onDdsSwitchResponse: Wait for SIM to get READY");
+                     return;
++                } else if (error == CommandException.Error.RADIO_NOT_AVAILABLE) {
++                    log("onDdsSwitchResponse: Falling back to HAL_COMMAND_ALLOW_DATA");
++                    mHalCommandToUse = HAL_COMMAND_ALLOW_DATA;
++                    sendRilCommands(phoneId);
++                    return;
+                 }
+             }
+             log("onDdsSwitchResponse: Scheduling DDS switch retry");
+-- 
+2.25.1
+
