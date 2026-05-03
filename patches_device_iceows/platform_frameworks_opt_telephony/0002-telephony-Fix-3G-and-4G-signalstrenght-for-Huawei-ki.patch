@@ -1,7 +1,7 @@
-From cb59796a67262642ecb5ee9dfb0743f71f9ed706 Mon Sep 17 00:00:00 2001
+From 6e321e0510b020dcf24c54f866790e4dd0fe0b0c Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Sun, 26 Apr 2026 15:08:53 +0200
-Subject: [PATCH 2/2] telephony: Fix 3G and 4G signalstrenght for Huawei kirin
+Subject: [PATCH 2/3] telephony: Fix 3G and 4G signalstrenght for Huawei kirin
  devices
 
 Change-Id: I83e05c07c267f8b344d07c65d8d70757cde5db35

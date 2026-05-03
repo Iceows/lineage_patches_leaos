@@ -1,0 +1,61 @@
+From e3c08dc14cc07d5bcf42b1284a33801e5bd9fd7e Mon Sep 17 00:00:00 2001
+From: Raphael Mounier <mounierr07@gmail.com>
+Date: Sun, 3 May 2026 16:24:21 +0200
+Subject: [PATCH 3/3] telephony: Fix 3G and gsm signalstrenght for Huawei kirin
+ devices hal 1.4
+
+Change-Id: I645e8adade3675bceee9880a68a519660867b6a0
+---
+ .../internal/telephony/RadioIndication.java   | 27 +++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+diff --git a/src/java/com/android/internal/telephony/RadioIndication.java b/src/java/com/android/internal/telephony/RadioIndication.java
+index b74103f594..ec648b7c9d 100644
+--- a/src/java/com/android/internal/telephony/RadioIndication.java
++++ b/src/java/com/android/internal/telephony/RadioIndication.java
+@@ -251,7 +251,7 @@ public class RadioIndication extends IRadioIndication.Stub {
+ 
+         // Fix signalStrength for Huawei
+         String hardware = android.os.SystemProperties.get("ro.hardware", "");
+-        if(hardware.contains("hi3660") || hardware.contains("hi6250") || hardware.contains("hi3670") || hardware.contains("kirin"))
++        if (hardware.contains("hi3660") || hardware.contains("hi6250") || hardware.contains("hi3670") || hardware.contains("kirin"))
+         {
+             if (RIL.RILJ_LOGV) mRil.riljLog("currentSignalStrength Found Huawei device");
+             ss = mRil.fixupSignalStrengthHuawei(signalStrength);
+@@ -320,9 +320,32 @@ public class RadioIndication extends IRadioIndication.Stub {
+      */
+     public void currentSignalStrength_1_4(int indicationType,
+             android.hardware.radio.V1_4.SignalStrength signalStrength) {
+-
+         mRil.processIndication(RIL.RADIO_SERVICE, indicationType);
+ 
++        // Fix signalStrength for Huawei
++        String hardware = android.os.SystemProperties.get("ro.hardware", "");
++        if (hardware.contains("kirin"))
++        {
++            mRil.riljLog("currentSignalStrength Found Huawei device : "+ signalStrength.toString());
++
++            // GSM - Range for RSSI in ASU (0-31, 99) as defined in TS 27.007 8.69
++            if (signalStrength.gsm.signalStrength<0)
++            {
++               mRil.riljLog("currentSignalStrength fix gsm");
++               signalStrength.gsm.signalStrength=(signalStrength.gsm.signalStrength+113)/2;
++            }
++
++
++            // 3G - Range for RSCP in ASU (0-96, 255) as defined in TS 27.007 8.69
++            // Huawei set negatif value in rscp (dBm)
++            if (signalStrength.wcdma.rscp<0)
++            {
++               mRil.riljLog("currentSignalStrength fix wcdma");
++               signalStrength.wcdma.rscp=signalStrength.wcdma.rscp+120;
++            }
++        }
++
++        mRil.riljLog("Huawei : " + signalStrength.toString());
+         SignalStrength ss = RILUtils.convertHalSignalStrength(signalStrength);
+ 
+         if (mRil.isLogvOrTrace()) mRil.unsljLogvRet(RIL_UNSOL_SIGNAL_STRENGTH, ss);
+-- 
+2.25.1
+
